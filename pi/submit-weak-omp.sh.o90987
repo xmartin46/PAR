@@ -1,0 +1,112 @@
+Intel(R) Parallel Studio XE 2018 Update 2 for Linux*
+Copyright (C) 2009-2018 Intel Corporation. All rights reserved.
+make: 'pi_omp' is up to date.
+Executing pi_omp with one thread
+Run 0...Elapsed time = 0.36
+Run 1...Elapsed time = 0.35
+Run 2...Elapsed time = 0.36
+ELAPSED TIME MIN OF 3 EXECUTIONS =0.35
+
+pi_omp 100000000 1 12 3
+Starting OpenMP executions...
+Executing pi_omp with 1 threads
+Run 0 with size 100000000 ...Elapsed time = 0.36
+Run 1 with size 100000000 ...Elapsed time = 0.34
+Run 2 with size 100000000 ...Elapsed time = 0.37
+ELAPSED TIME Min OF 3 EXECUTIONS =0.34
+
+Executing pi_omp with 2 threads
+Run 0 with size 200000000 ...Elapsed time = 0.37
+Run 1 with size 200000000 ...Elapsed time = 0.37
+Run 2 with size 200000000 ...Elapsed time = 0.35
+ELAPSED TIME Min OF 3 EXECUTIONS =0.35
+
+Executing pi_omp with 3 threads
+Run 0 with size 300000000 ...Elapsed time = 0.33
+Run 1 with size 300000000 ...Elapsed time = 0.34
+Run 2 with size 300000000 ...Elapsed time = 0.32
+ELAPSED TIME Min OF 3 EXECUTIONS =0.32
+
+Executing pi_omp with 4 threads
+Run 0 with size 400000000 ...Elapsed time = 0.37
+Run 1 with size 400000000 ...Elapsed time = 0.33
+Run 2 with size 400000000 ...Elapsed time = 0.34
+ELAPSED TIME Min OF 3 EXECUTIONS =0.33
+
+Executing pi_omp with 5 threads
+Run 0 with size 500000000 ...Elapsed time = 0.34
+Run 1 with size 500000000 ...Elapsed time = 0.33
+Run 2 with size 500000000 ...Elapsed time = 0.34
+ELAPSED TIME Min OF 3 EXECUTIONS =0.33
+
+Executing pi_omp with 6 threads
+Run 0 with size 600000000 ...Elapsed time = 0.33
+Run 1 with size 600000000 ...Elapsed time = 0.33
+Run 2 with size 600000000 ...Elapsed time = 0.32
+ELAPSED TIME Min OF 3 EXECUTIONS =0.32
+
+Executing pi_omp with 7 threads
+Run 0 with size 700000000 ...Elapsed time = 0.33
+Run 1 with size 700000000 ...Elapsed time = 0.34
+Run 2 with size 700000000 ...Elapsed time = 0.30
+ELAPSED TIME Min OF 3 EXECUTIONS =0.30
+
+Executing pi_omp with 8 threads
+Run 0 with size 800000000 ...Elapsed time = 0.37
+Run 1 with size 800000000 ...Elapsed time = 0.37
+Run 2 with size 800000000 ...Elapsed time = 0.39
+ELAPSED TIME Min OF 3 EXECUTIONS =0.37
+
+Executing pi_omp with 9 threads
+Run 0 with size 900000000 ...Elapsed time = 0.30
+Run 1 with size 900000000 ...Elapsed time = 0.34
+Run 2 with size 900000000 ...Elapsed time = 0.33
+ELAPSED TIME Min OF 3 EXECUTIONS =0.30
+
+Executing pi_omp with 10 threads
+Run 0 with size 1000000000 ...Elapsed time = 0.33
+Run 1 with size 1000000000 ...Elapsed time = 0.37
+Run 2 with size 1000000000 ...Elapsed time = 0.33
+ELAPSED TIME Min OF 3 EXECUTIONS =0.33
+
+Executing pi_omp with 11 threads
+Run 0 with size 1100000000 ...Elapsed time = 0.44
+Run 1 with size 1100000000 ...Elapsed time = 0.35
+Run 2 with size 1100000000 ...Elapsed time = 0.41
+ELAPSED TIME Min OF 3 EXECUTIONS =0.35
+
+Executing pi_omp with 12 threads
+Run 0 with size 1200000000 ...Elapsed time = 0.43
+Run 1 with size 1200000000 ...Elapsed time = 0.34
+Run 2 with size 1200000000 ...Elapsed time = 0.38
+ELAPSED TIME Min OF 3 EXECUTIONS =0.34
+
+Resultat de l'experiment (tambe es troben a  ./executiontime-boada-5.txt  i  ./efficiency-boada-5.txt  )
+#threads	Elapsed min
+1   0.34
+2   0.35
+3   0.32
+4   0.33
+5   0.33
+6   0.32
+7   0.30
+8   0.37
+9   0.30
+10   0.33
+11   0.35
+12   0.34
+
+#threads	Speedup
+1   1.02941176470588235294
+2   1.00000000000000000000
+3   1.09375000000000000000
+4   1.06060606060606060606
+5   1.06060606060606060606
+6   1.09375000000000000000
+7   1.16666666666666666666
+8   .94594594594594594594
+9   1.16666666666666666666
+10   1.06060606060606060606
+11   1.00000000000000000000
+12   1.02941176470588235294
+

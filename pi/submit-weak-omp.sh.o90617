@@ -1,0 +1,51 @@
+Intel(R) Parallel Studio XE 2018 Update 2 for Linux*
+Copyright (C) 2009-2018 Intel Corporation. All rights reserved.
+make: 'pi_omp' is up to date.
+Executing pi_omp with one thread
+Run 0...Elapsed time = 0.40
+Run 1...Elapsed time = 0.40
+Run 2...Elapsed time = 0.40
+ELAPSED TIME MIN OF 3 EXECUTIONS =0.40
+
+pi_omp 100000000 1 12 3
+Starting OpenMP executions...
+Executing pi_omp with 1 threads
+Run 0 with size 100000000 ...Elapsed time = 0.40
+Run 1 with size 100000000 ...Elapsed time = 0.40
+Run 2 with size 100000000 ...Elapsed time = 0.40
+ELAPSED TIME Min OF 3 EXECUTIONS =0.40
+
+Executing pi_omp with 2 threads
+Run 0 with size 200000000 ...Elapsed time = 0.40
+Run 1 with size 200000000 ...Elapsed time = 0.40
+Run 2 with size 200000000 ...Elapsed time = 0.40
+ELAPSED TIME Min OF 3 EXECUTIONS =0.40
+
+Executing pi_omp with 3 threads
+Run 0 with size 300000000 ...Elapsed time = 0.41
+Run 1 with size 300000000 ...Elapsed time = 0.40
+Run 2 with size 300000000 ...Elapsed time = 0.41
+ELAPSED TIME Min OF 3 EXECUTIONS =0.40
+
+Executing pi_omp with 4 threads
+Run 0 with size 400000000 ...Elapsed time = 0.41
+Run 1 with size 400000000 ...Elapsed time = 0.41
+Run 2 with size 400000000 ...Elapsed time = 0.40
+ELAPSED TIME Min OF 3 EXECUTIONS =0.40
+
+Executing pi_omp with 5 threads
+Run 0 with size 500000000 ...Elapsed time = 0.42
+Run 1 with size 500000000 ...Elapsed time = 0.42
+Run 2 with size 500000000 ...Elapsed time = 0.42
+ELAPSED TIME Min OF 3 EXECUTIONS =0.42
+
+Executing pi_omp with 6 threads
+Run 0 with size 600000000 ...Elapsed time = 0.45
+Run 1 with size 600000000 ...Elapsed time = 0.43
+Run 2 with size 600000000 ...Elapsed time = 0.42
+ELAPSED TIME Min OF 3 EXECUTIONS =0.42
+
+Executing pi_omp with 7 threads
+Run 0 with size 700000000 ...Elapsed time = 0.43
+Run 1 with size 700000000 ...Elapsed time = 0.42
+Run 2 with size 700000000 ...Elapsed time = 0.45
