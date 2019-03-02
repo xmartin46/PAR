@@ -1,0 +1,152 @@
+\documentclass[12pt, a4paper]{article}
+
+% Text languages
+\usepackage[spanish, english, UKenglish, USenglish, american, british]{babel}
+
+% Accents
+\usepackage[latin1]{inputenc}
+
+% Maths
+\usepackage{mathtools}
+\usepackage{amsmath,amsthm,amssymb}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the 
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
+% https://www.overleaf.com/learn/latex/Page_size_and_margins
+\usepackage{geometry}
+\topmargin = -23pt
+\oddsidemargin = 13pt
+\headheight = 12pt
+\headsep = 25pt
+\textheight = 674pt
+\textwidth = 426pt
+\marginparsep = 10pt
+\marginparwidth = 50pt
+\footskip = 30pt
+\marginparpush = 5pt
+\hoffset = 0pt
+\voffset = 0pt
+\paperwidth = 597pt
+\paperheight = 845pt
+
+% Hyperlinks
+\usepackage{hyperref}
+
+% Figure
+\usepackage{graphicx}
+% \usepackage{subcaption}
+\usepackage{etoc}
+% Example
+\newtheorem{exmp}{Example}[section]
+% Algorithms
+%\usepackage[]{algorithm2e}
+%\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+%\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\usepackage{algpseudocode}
+
+\renewcommand{\thefootnote}{\arabic{footnote}} % 1, 2, 3... (la que hay por defecto)
+
+\usepackage{titlesec}
+\setcounter{secnumdepth}{5}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\usepackage{float}
+%--------------------------------------------------------------------------
+\title{Detection of/between similarity of documents with hashing}
+\author{Roger Vilaseca Darné, Xavier Lacasa Curto and Xavier Martín Ballesteros\\
+  \small Algorithms\\
+}
+\date{10th December 2018}
+
+\begin{document}
+% Images
+\graphicspath{ {./images/}, {./plots/} }
+
+%\maketitle
+
+\begin{titlepage}
+	\centering
+	%{\scshape\LARGE UNIVERSITAT POLITÈCNICA DE CATALUNYA \par}
+	\vspace{1cm}
+	{\scshape\Large ALGORTIHMS\par}
+	\vspace{1.5cm}
+	{\huge\bfseries Detection of similarity between documents with hashing\par}
+	\vspace{2cm}
+	{\Large\itshape Roger Vilaseca Darné, Xavier Lacasa Curto and Xavier Martín Ballesteros\par}
+	\vfill
+%	\includegraphics[width=0.15\textwidth]{UPC.png}\par\vspace{1cm}
+	%supervised by\par
+	%Dr.~Mark \textsc{Brown}
+
+	\vfill
+
+% Bottom of the page
+	{\large 10th December 2018}
+\end{titlepage}
+
+%\abstract{Esto es una plantilla simple para un articulo en \LaTeX.}
+
+%	*********************** ÍNDEX *********************
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+\newpage
+  \tableofcontents
+\newpage
+
+\section{Introduction}
+
+% Referència a una equació \ref{eq:area}).
+% Referència a una secció \ref{sec:nada}
+% Referència a una cita \cite{Cd94}.
+
+
+
+% Bibliografía.
+%-----------------------------------------------------------------
+\newpage
+\begin{thebibliography}{9}
+\bibitem{The Best} 
+Anand Rajaraman, Jure Leskovec and Jeffrey D. Ullman. 
+\textit{Mining of Massive Datasets}. Cambridge University Press. (December 30, 2011).
+ 
+ \bibitem{Bottom} 
+ cmhteixeira. \textit{Locality Sensitive Hashing (LSH)} [online]. (November 29, 2017). $<$https://aerodatablog.wordpress.com/2017/11/29/locality-sensitive-hashing-lsh/$>$[Consulted: December 12, 2018].
+ 
+ \bibitem{Wtf is this name}
+ Hubert Brylkowski. \textit{Locality sensitive hashing $-$LSH explained} [online]. (October 6, 2017). $<$https://medium.com/engineering-brainly/locality-sensitive-hashing-explained-304eb39291e4$>$[Consulted: December 15, 2018].
+ 
+ \bibitem{Ma maaan}
+ Jeffrey D. Ullman[Mining Massive Datasets]. (July 23, 2016). \textit{3 2 Minhashing 25 18}. $<$https://www.youtube.com/watch?v=96WOGPUgMfw$>$.
+ 
+ \bibitem{Ma man agaaaain}
+ Jeffrey D. Ullman[Mining Massive Datasets]. (July 23, 2016). \textit{3 3 Locality Sensitive Hashing 19 24}. $<$https://www.youtube.com/watch?v=\_1D35bN95Go$>$.
+ 
+ \bibitem{Second one}
+ santhoshhari. \textit{Locality Sensitive Hashing: Application of Locality Sensitive Hashing to Audio Fingerprinting} [online]. (n. d.). $<$https://santhoshhari.github.io/Locality-Sensitive-Hashing/$>$[Consulted: December 16, 2018].
+ 
+ \bibitem{The firsty one}
+  Shikhar Gupta. \textit{Locality Sensitive Hashing: An effective way of reducing the dimensionality of your data} [online]. (June 29, 2018). $<$https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134$>$[Consulted: December 16, 2018]
+ 
+%\url{http://www.mit.edu/~andoni/LSH/} 
+ 
+\end{thebibliography}
+
+\end{document}
