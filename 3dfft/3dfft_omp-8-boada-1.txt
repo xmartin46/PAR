@@ -1,0 +1,3 @@
+3D FFT Plan Generation:0.000513s
+Init Complex Grid FFT3D:0.583320s
+Execution FFT3D:0.584936s

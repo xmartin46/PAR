@@ -1,0 +1,44 @@
+1. the number of sockets, cores per socket and threads per core in a specific 
+node of boada;
+
+boada 1-4
+- # Sockets: 2
+- Cores per socket: 6
+- Threads per core: 2
+
+boada 1-4
+- # Sockets: 2
+- Cores per socket: 6
+- Threads per core: 2
+
+boada 6-8
+- # Sockets: 2
+- Cores per socket: 8
+- Threads per core: 1
+
+
+2. the amount of main memory in a specific node of boada, and 
+each NUMAnode;
+
+boada 1-4
+- 23GB
+
+boada 1-4
+- 23GB
+
+boada 6-8
+- 31GB
+
+
+3. the cache memory hierarchy (L1, L2 and L3), private or shared 
+to each core/socket.
+
+boada 1-4
+L1d cache:             32K		Private (per core)
+L1i cache:             32K		Private (per core)
+L2 cache:              256K		Private (per core)
+L3 cache:              12288K		Shared (between cores)
+
+boada 5
+
+boada 6-8
