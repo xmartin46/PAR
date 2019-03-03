@@ -1,0 +1,442 @@
+1. the number of sockets, cores per socket and threads per core in a specific
+node of boada;
+
+boada 1-4
+- # Sockets: 2
+- Cores per socket: 6
+- Threads per core: 2
+
+boada 5
+- # Sockets: 2
+- Cores per socket: 6
+- Threads per core: 2
+
+boada 6-8
+- # Sockets: 2
+- Cores per socket: 8
+- Threads per core: 1
+
+
+2. the amount of main memory in a specific node of boada, and
+each NUMAnode;
+
+boada 1-4
+- 23GB
+
+boada 5
+- 63GB
+
+boada 6-8
+- 31GB
+
+
+3. the cache memory hierarchy (L1, L2 and L3), private or shared
+to each core/socket.
+
+boada 1-4
+L1d cache:             32K              Private (per core)
+L1i cache:             32K              Private (per core)
+L2 cache:              256K             Private (per core)
+L3 cache:              12288K           Shared (between cores)
+
+boada 5
+L1d cache:             32K              Private (per core)
+L1i cache:             32K              Private (per core)
+L2 cache:              256K             Private (per core)
+L3 cache:              15360K           Shared (between cores)
+
+boada 6-8
+L1d cache:             32K              Private (per core)
+L1i cache:             32K              Private (per core)
+L2 cache:              256K             Private (per core)
+L3 cache:              20480K           Shared (between cores)
+
+
+
+
+
+1.2
+
+2)
+par4110@boada-1:~/lab1/pi$ ./run-seq.sh pi_seq 1000000000
+Number pi after 1000000000 iterations = 3.141592653589768
+Execution time (secs.): 3.939644
+3.94user 0.00system 0:03.94elapsed 99%CPU (0avgtext+0avgdata 1892maxresident)k
+0inputs+0outputs (0major+79minor)pagefaults 0swaps
+
+
+3)
+par4110@boada-1:~/lab1/pi$ qsub -l execution submit-seq.sh pi_seq 1000000000
+Your job 90608 ("submit-seq.sh") has been submitted
+
+par4110@boada-1:~/lab1/pi$ qstat
+job-ID  prior   name       user         state submit/start at     queue                          slots ja-task-ID 
+-----------------------------------------------------------------------------------------------------------------
+  90607 0.51000 QRLOGIN    par4110      r     02/19/2019 16:14:32 interactive.q@boada-1.ac.upc.e     1        
+  90608 0.00000 submit-seq par4110      qw    02/19/2019 16:14:49                                    1        
+
+par4110@boada-1:~/lab1/pi$ ls -l
+total 116
+-rw-r--r-- 1 par4110 par4110   979 Feb  5 16:02 extrae.xml
+-rw-r--r-- 1 par4110 par4110   352 Feb  5 16:02 Makefile
+-rwxr-xr-x 1 par4110 par4110 30832 Feb 17 12:37 pi_omp
+-rw-r--r-- 1 par4110 par4110  1515 Feb  5 16:02 pi_omp.c
+-rwxr-xr-x 1 par4110 par4110 28704 Feb 17 12:01 pi_seq
+-rw-r--r-- 1 par4110 par4110  1223 Feb  5 16:02 pi_seq.c
+-rwxr-xr-x 1 par4110 par4110   293 Feb  5 16:02 run-omp.sh
+-rwxr-xr-x 1 par4110 par4110   245 Feb  5 16:02 run-seq.sh
+-rwxr-xr-x 1 par4110 par4110   740 Feb  5 16:02 submit-omp-i.sh
+-rwxr-xr-x 1 par4110 par4110   603 Feb  5 16:02 submit-omp.sh
+-rwxr-xr-x 1 par4110 par4110   542 Feb  5 16:02 submit-seq.sh
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:15 submit-seq.sh.e90608        New File!
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:15 submit-seq.sh.o90608        New File!
+-rwxr-xr-x 1 par4110 par4110  3058 Feb  5 16:02 submit-strong-omp.sh
+-rwxr-xr-x 1 par4110 par4110  3085 Feb  5 16:02 submit-weak-omp.sh
+-rw-r--r-- 1 par4110 par4110   131 Feb 19 16:15 time-pi_seq-boada-4         New File!
+
+par4110@boada-1:~/lab1/pi$ cat submit-seq.sh.e90608 
+
+par4110@boada-1:~/lab1/pi$ cat submit-seq.sh.o90608 
+Intel(R) Parallel Studio XE 2018 Update 2 for Linux*
+Copyright (C) 2009-2018 Intel Corporation. All rights reserved.
+make: 'pi_seq' is up to date.
+Number pi after 1000000000 iterations = 3.141592653589768
+Execution time (secs.): 3.958794
+
+par4110@boada-1:~/lab1/pi$ cat time-pi_seq-boada-4 
+3.95user 0.00system 0:03.97elapsed 99%CPU (0avgtext+0avgdata 1876maxresident)k
+64inputs+8outputs (1major+81minor)pagefaults 0swaps
+
+
+
+
+1.3
+3)
+1 THREAD:
+
+par4110@boada-1:~/lab1/pi$ ./run-omp.sh pi_omp 1000000000 1
+Number pi after 1000000000 iterations = 3.141592653589768
+Execution time (secs.): 3.944351
+3.93user 0.00system 0:03.99elapsed 98%CPU (0avgtext+0avgdata 3480maxresident)k
+0inputs+0outputs (0major+240minor)pagefaults 0swaps
+
+
+8 THREADS:
+
+par4110@boada-1:~/lab1/pi$ ./run-omp.sh pi_omp 1000000000 8
+Number pi after 1000000000 iterations = 3.141592653589845
+Execution time (secs.): 0.581683
+4.60user 0.02system 0:00.58elapsed 788%CPU (0avgtext+0avgdata 4024maxresident)k
+0inputs+0outputs (0major+308minor)pagefaults 0swaps
+
+
+4)
+1 THREAD:
+
+par4110@boada-1:~/lab1/pi$ qsub -l execution submit-omp.sh pi_omp 1000000000 1
+Your job 90611 ("submit-omp.sh") has been submitted
+
+par4110@boada-1:~/lab1/pi$ qstat
+job-ID  prior   name       user         state submit/start at     queue                          slots ja-task-ID 
+-----------------------------------------------------------------------------------------------------------------
+  90607 0.51000 QRLOGIN    par4110      r     02/19/2019 16:14:32 interactive.q@boada-1.ac.upc.e     1        
+  90611 0.00000 submit-omp par4110      qw    02/19/2019 16:23:41                                    1        
+
+par4110@boada-1:~/lab1/pi$ ls -l
+total 124
+-rw-r--r-- 1 par4110 par4110   979 Feb  5 16:02 extrae.xml
+-rw-r--r-- 1 par4110 par4110   352 Feb  5 16:02 Makefile
+-rwxr-xr-x 1 par4110 par4110 30832 Feb 17 12:37 pi_omp
+-rw-r--r-- 1 par4110 par4110  1515 Feb  5 16:02 pi_omp.c
+-rwxr-xr-x 1 par4110 par4110 28704 Feb 17 12:01 pi_seq
+-rw-r--r-- 1 par4110 par4110  1223 Feb  5 16:02 pi_seq.c
+-rwxr-xr-x 1 par4110 par4110   293 Feb  5 16:02 run-omp.sh
+-rwxr-xr-x 1 par4110 par4110   245 Feb  5 16:02 run-seq.sh
+-rwxr-xr-x 1 par4110 par4110   740 Feb  5 16:02 submit-omp-i.sh
+-rwxr-xr-x 1 par4110 par4110   603 Feb  5 16:02 submit-omp.sh
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:23 submit-omp.sh.e90611        New File!
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:23 submit-omp.sh.o90611        New File!
+-rwxr-xr-x 1 par4110 par4110   542 Feb  5 16:02 submit-seq.sh
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:15 submit-seq.sh.e90608
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:15 submit-seq.sh.o90608
+-rwxr-xr-x 1 par4110 par4110  3058 Feb  5 16:02 submit-strong-omp.sh
+-rwxr-xr-x 1 par4110 par4110  3085 Feb  5 16:02 submit-weak-omp.sh
+-rw-r--r-- 1 par4110 par4110   132 Feb 19 16:23 time-pi_omp-1-boada-2       New File!
+-rw-r--r-- 1 par4110 par4110   131 Feb 19 16:15 time-pi_seq-boada-4
+
+par4110@boada-1:~/lab1/pi$ cat submit-omp.sh.e90611 
+
+par4110@boada-1:~/lab1/pi$ cat submit-omp.sh.o90611 
+Intel(R) Parallel Studio XE 2018 Update 2 for Linux*
+Copyright (C) 2009-2018 Intel Corporation. All rights reserved.
+make: 'pi_omp' is up to date.
+Number pi after 1000000000 iterations = 3.141592653589768
+Execution time (secs.): 3.944042
+
+par4110@boada-1:~/lab1/pi$ cat time-pi_omp-1-boada-2 
+3.93user 0.00system 0:03.99elapsed 98%CPU (0avgtext+0avgdata 3656maxresident)k
+64inputs+8outputs (1major+316minor)pagefaults 0swaps
+
+8 THREADS:
+
+par4110@boada-1:~/lab1/pi$ qsub -l execution submit-omp.sh pi_omp 1000000000 8
+Your job 90614 ("submit-omp.sh") has been submitted
+
+par4110@boada-1:~/lab1/pi$ qstat
+job-ID  prior   name       user         state submit/start at     queue                          slots ja-task-ID 
+-----------------------------------------------------------------------------------------------------------------
+  90607 0.51000 QRLOGIN    par4110      r     02/19/2019 16:14:32 interactive.q@boada-1.ac.upc.e     1        
+  90614 0.00000 submit-omp par4110      qw    02/19/2019 16:25:45                                    1        
+
+par4110@boada-1:~/lab1/pi$ ls -l
+total 132
+-rw-r--r-- 1 par4110 par4110   979 Feb  5 16:02 extrae.xml
+-rw-r--r-- 1 par4110 par4110   352 Feb  5 16:02 Makefile
+-rwxr-xr-x 1 par4110 par4110 30832 Feb 17 12:37 pi_omp
+-rw-r--r-- 1 par4110 par4110  1515 Feb  5 16:02 pi_omp.c
+-rwxr-xr-x 1 par4110 par4110 28704 Feb 17 12:01 pi_seq
+-rw-r--r-- 1 par4110 par4110  1223 Feb  5 16:02 pi_seq.c
+-rwxr-xr-x 1 par4110 par4110   293 Feb  5 16:02 run-omp.sh
+-rwxr-xr-x 1 par4110 par4110   245 Feb  5 16:02 run-seq.sh
+-rwxr-xr-x 1 par4110 par4110   740 Feb  5 16:02 submit-omp-i.sh
+-rwxr-xr-x 1 par4110 par4110   603 Feb  5 16:02 submit-omp.sh
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:23 submit-omp.sh.e90611
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:25 submit-omp.sh.e90614        New File!
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:23 submit-omp.sh.o90611
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:25 submit-omp.sh.o90614        New File!
+-rwxr-xr-x 1 par4110 par4110   542 Feb  5 16:02 submit-seq.sh
+-rw-r--r-- 1 par4110 par4110     0 Feb 19 16:15 submit-seq.sh.e90608
+-rw-r--r-- 1 par4110 par4110   238 Feb 19 16:15 submit-seq.sh.o90608
+-rwxr-xr-x 1 par4110 par4110  3058 Feb  5 16:02 submit-strong-omp.sh
+-rwxr-xr-x 1 par4110 par4110  3085 Feb  5 16:02 submit-weak-omp.sh
+-rw-r--r-- 1 par4110 par4110   132 Feb 19 16:23 time-pi_omp-1-boada-2
+-rw-r--r-- 1 par4110 par4110   132 Feb 19 16:25 time-pi_omp-8-boada-3       New File!
+-rw-r--r-- 1 par4110 par4110   131 Feb 19 16:15 time-pi_seq-boada-4
+
+par4110@boada-1:~/lab1/pi$ cat submit-omp.sh.e90614
+
+par4110@boada-1:~/lab1/pi$ cat submit-omp.sh.o90614
+Intel(R) Parallel Studio XE 2018 Update 2 for Linux*
+Copyright (C) 2009-2018 Intel Corporation. All rights reserved.
+make: 'pi_omp' is up to date.
+Number pi after 1000000000 iterations = 3.141592653589845
+Execution time (secs.): 0.943658
+
+par4110@boada-1:~/lab1/pi$ cat time-pi_omp-8-boada-3 
+6.66user 0.12system 0:00.96elapsed 705%CPU (0avgtext+0avgdata 3988maxresident)k
+0inputs+8outputs (0major+311minor)pagefaults 0swaps
+
+
+
+1.4
+FALTA REASON ABOUT THE DIFFERENCES OBSERVED BETWEEN THE 2 SCENARIOS
+BOADA 2-4:
+1)
+Com podem observar, en el primer grÃ fic el temps d'execuciÃ³ disminueix a mesura que augmentem el nombre de threads fins arribar a un punt Ã²ptim, en aquest cas el 10, on desprÃ©s d'aixÃ² el temps d'execuciÃ³ comenÃ§a a augmentar per culpa de l'"overhead" en el temps de creaciÃ³ i sincronitzacio.
+
+En la segona grÃ fica, per altra banda, podem observar la diferÃ¨ncia de l'speed-up real (lÃ­nia contÃ­nua) respecte el teÃ²ric (lÃ­nia discontÃ­nua). Podem extreure les mateixes conclusion que al grÃ fic anterior. El mÃ xim speed-up l'obtenim amb 10 threads i a partir d'aquÃ­ comenÃ§a a disminuir. L'speed-up real no Ã©s el mateix que el teÃ²ric ja que el temps de creaciÃ³ i sincronitzaciÃ³ fa que disminueixi.
+
+2)
+En aquesta grÃ fica l'speed up teÃ²ric seria una lÃ­nia horitzontal en y = 1.0 perÃ² aixÃ² no passa pel mateix motiu exposat anteriorment. La disminuciÃ³ mÃ©s brusca la trobem a partir del thread 10~11 quan el tcreate i tsync comencen a ser rellevants en el cÃ lcul del temps.
+
+3)
+
+BOADA 1:
+    1) Observem el mateix que a l'1) perÃ² per a nombre de threads = 11.
+    
+    2) Observem que la tendencia de la funciÃ³ Ã©s semblant al del 2) perÃ² comenÃ§a a disminuir mÃ©s drÃ sticament a partir del thread 7. Pensem que es deu a quÃ¨ l'execuciÃ³ Ã©s interactiva.
+    
+BOADA 5:
+    1) El sequencial ha anat mÃ©s rÃ pid (PREGUNTAR AL PROFESSOR SI S'HAVIA D'EXECUTAR AL BOADA-5).
+    
+    2) El sequencial ha anat mÃ©s rÃ pid (PREGUNTAR AL PROFESSOR SI S'HAVIA D'EXECUTAR AL BOADA-5).
+    
+BOADA 6-8:
+    1) La cremme de la cremme.
+    
+    2) La cremme de la cremme 4.0.
+
+    
+    
+    
+LAB 2
+v1: 
+v2: 
+v3: 
+v4: 
+v5: 
+
+LAB 3
+3)
+par4110@boada-1:~/lab1/3dfft$ ./submit-omp.sh 3dfft_omp 1
+make: '3dfft_omp' is up to date.
+2.11user 0.24system 0:02.38elapsed 99%CPU (0avgtext+0avgdata 266684maxresident)k
+0inputs+8outputs (0major+98588minor)pagefaults 0swaps
+
+par4110@boada-1:~/lab1/3dfft$ ./submit-omp.sh 3dfft_omp 8
+make: '3dfft_omp' is up to date.
+4.36user 0.85system 0:01.20elapsed 432%CPU (0avgtext+0avgdata 267032maxresident)k
+0inputs+8outputs (0major+288197minor)pagefaults 0swaps
+
+par4110@boada-1:~/lab1/3dfft$ ls -l
+total 4840
+-rwxr-xr-x 1 par4110 par4110 1127384 Feb 26 16:19 3dfft_omp
+-rw-r--r-- 1 par4110 par4110      93 Feb 27 17:18 3dfft_omp-1-boada-1.txt       New File!
+-rw-r--r-- 1 par4110 par4110      93 Feb 27 17:18 3dfft_omp-8-boada-1.txt       New File!
+-rwxr-xr-x 1 par4110 par4110    3625 Feb  8 15:08 3dfft_omp.c
+-rwxr-xr-x 1 par4110 par4110 1120088 Feb 26 16:18 3dfft_seq
+-rwxr-xr-x 1 par4110 par4110    3445 Feb  8 15:08 3dfft_seq.c
+-rwxr-xr-x 1 par4110 par4110 2096536 Feb 26 17:13 3dfft_tar
+-rwxr-xr-x 1 par4110 par4110    4108 Feb 26 17:13 3dfft_tar.c
+-rwxr-xr-x 1 par4110 par4110    4558 Feb 20 18:08 3dfft_tar_v1.c
+-rwxr-xr-x 1 par4110 par4110    4319 Feb 20 18:37 3dfft_tar_v2.c
+-rwxr-xr-x 1 par4110 par4110    4087 Feb 20 18:42 3dfft_tar_v3.c
+-rwxr-xr-x 1 par4110 par4110    4093 Feb 20 18:49 3dfft_tar_v4.c
+-rwxr-xr-x 1 par4110 par4110    4108 Feb 20 18:54 3dfft_tar_v5.c
+-rwxr-xr-x 1 par4110 par4110     559 Feb  8 15:08 const.h
+-rw-r--r-- 1 par4110 par4110   21948 Feb 20 17:51 dependency_graph_base_disabled_in_fftw.png
+-rw-r--r-- 1 par4110 par4110   14696 Feb 20 17:53 dependency_graph_base.png
+-rw-r--r-- 1 par4110 par4110   12687 Feb 20 18:07 dependency_graph_v1.png
+-rw-r--r-- 1 par4110 par4110   63614 Feb 20 18:39 dependency_graph_v2.png
+-rw-r--r-- 1 par4110 par4110   88244 Feb 20 18:42 dependency_graph_v3.png
+-rw-r--r-- 1 par4110 par4110   88893 Feb 20 18:48 dependency_graph_v4.png
+-rw-r--r-- 1 par4110 par4110   35287 Feb 20 18:53 dependency_graph_v5.png
+-rwxr-xr-x 1 par4110 par4110     979 Feb  8 15:08 extrae.xml
+drwxr-x--x 2 par4110 par4110    4096 Feb 20 17:25 logs
+-rwxr-xr-x 1 par4110 par4110     757 Feb  8 15:08 Makefile
+-rwxr-xr-x 1 par4110 par4110     541 Feb  8 15:08 run-omp.sh
+-rwxr-xr-x 1 par4110 par4110     248 Feb  8 15:08 run-tareador.sh
+-rwxr-xr-x 1 par4110 par4110     741 Feb  8 15:08 submit-omp-i.sh
+-rwxr-xr-x 1 par4110 par4110     604 Feb  8 15:08 submit-omp.sh
+-rwxr-xr-x 1 par4110 par4110    2952 Feb  8 15:08 submit-strong-omp.sh
+-rw-r--r-- 1 par4110 par4110  160560 Feb 26 17:14 tareador_llvm.log
+-rw-r--r-- 1 par4110 par4110    3384 Feb 20 17:45 task_type_running_on_CPUs@prv_4cores.png
+-rw-r--r-- 1 par4110 par4110    3382 Feb 20 17:46 task_type_running_on_CPUs@prv_4cores_zoom.png
+-rw-r--r-- 1 par4110 par4110       0 Feb 20 17:25 verbose.log
+
+par4110@boada-1:~/lab1/3dfft$ cat 3dfft_omp-1-boada-1.txt 
+3D FFT Plan Generation:0.000519s
+Init Complex Grid FFT3D:0.613339s
+Execution FFT3D:1.729118s
+
+par4110@boada-1:~/lab1/3dfft$ cat 3dfft_omp-8-boada-1.txt 
+3D FFT Plan Generation:0.000513s
+Init Complex Grid FFT3D:0.583320s
+Execution FFT3D:0.584936s
+
+5)
+par4110@boada-1:~/lab1/3dfft$ ./submit-omp-i.sh 3dfft_omp 8
+make: '3dfft_omp' is up to date.
+Extrae: WARNING! omp_get_thread_num_real is a NULL pointer. Did the initialization of this module trigger? Retrying initialization...
+Welcome to Extrae 3.5.4
+Extrae: Detected GOMP version is 4.5
+Extrae: Detected and hooked OpenMP runtime: [Intel KMPC] [GNU GOMP]
+Extrae: OMP_NUM_THREADS set to 8
+Extrae: Parsing the configuration file (./extrae.xml) begins
+Extrae: Tracing package is located on $EXTRAE_HOME
+Extrae: Generating intermediate files for Paraver traces.
+Extrae: OpenMP routines will collect HW counters information.
+Extrae: Tracing buffer can hold 500000 events
+Extrae: Circular buffer disabled.
+Extrae: Dynamic memory instrumentation is disabled.
+Extrae: Basic I/O memory instrumentation is disabled.
+Extrae: System calls instrumentation is disabled.
+Extrae: Parsing the configuration file (./extrae.xml) has ended
+Extrae: Intermediate traces will be stored in /scratch/nas/1/par4110/lab1/3dfft
+Extrae: Tracing mode is set to: Detail.
+Extrae: Successfully initiated with 1 tasks and 8 threads
+
+3D FFT Plan Generation:0.000418s
+Init Complex Grid FFT3D:0.586133s
+Execution FFT3D:0.566955s
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000000.mpit
+Extrae: Intermediate raw sym file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000000.sym
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000001.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000002.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000003.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000004.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000005.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000006.mpit
+Extrae: Intermediate raw trace file created : /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000007.mpit
+Extrae: Deallocating memory.
+Extrae: Application has ended. Tracing has been terminated.
+merger: Output trace format is: Paraver
+merger: Extrae 3.5.4
+mpi2prv: Assigned nodes < boada-1 >
+mpi2prv: Assigned size per processor < 3 Mbytes >
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000000.mpit is object 1.1.1 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000001.mpit is object 1.1.2 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000002.mpit is object 1.1.3 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000003.mpit is object 1.1.4 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000004.mpit is object 1.1.5 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000005.mpit is object 1.1.6 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000006.mpit is object 1.1.7 on node boada-1 assigned to processor 0
+mpi2prv: File /scratch/nas/1/par4110/lab1/3dfft/set-0/TRACE@boada-1.0000026868000000000007.mpit is object 1.1.8 on node boada-1 assigned to processor 0
+mpi2prv: Time synchronization has been turned off
+mpi2prv: Checking for target directory existance... exists, ok!
+mpi2prv: Selected output trace format is Paraver
+mpi2prv: Stored trace format is Paraver
+mpi2prv: Searching synchronization points... done
+mpi2prv: Time Synchronization disabled.
+mpi2prv: Circular buffer enabled at tracing time? NO
+mpi2prv: Parsing intermediate files
+mpi2prv: Progress 1 of 2 ... 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% done
+mpi2prv: Processor 0 succeeded to translate its assigned files
+mpi2prv: Elapsed time translating files: 0 hours 0 minutes 0 seconds
+mpi2prv: Elapsed time sorting addresses: 0 hours 0 minutes 0 seconds
+mpi2prv: Generating tracefile (intermediate buffers of 838848 events)
+         This process can take a while. Please, be patient.
+mpi2prv: Progress 2 of 2 ... 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% done
+mpi2prv: Elapsed time merge step: 0 hours 0 minutes 0 seconds
+mpi2prv: Resulting tracefile occupies 1877439 bytes
+mpi2prv: Removing temporal files... done
+mpi2prv: Elapsed time removing temporal files: 0 hours 0 minutes 1 seconds
+mpi2prv: Cannot open file pointed by EXTRAE_LABELS (./user-events.dat)
+mpi2prv: Congratulations! 3dfft_omp-8-boada-1.prv has been generated.
+
+
+par4110@boada-1:~/lab1/3dfft$ ls -l
+total 6688
+-rwxr-xr-x 1 par4110 par4110 1127384 Feb 26 16:19 3dfft_omp
+-rw-r--r-- 1 par4110 par4110      93 Feb 27 17:18 3dfft_omp-1-boada-1.txt
+-rw-r--r-- 1 par4110 par4110    4815 Feb 27 17:24 3dfft_omp-8-boada-1.pcf       New File!
+-rw-r--r-- 1 par4110 par4110 1877439 Feb 27 17:24 3dfft_omp-8-boada-1.prv       New File!
+-rw-r--r-- 1 par4110 par4110     249 Feb 27 17:24 3dfft_omp-8-boada-1.row       New File!
+-rw-r--r-- 1 par4110 par4110      93 Feb 27 17:18 3dfft_omp-8-boada-1.txt
+-rwxr-xr-x 1 par4110 par4110    3625 Feb  8 15:08 3dfft_omp.c
+-rwxr-xr-x 1 par4110 par4110 1120088 Feb 26 16:18 3dfft_seq
+-rwxr-xr-x 1 par4110 par4110    3445 Feb  8 15:08 3dfft_seq.c
+-rwxr-xr-x 1 par4110 par4110 2096536 Feb 26 17:13 3dfft_tar
+-rwxr-xr-x 1 par4110 par4110    4108 Feb 26 17:13 3dfft_tar.c
+-rwxr-xr-x 1 par4110 par4110    4558 Feb 20 18:08 3dfft_tar_v1.c
+-rwxr-xr-x 1 par4110 par4110    4319 Feb 20 18:37 3dfft_tar_v2.c
+-rwxr-xr-x 1 par4110 par4110    4087 Feb 20 18:42 3dfft_tar_v3.c
+-rwxr-xr-x 1 par4110 par4110    4093 Feb 20 18:49 3dfft_tar_v4.c
+-rwxr-xr-x 1 par4110 par4110    4108 Feb 20 18:54 3dfft_tar_v5.c
+-rwxr-xr-x 1 par4110 par4110     559 Feb  8 15:08 const.h
+-rw-r--r-- 1 par4110 par4110   21948 Feb 20 17:51 dependency_graph_base_disabled_in_fftw.png
+-rw-r--r-- 1 par4110 par4110   14696 Feb 20 17:53 dependency_graph_base.png
+-rw-r--r-- 1 par4110 par4110   12687 Feb 20 18:07 dependency_graph_v1.png
+-rw-r--r-- 1 par4110 par4110   63614 Feb 20 18:39 dependency_graph_v2.png
+-rw-r--r-- 1 par4110 par4110   88244 Feb 20 18:42 dependency_graph_v3.png
+-rw-r--r-- 1 par4110 par4110   88893 Feb 20 18:48 dependency_graph_v4.png
+-rw-r--r-- 1 par4110 par4110   35287 Feb 20 18:53 dependency_graph_v5.png
+-rwxr-xr-x 1 par4110 par4110     979 Feb  8 15:08 extrae.xml
+drwxr-x--x 2 par4110 par4110    4096 Feb 20 17:25 logs
+-rwxr-xr-x 1 par4110 par4110     757 Feb  8 15:08 Makefile
+-rwxr-xr-x 1 par4110 par4110     541 Feb  8 15:08 run-omp.sh
+-rwxr-xr-x 1 par4110 par4110     248 Feb  8 15:08 run-tareador.sh
+-rwxr-xr-x 1 par4110 par4110     741 Feb  8 15:08 submit-omp-i.sh
+-rwxr-xr-x 1 par4110 par4110     604 Feb  8 15:08 submit-omp.sh
+-rwxr-xr-x 1 par4110 par4110    2952 Feb  8 15:08 submit-strong-omp.sh
+-rw-r--r-- 1 par4110 par4110  160560 Feb 26 17:14 tareador_llvm.log
+-rw-r--r-- 1 par4110 par4110    3384 Feb 20 17:45 task_type_running_on_CPUs@prv_4cores.png
+-rw-r--r-- 1 par4110 par4110    3382 Feb 20 17:46 task_type_running_on_CPUs@prv_4cores_zoom.png
+-rw-r--r-- 1 par4110 par4110       0 Feb 20 17:25 verbose.log
+
+
+3.2.1.1)
+Tpar = (105448,45 + 147491,74 + 194881,04 + 391274,14 + 348411,31 + 368953,66) = 1556460,34 [us]
+T1 = 2550067676 ns
+Tseq = T1 - Tpar = 2550067676 - (1556460,34 * 1000) = 993607336 [ns]
+fi = Tpar / (T1) = (1556460,34 * 1000)/2550067676 = 0.61036040519 = 61% parallelizable
