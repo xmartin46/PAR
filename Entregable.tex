@@ -83,9 +83,9 @@
 
 \usepackage{float}
 %--------------------------------------------------------------------------
-\title{Detection of/between similarity of documents with hashing}
-\author{Roger Vilaseca Darné, Xavier Lacasa Curto and Xavier Martín Ballesteros\\
-  \small Algorithms\\
+\title{Lab 1: Experimental setup and tools}
+\author{Roger Vilaseca Darné and Xavier Martín Ballesteros\\
+  \small Parallelism\\
 }
 \date{10th December 2018}
 
@@ -99,11 +99,11 @@
 	\centering
 	%{\scshape\LARGE UNIVERSITAT POLITÈCNICA DE CATALUNYA \par}
 	\vspace{1cm}
-	{\scshape\Large ALGORTIHMS\par}
+	{\scshape\Large PARALLELISM\par}
 	\vspace{1.5cm}
-	{\huge\bfseries Detection of similarity between documents with hashing\par}
+	{\huge\bfseries Lab 1: Experimental setup and tools\par}
 	\vspace{2cm}
-	{\Large\itshape Roger Vilaseca Darné, Xavier Lacasa Curto and Xavier Martín Ballesteros\par}
+	{\Large\itshape Roger Vilaseca Darné and Xavier Martín Ballesteros\par}
 	\vfill
 %	\includegraphics[width=0.15\textwidth]{UPC.png}\par\vspace{1cm}
 	%supervised by\par
@@ -112,7 +112,7 @@
 	\vfill
 
 % Bottom of the page
-	{\large 10th December 2018}
+	{\large 6th March 2019}
 \end{titlepage}
 
 %\abstract{Esto es una plantilla simple para un articulo en \LaTeX.}
@@ -131,33 +131,7 @@
 % Referència a una secció \ref{sec:nada}
 % Referència a una cita \cite{Cd94}.
 
-\begin{center}
- \begin{tabular}{|c || c | c | c|} 
- \hline
-   & boada-1 \textbf{to} boada-4 & boada-5 & boada-6 \textbf{to} boada-8 \\
- \hline
- Number of sockets per node & 2 & 2 & 2 \\ 
- \hline
- Number of cores per socket & 6 & 6 & 8 \\
- \hline
- Number of threads per core & 2 & 2 & 1 \\
- \hline
- Maximum core frequency & 2395 MHz & 2600 MHz & 1700 MHz \\
- \hline \hline
- L1-I cache size (per-core) & 32 kB & 32 kB & 32 kB \\ 
- \hline
- L1-D cache size (per-core) & 32 kB & 32 kB & 32 kB \\
- \hline
- L2 cache size (per-core) & 256 kB & 256 kB & 256 kB \\
- \hline
- Last-level cache size (per-socket) & 12288 kB & 15360 kB & 20480 kB \\
- \hline \hline
- Main memory size (per socket) & 12 GB & 31 GB & 16 GB \\
- \hline
- Main memory size (per node) & 23 GB & 63 GB & 31 GB \\
- \hline
-\end{tabular}
-\end{center}
+
 
 \begin{center}
  \begin{tabular}{|c || c | c | c|} 
@@ -178,6 +152,117 @@
  \hline
 \end{tabular}
 \end{center}
+
+\newpage
+\section{Experimental setup}
+\subsection{Node architecture and memory}
+
+In this first part of Laboratory 1, we had to do a search in the boada, to investigate the characteristics of each node. To do this we have had to use the orders lscpu and lstopo. We have obtained the following data:
+
+\begin{center}
+	\begin{tabular}{|c || c | c | c|} 
+	\hline
+	  & boada-1 \textbf{to} boada-4 & boada-5 & boada-6 \textbf{to} boada-8 \\
+	\hline
+	Number of sockets per node & 2 & 2 & 2 \\ 
+	\hline
+	Number of cores per socket & 6 & 6 & 8 \\
+	\hline
+	Number of threads per core & 2 & 2 & 1 \\
+	\hline
+	Maximum core frequency & 2395 MHz & 2600 MHz & 1700 MHz \\
+	\hline \hline
+	L1-I cache size (per-core) & 32 kB & 32 kB & 32 kB \\ 
+	\hline
+	L1-D cache size (per-core) & 32 kB & 32 kB & 32 kB \\
+	\hline
+	L2 cache size (per-core) & 256 kB & 256 kB & 256 kB \\
+	\hline
+	Last-level cache size (per-socket) & 12288 kB & 15360 kB & 20480 kB \\
+	\hline \hline
+	Main memory size (per socket) & 12 GB & 31 GB & 16 GB \\
+	\hline
+	Main memory size (per node) & 23 GB & 63 GB & 31 GB \\
+	\hline
+   \end{tabular}
+\end{center}
+
+\subsection{Serial compilation and execution}
+
+\ \newline
+
+In this part, we have worked with a code used to find an approximation of the pi number.
+We have used this code to test the performance of the executable in the different nodes of the boada. Learning the main difference of execution in node 1, where it is executed interactively (since everyone is connected at the same time in this node) or in the other nodes, where we will achieve an isolated execution ensuring the maximum performance of the node.
+We have obtained the following results:\newline
+
+Execution time in node 1: 3.939644 s
+
+Execution time in node 4: 3.958794 s\newline
+
+Theoretically the execution time in node 4 should be smaller than in node 1 but we have supposed that the status of the machine (maybe too heat) can cause to this difference.
+
+\subsection{Compilation and execution of OpenMP programs}
+
+In this part of the laboratory we made the first contact with an OpenMP code, where we have been able to observe different instructions used to carry out with the parallelization.
+Executing the code we have obtained the following results interactively in the node 1:\newline
+
+Execution time with 1 thread: 3.944351 s
+
+Execution time with 8 thread: 0.581683 s\newline
+
+And then the same code has been executed isolated in the node 3:\newline
+
+Execution time with 1 thread: 3.944042 s
+
+Execution time with 8 thread: 0.943658 s\newline
+
+We have obtained a simmilar diferences between the interactive and the isolated execution.
+
+\newpage
+\section{Understanding the parallel execution of 3DFFT}
+\subsection{Initial version}
+
+In this part, we start finding the T\textsubscript{par} oppening the execution with one thread, wtih the OMP\_parallel\_functions\_duration configuration and using the OMP\_state\_profile to see the parallel time.
+
+\begin{equation}
+	T\textsubscript{par} = 105448.45 + 147491.74 + 194881.04 + 391274.14 + 348411.31 + 368953.66 = 1556460.34 us
+\end{equation}
+
+Afterwards, we wnt to the where shows the total timeline of the activity. There we could find the total time T\textsubscript{1}.
+
+\begin{equation}
+	T\textsubscript{1} = 2550067676 ns
+\end{equation}
+
+\begin{equation}
+	T\textsubscript{seq} = T\textsubscript{1} - T\textsubscript{par} = 2550067676 - 1556460.34*1000 = 993607336 ns
+\end{equation}
+
+\begin{equation}
+	\phi = \dfrac{T\textsubscript{par}} {T\textsubscript{seq} + T\textsubscript{par}} = \dfrac{2550067676} {993607336 + 2550067676} = 0.71961104428
+	\phi = 71.961104428\%
+\end{equation}
+
+Then we have changed the trace for the one that has been processed with 8 threads.
+
+\begin{equation}
+	T\textsubscript{8} = 1390802888 ns
+\end{equation}
+
+And dividing T\textsubscript{1} by T\textsubscript{8} we obtain the Speed-up.
+
+\begin{equation}
+	S\textsubscript{8} = \dfrac{T\textsubscript{1}}{T\textsubscript{8}} = \dfrac{2550067676} {1390802888} = 1.83352198791
+\end{equation}
+
+
+Finally we can compute the S(no puc posar infinit) using the next equation
+
+\begin{equation}
+	S\infty = \dfrac{1}{1 - \phi} = \dfrac{1} {1-0.71961104428} = 3.56647428367
+\end{equation}
+
+\subsection{Improving phi}
 
 \begin{center}
  \begin{tabular}{|c || c | c || c | c | c|} 
