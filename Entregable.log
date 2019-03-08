@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6840 64-bit) (preloaded format=pdflatex 2018.12.1)  2 MAR 2019 22:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6840 64-bit) (preloaded format=pdflatex 2018.12.1)  8 MAR 2019 11:49
 entering extended mode
 **./Entregable.tex
 (Entregable.tex
@@ -238,6 +238,78 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\multirow\multirow
+.sty"
+Package: multirow 2018/08/03 v2.3 Span multiple rows of a table
+\multirow@colwidth=\skip53
+\multirow@cntb=\count107
+\multirow@dima=\skip54
+\bigstrutjot=\dimen122
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\listings
+.sty"
+\lst@mode=\count108
+\lst@gtempboxa=\box28
+\lst@token=\toks29
+\lst@length=\count109
+\lst@currlwidth=\dimen123
+\lst@column=\count110
+\lst@pos=\count111
+\lst@lostspace=\dimen124
+\lst@width=\dimen125
+\lst@newlines=\count112
+\lst@lineno=\count113
+\lst@maxwidth=\dimen126
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\lstmisc.
+sty"
+File: lstmisc.sty 2019/02/27 1.8b (Carsten Heinz)
+\c@lstnumber=\count114
+\lst@skipnumbers=\count115
+\lst@framebox=\box29
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\listings
+.cfg"
+File: listings.cfg 2019/02/27 1.8b listings configuration
+))
+Package: listings 2019/02/27 1.8b (Carsten Heinz)
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\xcolor\xcolor.sty
+"
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-cfg\colo
+r.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-def\pdft
+ex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\lstlang1
+.sty"
+File: lstlang1.sty 2019/02/27 1.8b listings language file
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\lstlang1
+.sty"
+File: lstlang1.sty 2019/02/27 1.8b listings language file
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\lstmisc.
+sty"
+File: lstmisc.sty 2019/02/27 1.8b (Carsten Heinz)
+)
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\geometry\geometry
 .sty"
 Package: geometry 2018/04/16 v5.8 Page Geometry
@@ -255,18 +327,18 @@ Package ifvtex Info: VTeX not detected.
 .sty"
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count107
-\Gm@cntv=\count108
-\c@Gm@tempcnt=\count109
-\Gm@bindingoffset=\dimen122
-\Gm@wd@mp=\dimen123
-\Gm@odd@mp=\dimen124
-\Gm@even@mp=\dimen125
-\Gm@layoutwidth=\dimen126
-\Gm@layoutheight=\dimen127
-\Gm@layouthoffset=\dimen128
-\Gm@layoutvoffset=\dimen129
-\Gm@dimlist=\toks29
+\Gm@cnth=\count116
+\Gm@cntv=\count117
+\c@Gm@tempcnt=\count118
+\Gm@bindingoffset=\dimen127
+\Gm@wd@mp=\dimen128
+\Gm@odd@mp=\dimen129
+\Gm@even@mp=\dimen130
+\Gm@layoutwidth=\dimen131
+\Gm@layoutheight=\dimen132
+\Gm@layouthoffset=\dimen133
+\Gm@layoutvoffset=\dimen134
+\Gm@dimlist=\toks30
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\geometry\geometry
 .cfg"))
@@ -327,9 +399,9 @@ Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
 s.sty"
 Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
 )
-\@linkdim=\dimen130
-\Hy@linkcounter=\count110
-\Hy@pagecounter=\count111
+\@linkdim=\dimen135
+\Hy@linkcounter=\count119
+\Hy@pagecounter=\count120
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\pd1enc.d
 ef"
@@ -337,7 +409,7 @@ File: pd1enc.def 2018/09/30 v6.88a Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
-\Hy@SavedSpaceFactor=\count112
+\Hy@SavedSpaceFactor=\count121
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\00miktex\hyperref
 .cfg"
@@ -350,16 +422,16 @@ Package hyperref Info: Plain pages OFF on input line 4550.
 Package hyperref Info: Backreferencing OFF on input line 4555.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4788.
-\c@Hy@tempcnt=\count113
+\c@Hy@tempcnt=\count122
  ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\url\url.sty"
 \Urlmuskip=\muskip11
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5141.
-\XeTeXLinkMargin=\dimen131
-\Fld@menulength=\count114
-\Field@Width=\dimen132
-\Fld@charsize=\dimen133
+\XeTeXLinkMargin=\dimen136
+\Fld@menulength=\count123
+\Field@Width=\dimen137
+\Fld@charsize=\dimen138
 Package hyperref Info: Hyper figures OFF on input line 6396.
 Package hyperref Info: Link nesting OFF on input line 6401.
 Package hyperref Info: Hyper index ON on input line 6404.
@@ -369,17 +441,17 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6421.
 Package hyperref Info: PDF/A mode OFF on input line 6426.
 LaTeX Info: Redefining \ref on input line 6466.
 LaTeX Info: Redefining \pageref on input line 6470.
-\Hy@abspage=\count115
-\c@Item=\count116
-\c@Hfootnote=\count117
+\Hy@abspage=\count124
+\c@Item=\count125
+\c@Hfootnote=\count126
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\hpdftex.
 def"
 File: hpdftex.def 2018/09/30 v6.88a Hyperref driver for pdfTeX
-\Fld@listcount=\count118
-\c@bookmark@seq@number=\count119
+\Fld@listcount=\count127
+\c@bookmark@seq@number=\count128
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\rerunfil
 echeck.sty"
@@ -387,7 +459,7 @@ Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
-\Hy@SectionHShift=\skip53
+\Hy@SectionHShift=\skip55
 )
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\graphicx
 .sty"
@@ -406,13 +478,36 @@ hics.cfg"
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 99.
+)
+\Gin@req@height=\dimen139
+\Gin@req@width=\dimen140
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\caption\caption.s
+ty"
+Package: caption 2018/10/06 v3.3-154 Customizing captions (AR)
 
-("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics-def\pdft
-ex.def"
-File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
-))
-\Gin@req@height=\dimen134
-\Gin@req@width=\dimen135
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\caption\caption3.
+sty"
+Package: caption3 2018/09/12 v1.8c caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 64.
+\captionmargin=\dimen141
+\captionmargin@=\dimen142
+\captionwidth=\dimen143
+\caption@tempdima=\dimen144
+\caption@indent=\dimen145
+\caption@parindent=\dimen146
+\caption@hangindent=\dimen147
+)
+\c@caption@flags=\count129
+\c@ContinuedFloat=\count130
+Package caption Info: hyperref package is loaded.
+Package caption Info: listings package is loaded.
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\caption\subcaptio
+n.sty"
+Package: subcaption 2018/05/01 v1.1-162 Sub-captions (AR)
+\c@subfigure=\count131
+\c@subtable=\count132
 )
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\etoc\etoc.sty"
 Package: etoc 2018/07/04 v1.08p Completely customisable TOCs (JFB)
@@ -420,29 +515,27 @@ Package: etoc 2018/07/04 v1.08p Completely customisable TOCs (JFB)
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\tools\multicol.st
 y"
 Package: multicol 2018/04/20 v1.8s multicolumn formatting (FMi)
-\c@tracingmulticols=\count120
-\mult@box=\box28
-\multicol@leftmargin=\dimen136
-\c@unbalance=\count121
-\c@collectmore=\count122
-\doublecol@number=\count123
-\multicoltolerance=\count124
-\multicolpretolerance=\count125
-\full@width=\dimen137
-\page@free=\dimen138
-\premulticols=\dimen139
-\postmulticols=\dimen140
-\multicolsep=\skip54
-\multicolbaselineskip=\skip55
-\partial@page=\box29
-\last@line=\box30
-\maxbalancingoverflow=\dimen141
-\mult@rightbox=\box31
-\mult@grightbox=\box32
-\mult@gfirstbox=\box33
-\mult@firstbox=\box34
-\@tempa=\box35
-\@tempa=\box36
+\c@tracingmulticols=\count133
+\mult@box=\box30
+\multicol@leftmargin=\dimen148
+\c@unbalance=\count134
+\c@collectmore=\count135
+\doublecol@number=\count136
+\multicoltolerance=\count137
+\multicolpretolerance=\count138
+\full@width=\dimen149
+\page@free=\dimen150
+\premulticols=\dimen151
+\postmulticols=\dimen152
+\multicolsep=\skip56
+\multicolbaselineskip=\skip57
+\partial@page=\box31
+\last@line=\box32
+\maxbalancingoverflow=\dimen153
+\mult@rightbox=\box33
+\mult@grightbox=\box34
+\mult@gfirstbox=\box35
+\mult@firstbox=\box36
 \@tempa=\box37
 \@tempa=\box38
 \@tempa=\box39
@@ -458,22 +551,24 @@ Package: multicol 2018/04/20 v1.8s multicolumn formatting (FMi)
 \@tempa=\box49
 \@tempa=\box50
 \@tempa=\box51
-\c@columnbadness=\count126
-\c@finalcolumnbadness=\count127
-\last@try=\dimen142
-\multicolovershoot=\dimen143
-\multicolundershoot=\dimen144
-\mult@nat@firstbox=\box52
-\colbreak@box=\box53
-\mc@col@check@num=\count128
+\@tempa=\box52
+\@tempa=\box53
+\c@columnbadness=\count139
+\c@finalcolumnbadness=\count140
+\last@try=\dimen154
+\multicolovershoot=\dimen155
+\multicolundershoot=\dimen156
+\mult@nat@firstbox=\box54
+\colbreak@box=\box55
+\mc@col@check@num=\count141
 )
-\Etoc@toctoks=\toks30
-\c@etoc@tocid=\count129
-\c@etoc@tocdepth=\count130
-\etoc@framed@titlebox=\box54
-\etoc@framed@contentsbox=\box55
+\Etoc@toctoks=\toks31
+\c@etoc@tocid=\count142
+\c@etoc@tocdepth=\count143
+\etoc@framed@titlebox=\box56
+\etoc@framed@contentsbox=\box57
 )
-\c@exmp=\count131
+\c@exmp=\count144
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\algorithmicx\algp
 seudocode.sty"
@@ -487,57 +582,98 @@ rithmicx.sty"
 Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
 
 Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
-\c@ALG@line=\count132
-\c@ALG@rem=\count133
-\c@ALG@nested=\count134
-\ALG@tlm=\skip56
-\ALG@thistlm=\skip57
-\c@ALG@Lnr=\count135
-\c@ALG@blocknr=\count136
-\c@ALG@storecount=\count137
-\c@ALG@tmpcounter=\count138
-\ALG@tmplength=\skip58
+\c@ALG@line=\count145
+\c@ALG@rem=\count146
+\c@ALG@nested=\count147
+\ALG@tlm=\skip58
+\ALG@thistlm=\skip59
+\c@ALG@Lnr=\count148
+\c@ALG@blocknr=\count149
+\c@ALG@storecount=\count150
+\c@ALG@tmpcounter=\count151
+\ALG@tmplength=\skip60
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
 )
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\titlesec\titlesec
 .sty"
 Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
-\ttl@box=\box56
-\beforetitleunit=\skip59
-\aftertitleunit=\skip60
-\ttl@plus=\dimen145
-\ttl@minus=\dimen146
-\ttl@toksa=\toks31
-\titlewidth=\dimen147
-\titlewidthlast=\dimen148
-\titlewidthfirst=\dimen149
+\ttl@box=\box58
+\beforetitleunit=\skip61
+\aftertitleunit=\skip62
+\ttl@plus=\dimen157
+\ttl@minus=\dimen158
+\ttl@toksa=\toks32
+\titlewidth=\dimen159
+\titlewidthlast=\dimen160
+\titlewidthfirst=\dimen161
 )
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\float\float.sty"
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count139
-\float@exts=\toks32
-\float@box=\box57
-\@float@everytoks=\toks33
-\@floatcapt=\box58
-) (Entregable.aux)
+\c@float@type=\count152
+\float@exts=\toks33
+\float@box=\box59
+\@float@everytoks=\toks34
+\@floatcapt=\box60
+) (Entregable.aux
+
+LaTeX Warning: Label `fig:figure2' multiply defined.
+
+
+LaTeX Warning: Label `fig:figure2' multiply defined.
+
+
+LaTeX Warning: Label `fig:figure2' multiply defined.
+
+)
 \openout1 = `Entregable.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 110.
+LaTeX Font Info:    ... okay on input line 110.
+\c@lstlisting=\count153
 
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\context\base\supp-pdf.m
+kii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count154
+\scratchdimen=\dimen162
+\scratchbox=\box61
+\nofMPsegments=\count155
+\nofMParguments=\count156
+\everyMPshowfont=\toks35
+\MPscratchCnt=\count157
+\MPscratchDim=\dimen163
+\MPnumerator=\count158
+\makeMPintoPDFobject=\count159
+\everyMPtoPDFconversion=\toks36
+)
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\epstopdf
+-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\grfext.s
+ty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+)
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -572,8 +708,8 @@ LaTeX Font Info:    ... okay on input line 78.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box59
-Package hyperref Info: Link coloring OFF on input line 78.
+\AtBeginShipoutBox=\box62
+Package hyperref Info: Link coloring OFF on input line 110.
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\nameref.
 sty"
@@ -583,150 +719,446 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 lestring.sty"
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count140
+\c@section@level=\count160
 )
-LaTeX Info: Redefining \ref on input line 78.
-LaTeX Info: Redefining \pageref on input line 78.
-LaTeX Info: Redefining \nameref on input line 78.
+LaTeX Info: Redefining \ref on input line 110.
+LaTeX Info: Redefining \pageref on input line 110.
+LaTeX Info: Redefining \nameref on input line 110.
  (Entregable.out) (Entregable.out)
 \@outlinefile=\write3
 \openout3 = `Entregable.out'.
 
-
-("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\context\base\supp-pdf.m
-kii"
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count141
-\scratchdimen=\dimen150
-\scratchbox=\box60
-\nofMPsegments=\count142
-\nofMParguments=\count143
-\everyMPshowfont=\toks34
-\MPscratchCnt=\count144
-\MPscratchDim=\dimen151
-\MPnumerator=\count145
-\makeMPintoPDFobject=\count146
-\everyMPtoPDFconversion=\toks35
-)
-("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\epstopdf
--base.sty"
-Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
-
-("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek\grfext.s
-ty"
-Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
-)
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
-38.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 456.
-)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
 \Etoc@tf=\read1
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 92.
+<./images/UPC.png, id=115, 197.73875pt x 196.735pt>
+File: ./images/UPC.png Graphic file (type png)
+<use ./images/UPC.png>
+Package pdftex.def Info: ./images/UPC.png  used on input line 128.
+(pdftex.def)             Requested size: 106.5pt x 105.95912pt.
+ [1
 
-("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\omscmr.fd"
-File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <17.28> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 92.
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <17.28> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 92.
-
-[1
-
-{C:/Users/Xavier/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+{C:/Users/Xavier/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <./images/U
+PC.png>]
 \tf@toc=\write4
 \openout4 = `Entregable.toc'.
 
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.112 \newpage
-               [1] [2]
-LaTeX Font Info:    Try loading font information for U+msa on input line 131.
+LaTeX Font Info:    Try loading font information for U+msa on input line 146.
 
 ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 131.
+LaTeX Font Info:    Try loading font information for U+msb on input line 146.
  ("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd
 "
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Underfull \hbox (badness 10000) in paragraph at lines 131--132
-\OML/cmm/m/it/12 <$\OT1/cmr/m/n/12 https://aerodatablog.wordpress.com/2017/11/2
-9/locality-sensitive-hashing-
+)pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
+ been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.146 \newpage
+               [1]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 185.
+See the caption package documentation for explanation.
+
+
+Overfull \hbox (47.1917pt too wide) in paragraph at lines 160--185
+ [] 
+ []
+
+<./images/boada1-4.png, id=161, 1900.701pt x 747.9945pt>
+File: ./images/boada1-4.png Graphic file (type png)
+<use ./images/boada1-4.png>
+Package pdftex.def Info: ./images/boada1-4.png  used on input line 193.
+(pdftex.def)             Requested size: 475.17409pt x 186.99817pt.
+
+Overfull \hbox (49.17409pt too wide) in paragraph at lines 193--194
+ [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
-[]\OT1/cmr/m/n/12 santhoshhari. \OT1/cmr/m/it/12 Loc-al-ity Sens-it-ive Hash-in
-g: Ap-plic-a-tion of Loc-al-
+Underfull \hbox (badness 10000) in paragraph at lines 200--203
+
+ []
+
+[2 <./images/boada1-4.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 206--207
+
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
-\OT1/cmr/m/it/12 ity Sens-it-ive Hash-ing to Au-dio Fin-ger-print-ing \OT1/cmr/
-m/n/12 [on-line]. (n. d.).
+Underfull \hbox (badness 10000) in paragraph at lines 212--214
+
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
-\OML/cmm/m/it/12 <$\OT1/cmr/m/n/12 https://santhoshhari.github.io/Locality-Sens
-itive-Hashing/$\OML/cmm/m/it/12 >$\OT1/cmr/m/n/12 [Consulted:
+Underfull \hbox (badness 10000) in paragraph at lines 217--218
+
  []
 
 
-Underfull \hbox (badness 4556) in paragraph at lines 146--147
-[]\OT1/cmr/m/n/12 Shikhar Gupta. \OT1/cmr/m/it/12 Loc-al-ity Sens-it-ive Hash-i
-ng: An ef-fect-ive way of re-
+Underfull \hbox (badness 10000) in paragraph at lines 219--220
+
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 146--147
-\OT1/cmr/m/it/12 du-cing the di-men-sion-al-ity of your data \OT1/cmr/m/n/12 [o
-n-line]. (June 29, 2018).
+Underfull \hbox (badness 10000) in paragraph at lines 223--224
+
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 146--147
-\OML/cmm/m/it/12 <$\OT1/cmr/m/n/12 https://towardsdatascience.com/understanding
--locality-sensitive-hashing-
- []
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 152.
 [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 152.
- (Entregable.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 152.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 152.
+<./images/strong_v1_1.png, id=173, 330.73563pt x 356.33125pt>
+File: ./images/strong_v1_1.png Graphic file (type png)
+<use ./images/strong_v1_1.png>
+Package pdftex.def Info: ./images/strong_v1_1.png  used on input line 246.
+(pdftex.def)             Requested size: 191.6987pt x 206.5309pt.
+<./images/strong_v1_2.png, id=174, 327.72438pt x 382.93062pt>
+File: ./images/strong_v1_2.png Graphic file (type png)
+<use ./images/strong_v1_2.png>
+Package pdftex.def Info: ./images/strong_v1_2.png  used on input line 253.
+(pdftex.def)             Requested size: 191.6987pt x 223.99304pt.
+<./images/strong_v5_1.png, id=178, 334.24875pt x 361.35pt>
+File: ./images/strong_v5_1.png Graphic file (type png)
+<use ./images/strong_v5_1.png>
+Package pdftex.def Info: ./images/strong_v5_1.png  used on input line 269.
+(pdftex.def)             Requested size: 191.6987pt x 207.24532pt.
+<./images/strong_v5_2.png, id=179, 339.76938pt x 375.90437pt>
+File: ./images/strong_v5_2.png Graphic file (type png)
+<use ./images/strong_v5_2.png>
+Package pdftex.def Info: ./images/strong_v5_2.png  used on input line 276.
+(pdftex.def)             Requested size: 191.6987pt x 212.08235pt.
+ [4 <./images/strong_v1_1.png> <./images/strong_v1_2.png>]
+<./images/strong_v7_1.png, id=188, 313.17pt x 344.78813pt>
+File: ./images/strong_v7_1.png Graphic file (type png)
+<use ./images/strong_v7_1.png>
+Package pdftex.def Info: ./images/strong_v7_1.png  used on input line 290.
+(pdftex.def)             Requested size: 191.6987pt x 211.05699pt.
+<./images/strong_v7_2.png, id=189, 325.215pt x 363.85938pt>
+File: ./images/strong_v7_2.png Graphic file (type png)
+<use ./images/strong_v7_2.png>
+Package pdftex.def Info: ./images/strong_v7_2.png  used on input line 297.
+(pdftex.def)             Requested size: 191.6987pt x 214.48083pt.
+ [5 <./images/strong_v5_1.png> <./images/strong_v5_2.png>]
+<./images/weak_v1.png, id=198, 325.215pt x 366.87062pt>
+File: ./images/weak_v1.png Graphic file (type png)
+<use ./images/weak_v1.png>
+Package pdftex.def Info: ./images/weak_v1.png  used on input line 339.
+(pdftex.def)             Requested size: 127.8013pt x 144.17056pt.
+<./images/weak_v5.png, id=199, 308.15125pt x 344.28625pt>
+File: ./images/weak_v5.png Graphic file (type png)
+<use ./images/weak_v5.png>
+Package pdftex.def Info: ./images/weak_v5.png  used on input line 346.
+(pdftex.def)             Requested size: 127.8013pt x 142.78682pt.
+<./images/weak_v8.png, id=200, 319.1925pt x 356.83313pt>
+File: ./images/weak_v8.png Graphic file (type png)
+<use ./images/weak_v8.png>
+Package pdftex.def Info: ./images/weak_v8.png  used on input line 354.
+(pdftex.def)             Requested size: 127.8013pt x 142.87228pt.
+
+Underfull \hbox (badness 3439) in paragraph at lines 356--356
+[]\OT1/cmr/m/n/12 Figure 10: |Ex-e-cu-tion
+ []
+
+
+Underfull \hbox (badness 3260) in paragraph at lines 356--356
+\OT1/cmr/m/n/12 time plot vary-ing the
+ []
+
+[6 <./images/strong_v7_1.png> <./images/strong_v7_2.png>] [7 <./images/weak_v1.
+png> <./images/weak_v5.png> <./images/weak_v8.png>]
+<./images/dependency_graph_base.png, id=222, 199.74625pt x 501.875pt>
+File: ./images/dependency_graph_base.png Graphic file (type png)
+<use ./images/dependency_graph_base.png>
+Package pdftex.def Info: ./images/dependency_graph_base.png  used on input line
+ 408.
+(pdftex.def)             Requested size: 199.74576pt x 501.87376pt.
+ [8]
+Overfull \hbox (8.577pt too wide) detected at line 417
+\OML/cmm/m/it/12 T[] \OT1/cmr/m/n/12 = (110 + 100442 + 103144 + 57444 + 103144 
++ 57444 + 103144 + 57444 + 57444 + 0) \OMS/cmsy/m/n/12  \OT1/cmr/m/n/12 1000
+ []
+
+[9 <./images/dependency_graph_base.png>]
+<./images/dependency_graph_v1.png, id=252, 496.85625pt x 3011.25pt>
+File: ./images/dependency_graph_v1.png Graphic file (type png)
+<use ./images/dependency_graph_v1.png>
+Package pdftex.def Info: ./images/dependency_graph_v1.png  used on input line 4
+63.
+(pdftex.def)             Requested size: 142.26508pt x 569.06494pt.
+ [10] [11 <./images/dependency_graph_v1.png>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 483.
+
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 483.
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 486.
+
+
+("C:\Users\Xavier\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\omlcmr.fd"
+File: omlcmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 486.
+
+[12]
+<./images/dependency_graph_v2.png, id=340, 2431.0825pt x 2509.375pt>
+File: ./images/dependency_graph_v2.png Graphic file (type png)
+<use ./images/dependency_graph_v2.png>
+Package pdftex.def Info: ./images/dependency_graph_v2.png  used on input line 5
+37.
+(pdftex.def)             Requested size: 426.78125pt x 426.77956pt.
+
+Overfull \hbox (0.78125pt too wide) in paragraph at lines 537--538
+ [][] 
+ []
+
+[13 <./images/dependency_graph_v2.png>] [14]
+<./images/dependency_graph_v3.png, id=401, 2208.25pt x 1968.35374pt>
+File: ./images/dependency_graph_v3.png Graphic file (type png)
+<use ./images/dependency_graph_v3.png>
+Package pdftex.def Info: ./images/dependency_graph_v3.png  used on input line 6
+23.
+(pdftex.def)             Requested size: 426.78262pt x 369.87636pt.
+
+Overfull \hbox (0.78262pt too wide) in paragraph at lines 623--624
+ [][] 
+ []
+
+[15] [16 <./images/dependency_graph_v3.png>] [17]
+<./images/dependency_graph_v4.png, id=500, 2007.5pt x 1827.82875pt>
+File: ./images/dependency_graph_v4.png Graphic file (type png)
+<use ./images/dependency_graph_v4.png>
+Package pdftex.def Info: ./images/dependency_graph_v4.png  used on input line 7
+07.
+(pdftex.def)             Requested size: 426.79488pt x 369.88228pt.
+
+Overfull \hbox (0.79488pt too wide) in paragraph at lines 707--708
+ [][] 
+ []
+
+[18 <./images/dependency_graph_v4.png>] [19]
+<./images/dependency_graph_v5.png, id=560, 3011.25pt x 341.275pt>
+File: ./images/dependency_graph_v5.png Graphic file (type png)
+<use ./images/dependency_graph_v5.png>
+Package pdftex.def Info: ./images/dependency_graph_v5.png  used on input line 8
+02.
+(pdftex.def)             Requested size: 3011.24269pt x 341.27415pt.
+ [20] [21 <./images/dependency_graph_v5.png>]
+<./images/texe_v4.png, id=602, 306.39468pt x 263.48438pt>
+File: ./images/texe_v4.png Graphic file (type png)
+<use ./images/texe_v4.png>
+Package pdftex.def Info: ./images/texe_v4.png  used on input line 819.
+(pdftex.def)             Requested size: 191.6987pt x 164.85019pt.
+<./images/speedup_v4.png, id=605, 310.15875pt x 267.24844pt>
+File: ./images/speedup_v4.png Graphic file (type png)
+<use ./images/speedup_v4.png>
+Package pdftex.def Info: ./images/speedup_v4.png  used on input line 858.
+(pdftex.def)             Requested size: 191.6987pt x 165.17442pt.
+ [22 <./images/texe_v4.png>]
+<./images/texe_v5.png, id=617, 310.15875pt x 262.73157pt>
+File: ./images/texe_v5.png Graphic file (type png)
+<use ./images/texe_v5.png>
+Package pdftex.def Info: ./images/texe_v5.png  used on input line 899.
+(pdftex.def)             Requested size: 191.6987pt x 162.38274pt.
+<./images/speedup_v5.png, id=620, 307.90031pt x 260.47313pt>
+File: ./images/speedup_v5.png Graphic file (type png)
+<use ./images/speedup_v5.png>
+Package pdftex.def Info: ./images/speedup_v5.png  used on input line 940.
+(pdftex.def)             Requested size: 191.6987pt x 162.1713pt.
+ [23 <./images/speedup_v4.png> <./images/texe_v5.png>]
+Overfull \hbox (23.28581pt too wide) in paragraph at lines 979--980
+[]\OT1/cmr/m/n/12 We could eas-ily see that in Fig-ure []15[] tasks \OT1/cmr/m/
+it/12 ffts1[]complex[]loop[]k \OT1/cmr/m/n/12 and \OT1/cmr/m/it/12 ffts1[]plane
+s[]loop[]k
+ []
+
+
+Overfull \hbox (70.57295pt too wide) in paragraph at lines 986--1055
+[][]   [] 
+ []
+
+[24 <./images/speedup_v5.png>]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 1104.
+See the caption package documentation for explanation.
+
+[25]
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1117.
+
+ [26]
+<./images/v0_t1.png, id=708, 602.25pt x 143.53625pt>
+File: ./images/v0_t1.png Graphic file (type png)
+<use ./images/v0_t1.png>
+Package pdftex.def Info: ./images/v0_t1.png  used on input line 1138.
+(pdftex.def)             Requested size: 301.12425pt x 71.76794pt.
+<./images/v0_excel_t1.png, id=709, 890.32625pt x 369.38pt>
+File: ./images/v0_excel_t1.png Graphic file (type png)
+<use ./images/v0_excel_t1.png>
+Package pdftex.def Info: ./images/v0_excel_t1.png  used on input line 1145.
+(pdftex.def)             Requested size: 445.16203pt x 184.68954pt.
+
+Overfull \hbox (19.16203pt too wide) in paragraph at lines 1145--1146
+ [][] 
+ []
+
+<./images/v0_t8.png, id=711, 610.28pt x 151.56625pt>
+File: ./images/v0_t8.png Graphic file (type png)
+<use ./images/v0_t8.png>
+Package pdftex.def Info: ./images/v0_t8.png  used on input line 1163.
+(pdftex.def)             Requested size: 305.13925pt x 75.78293pt.
+[27 <./images/v0_t1.png> <./images/v0_excel_t1.png>]
+<./images/min_v0.png, id=721, 157.58875pt x 152.57pt>
+File: ./images/min_v0.png Graphic file (type png)
+<use ./images/min_v0.png>
+Package pdftex.def Info: ./images/min_v0.png  used on input line 1189.
+(pdftex.def)             Requested size: 191.6987pt x 185.60432pt.
+<./images/speed_v0.png, id=722, 149.05687pt x 164.11313pt>
+File: ./images/speed_v0.png Graphic file (type png)
+<use ./images/speed_v0.png>
+Package pdftex.def Info: ./images/speed_v0.png  used on input line 1196.
+(pdftex.def)             Requested size: 191.6987pt x 211.07574pt.
+ [28 <./images/v0_t8.png>]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1203.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\phi' on input line 1203.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1203.
+
+
+Overfull \hbox (6.0044pt too wide) in paragraph at lines 1216--1217
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[29 <./images/min_v0.png> <./images/speed_v0.png>]
+<./images/v1_t1.png, id=754, 602.25pt x 143.53625pt>
+File: ./images/v1_t1.png Graphic file (type png)
+<use ./images/v1_t1.png>
+Package pdftex.def Info: ./images/v1_t1.png  used on input line 1244.
+(pdftex.def)             Requested size: 301.12425pt x 71.76794pt.
+<./images/v1_excel_tpar.png, id=755, 1549.79pt x 369.38pt>
+File: ./images/v1_excel_tpar.png Graphic file (type png)
+<use ./images/v1_excel_tpar.png>
+Package pdftex.def Info: ./images/v1_excel_tpar.png  used on input line 1251.
+(pdftex.def)             Requested size: 387.44655pt x 92.34477pt.
+<./images/v1_t8.png, id=756, 602.25pt x 143.53625pt>
+File: ./images/v1_t8.png Graphic file (type png)
+<use ./images/v1_t8.png>
+Package pdftex.def Info: ./images/v1_t8.png  used on input line 1258.
+(pdftex.def)             Requested size: 301.12425pt x 71.76794pt.
+<./images/min_v2.png, id=759, 326.21875pt x 357.335pt>
+File: ./images/min_v2.png Graphic file (type png)
+<use ./images/min_v2.png>
+Package pdftex.def Info: ./images/min_v2.png  used on input line 1268.
+(pdftex.def)             Requested size: 191.6987pt x 209.9916pt.
+<./images/speed_v2.png, id=760, 329.73187pt x 358.84062pt>
+File: ./images/speed_v2.png Graphic file (type png)
+<use ./images/speed_v2.png>
+Package pdftex.def Info: ./images/speed_v2.png  used on input line 1275.
+(pdftex.def)             Requested size: 191.6987pt x 208.62596pt.
+ [30 <./images/v1_t1.png> <./images/v1_excel_tpar.png> <./images/v1_t8.png>]
+Overfull \hbox (30.00464pt too wide) in paragraph at lines 1295--1296
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[31 <./images/min_v2.png> <./images/speed_v2.png>]
+<./images/v2_t1.png, id=798, 863.225pt x 369.38pt>
+File: ./images/v2_t1.png Graphic file (type png)
+<use ./images/v2_t1.png>
+Package pdftex.def Info: ./images/v2_t1.png  used on input line 1323.
+(pdftex.def)             Requested size: 431.61145pt x 184.68954pt.
+
+Overfull \hbox (5.61145pt too wide) in paragraph at lines 1323--1324
+ [][] 
+ []
+
+<./images/v2_tpar.png, id=799, 1206.5075pt x 369.38pt>
+File: ./images/v2_tpar.png Graphic file (type png)
+<use ./images/v2_tpar.png>
+Package pdftex.def Info: ./images/v2_tpar.png  used on input line 1330.
+(pdftex.def)             Requested size: 422.28395pt x 129.28493pt.
+<./images/v2_t8.png, id=800, 602.25pt x 143.53625pt>
+File: ./images/v2_t8.png Graphic file (type png)
+<use ./images/v2_t8.png>
+Package pdftex.def Info: ./images/v2_t8.png  used on input line 1337.
+(pdftex.def)             Requested size: 301.12425pt x 71.76794pt.
+[32 <./images/v2_t1.png> <./images/v2_tpar.png>]
+<./images/min_v1.png, id=811, 340.77313pt x 354.82562pt>
+File: ./images/min_v1.png Graphic file (type png)
+<use ./images/min_v1.png>
+Package pdftex.def Info: ./images/min_v1.png  used on input line 1347.
+(pdftex.def)             Requested size: 191.6987pt x 199.60515pt.
+<./images/speed_v1.png, id=812, 319.1925pt x 359.84438pt>
+File: ./images/speed_v1.png Graphic file (type png)
+<use ./images/speed_v1.png>
+Package pdftex.def Info: ./images/speed_v1.png  used on input line 1354.
+(pdftex.def)             Requested size: 191.6987pt x 216.11143pt.
+
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 1376.
+See the caption package documentation for explanation.
+
+
+Overfull \hbox (45.71414pt too wide) in paragraph at lines 1365--1376
+ [] 
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1383.
+[33 <./images/v2_t8.png> <./images/min_v1.png> <./images/speed_v1.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1383.
+
+(Entregable.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1383.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1383.
+
 Package rerunfilecheck Info: File `Entregable.out' has not changed.
-(rerunfilecheck)             Checksum: 1DB6ACF0CA858A323D5862A2C7FCFE6D;48.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 152.
+(rerunfilecheck)             Checksum: 6065E384C9D90544057D050025B45364;1941.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1383.
  ) 
 Here is how much of TeX's memory you used:
- 9332 strings out of 492970
- 139896 string characters out of 3126150
- 253584 words of memory out of 3000000
- 13042 multiletter control sequences out of 15000+200000
- 11655 words of font info for 43 fonts, out of 3000000 for 9000
+ 13468 strings out of 492970
+ 202825 string characters out of 3126150
+ 376432 words of memory out of 3000000
+ 16625 multiletter control sequences out of 15000+200000
+ 14365 words of font info for 54 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 33i,5n,31p,296b,368s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,13n,58p,751b,1821s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfont
 s/cm/cmbx12.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/
-public/amsfonts/cm/cmcsc10.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2
-.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Xavier/AppData/Local/Pro
-grams/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Xavier/AppD
-ata/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/User
-s/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy1
-0.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/ams
-fonts/cm/cmti12.pfb>
-Output written on Entregable.pdf (4 pages, 89020 bytes).
+public/amsfonts/cm/cmbxti10.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 
+2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Users/Xavier/AppData/Local/P
+rograms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Xavier/A
+ppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/
+Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+mmi8.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/
+amsfonts/cm/cmr10.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Xavier/AppData/Local/Programs/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Xavier/AppData/Local/P
+rograms/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Xavier/A
+ppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/U
+sers/Xavier/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cm
+ti12.pfb>
+Output written on Entregable.pdf (34 pages, 2828645 bytes).
 PDF statistics:
- 67 PDF objects out of 1000 (max. 8388607)
- 13 named destinations out of 1000 (max. 500000)
- 9 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 962 PDF objects out of 1000 (max. 8388607)
+ 482 named destinations out of 1000 (max. 500000)
+ 405 words of extra memory for PDF output out of 10000 (max. 10000000)
 
