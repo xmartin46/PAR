@@ -1,0 +1,115 @@
+D) TASKS
+	3. synchtasks
+		2.
+		printf("Creating task foo1\n");
+		#pragma omp task
+		foo1();
+
+		printf("Creating task foo2\n");
+		#pragma omp task
+		foo2();
+
+		printf("Creating task foo4\n");
+		#pragma omp taskwait
+		foo4();
+
+		printf("Creating task foo3\n");
+		#pragma omp task
+		foo3();
+
+		printf("Creating task foo5\n");
+		#pragma omp taskwait
+		foo5();
+
+	4. taskloop.c
+		1.
+		grainsize(grain-size)
+		Controls how many logical loop iterations are assigned to each created task. The number of logical loop iterations assigned to each created task is greater than or equal to the minimum of the value of grain-size and the number of logical loop iterations, but less than two times the value of grain-size. grain-size must be a positive integer expression.
+
+		num_tasks(num-tasks)
+    	Creates as many tasks as the minimum of num-tasks and the number of logical loop iterations. num-tasks must evaluate to a positive integer.
+
+		grainsize: CREIEM => 3 tasks (2 primeres: 5 it. i última 2 it.).
+				   REAL => 2 tasks (6 it./task).
+
+		num_tasks: 5 tasks.
+				   1a i 2a: 3 it.
+				   3 restants: 2 it.
+
+		par4110@boada-1:~/lab2/openmp/tasks$ ./4.taskloop
+		Going to distribute 12 iterations with grainsize(5) ...
+		Loop 1: (1) gets iteration 0
+		Loop 1: (1) gets iteration 1
+		Loop 1: (1) gets iteration 2
+		Loop 1: (1) gets iteration 3
+		Loop 1: (2) gets iteration 6
+		Loop 1: (2) gets iteration 7
+		Loop 1: (2) gets iteration 8
+		Loop 1: (2) gets iteration 9
+		Loop 1: (2) gets iteration 10
+		Loop 1: (2) gets iteration 11
+		Loop 1: (1) gets iteration 4
+		Loop 1: (1) gets iteration 5
+		Going to distribute 12 iterations with num_tasks(5) ...
+		Loop 2: (2) gets iteration 0
+		Loop 2: (2) gets iteration 1
+		Loop 2: (1) gets iteration 6
+		Loop 2: (1) gets iteration 7
+		Loop 2: (0) gets iteration 10
+		Loop 2: (0) gets iteration 11
+		Loop 2: (1) gets iteration 8
+		Loop 2: (1) gets iteration 9
+		Loop 2: (2) gets iteration 2
+		Loop 2: (3) gets iteration 3
+		Loop 2: (3) gets iteration 4
+		Loop 2: (3) gets iteration 5
+
+		2.
+		nogroup
+    	Removes the implicit taskgroup region that encloses the taskloop construct.
+
+		Sense el nogroup, quan fem un taskloop es genera implícitament un taskgroup que engloba
+		la part que engloba el taskloop. D'aquesta manera, l'execució es detindrpa fins que no
+		acabi d'executar-se el primer thread (el taskgoup obliga a tenir una sincronitzsació al final 			(barrera)).
+		En canvi, ara amb el nogroup no es genera implícitament el taskgroup. Per aquest motiu,
+		el segon for es pot executar sense haver d'esperar-se a que s'acabi d'executar el primer for.
+
+		par4110@boada-1:~/lab2/openmp/tasks$ ./4.taskloop
+		Going to distribute 12 iterations with grainsize(5) ...
+		Going to distribute 12 iterations with num_tasks(5) ...
+		Loop 2: (0) gets iteration 10
+		Loop 1: (1) gets iteration 0
+		Loop 1: (1) gets iteration 1
+		Loop 1: (1) gets iteration 2
+		Loop 1: (1) gets iteration 3
+		Loop 1: (1) gets iteration 4
+		Loop 2: (0) gets iteration 11
+		Loop 1: (1) gets iteration 5
+		Loop 2: (0) gets iteration 8
+		Loop 2: (0) gets iteration 9
+		Loop 2: (0) gets iteration 6
+		Loop 2: (0) gets iteration 7
+		Loop 1: (2) gets iteration 6
+		Loop 1: (2) gets iteration 7
+		Loop 1: (2) gets iteration 8
+		Loop 1: (2) gets iteration 9
+		Loop 1: (2) gets iteration 10
+		Loop 1: (2) gets iteration 11
+		Loop 2: (1) gets iteration 0
+		Loop 2: (1) gets iteration 1
+		Loop 2: (1) gets iteration 2
+		Loop 2: (0) gets iteration 3
+		Loop 2: (0) gets iteration 4
+		Loop 2: (0) gets iteration 5
+
+
+2.3.1
+	3. REPASSAR-HO => EL FOR NOMÉS EL REALITZARÀ 1 THREAD? TOTS? NO HO SE.
+	As the number of steps is just 1, we gain nothing when executing the code in the parallel
+	version. The only thing we add is overhead, and consequently, time.
+
+	We can see that the more threads we use, the bigger the overhead because we have 
+	to create and terminate more threads. However, the overhead per thread decreases as we increase 	the number of threads because each thread has to do less work. Hence, the difference between the
+	sequential code is smaller.
+
+	The order of magnitude is microseconds (line 57 of the code).
