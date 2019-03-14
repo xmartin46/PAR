@@ -1,0 +1,39 @@
+C) Synchronization
+1.datarace.c
+	1. 	El problema d'aquest programa que tothom accedeix a la mateixa variable per llegir i escriure.
+		Això proboca que ha vegades dos threads llegeixin la mateixa x, després que cada un
+		executi la suma que li toca, i a l'escriure el resultat d'un es sobrescrigui pel de l'altre.
+	2. 	Per sol·lucionar-ho hem proposat dues sol·lucions, una molt dastica que acabaria convertint el
+		programa en seqüencial:
+			
+    #pragma omp parallel for schedule(dynamic,1) private(i) shared(x)
+    for (i=0; i < N; i++) {
+        #pragma omp atomic
+        x++;
+    }
+
+		Ja que com a cada iteració del bucle s'hauria d'esperar que es fés la suma els threads no podrien
+		treballar alhora.
+		La segona sol·lució a consistit en aplicar una reducció en x.
+		
+    #pragma omp parallel for schedule(dynamic,1) private(i) reduction(+:x)
+    for (i=0; i < N; i++) {
+        x++;
+    }
+
+		En aquesta segona solució cada thread aplicarà el seu propi sumatori de x i quean tots els threads
+		acabin es farà una suma de tots, aconseguint un resultat correcte.
+
+2.barrier.c
+	1. 	En aquest programa aparaixeran de cop 4 prints dient el número the thread i quanta estona estarà fent un sleep.
+		A continuació a mesura que s'acabi el sleep de cada thred sortirà un print dient-nos que aquell thread s'ha despartat.
+		Finalment aparaixeràn 4 missatges identificats cada un pel seu thread dient que tots ja s'han despertat.
+		
+		Hem pogut observar que els threads després del barrier no surten en cap ordre especific.
+		
+3.ordered.c
+	1.	Els threads es van repartint les iteracions a mesura que es creen, per tant el before apareix de forma desordenada,
+		ja que cada thread pot tardar un temps diferent per arribar al primer print.
+		En canvi en el cas del segon print, al haver-hi el (#pragma omp ordered) obliga a que el print es fasci amb el mateix
+		ordre en que 
+	
