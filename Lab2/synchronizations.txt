@@ -35,5 +35,10 @@ C) Synchronization
 	1.	Els threads es van repartint les iteracions a mesura que es creen, per tant el before apareix de forma desordenada,
 		ja que cada thread pot tardar un temps diferent per arribar al primer print.
 		En canvi en el cas del segon print, al haver-hi el (#pragma omp ordered) obliga a que el print es fasci amb el mateix
-		ordre en que 
+		ordre en que es reparteixen les iteracions en el for, provoca que aquests es fascin en l'ordre correcte.
+	
+	2. Es podria fer fent:
+	
+	#pragma omp for schedule(dynamic,2) ordered
+
 	
