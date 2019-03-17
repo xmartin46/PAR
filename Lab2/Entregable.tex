@@ -157,38 +157,78 @@
 
 \subsubsection{1.hello.c}
 
-\textbf{1. How many times will you see the "Hello world!" message if the program is executed with
-"./1.hello"?}
+\textbf{1. How many times will you see the "Hello world!" message if the program is executed with "./1.hello"?}
+
+If the program is executed with the given code, we see 24 times the message "Hello world!" because the number of threads has been set to 24. We can see it if we add the line \textbf{printf("\%d", omp\_get\_num\_threads());} in the code.
 
 \hfill
 
 \textbf{2. Without changing the program, how to make it to print 4 times the "Hello World!" message?}
 
+We can change the number of threads to execute the code with the command \textbf{OMP\_NUM\_THREADS=4 ./1.hello}. This will execute the program 1.hello.c using only 4 threads.
+
 \subsubsection{2.hello.c}
 
 \textbf{1. Is the execution of the program correct? (i.e., prints a sequence of "(Thid) Hello (Thid)
 world!" being Thid the thread identifier). If not, add a data sharing clause to make it correct?}
+\textbf{TORNAR A REPASSSSSSSSSSAR}!!!!!!!!!!!!!!!!!!!!!!!!
+The execution of the program is not correct. This is because there is no flow control inside the parallel region, so the 8 threads execute at the same time the code inside this region. Consequently, there may be some prints that are not ordered. It also may occur that in the same line appears "(Thread X) Hello (Thread Y) Hello..." without the second part of the print.
+
+In order to make it correct, we have to add the \textbf{critical} clause as shown below. This clause specifies that code inside its region is executed by one thread at a time.
+
+\begin{lstlisting}
+	#pragma omp parallel num_threads(8)
+	#pragma omp critical
+	{
+	    id =omp_get_thread_num();
+	    printf("(%d) Hello ",id);
+	    printf("(%d) world!\n",id);
+	}
+\end{lstlisting}
 
 \hfill
 
 \textbf{2. Are the lines always printed in the same order? Why the messages sometimes appear intermixed? (Execute several times in order to see this).}
 
+The lines are not always printed in the same order. This is because threads do not always arrive at the same moment in the critical region. Hence, in one execution it may happen that thread number 2 is the first to arrive to the critical part, so it will enter the first (preventing the other threads to enter the region) and printing correctly the first message, and in another execution thread number 2 may be the last one to enter the critical part, being the last to output the "Hello world!" message.
+
 \subsubsection{3.how many.c}
 
-\textbf{Assuming the OMP NUM THREADS variable is set to 8 with "export OMP NUM THREADS=8"}
+\textbf{Assuming the OMP NUM THREADS variable is set to 8 with "export\_OMP\_NUM\_THREADS=8"}
 
 \hfill
 
 \textbf{1. How many "Hello world ..." lines are printed on the screen?}
 
+Using 8 threads, the different "Hello world..." messages appear a total of 20 times.
+
+\begin{itemize}
+	\item Hello world from the first parallel (8)! $=>$ 8 times
+	\item Hello world from the second parallel (2)! $=>$ 2 times
+	\item Hello world from the second parallel (3)! $=>$ 3 times
+	\item Hello world from the third parallel (4)! $=>$ 4 times
+	\item Hello world from the fourth  parallel (3)! $=>$ 3 times
+\end{itemize}
+
 \hfill
 
-\textbf{2. What does omp get num threads return when invoked outside and inside a parallel region?}
+\textbf{2. What does omp\_get\_num\_threads return when invoked outside and inside a parallel region?}
+
+Outside the parallel region the function returns 1 because, as we are in a sequential part, there is only 1 thread executing the code.
+
+There are several parallel regions (3 with \#pragma omp parallel and 1 with \#pragma omp parallel num\_threads(4)). The first region returns 8 threads, because we set the number of threads to use to 8. The second region is inside the first loop of the main. Before calling \#pragma omp parallel, we set the number of threads to \textit{i}, which is the variable used in the for. This for is executed 2 times. In the first one, we set the number of threads to 2, so the value will be 2 threads. In the next loop iteration, the \textit{i} value is 3, so we will have 3 threads executing the parallel region. In the next parallel region, we set with \textit{num\_threads(4)} the number of threads to execute the code, so the value in this region will be 4. Finally, the last parallel region will be executed by 3 threads. Altough we previously set the number of threads to be 8, we changed later this value inside the loop. The last value was 3, so in this new region the value will still be 3.
 
 \subsubsection{4.data sharing.c}
 
-\textbf{1. Which is the value of variable x after the execution of each parallel region with different datasharing attribute (shared, private, firstprivate and reduction)? Is that the value you
-would expect? (Execute several times if necessary)}
+\textbf{1. Which is the value of variable x after the execution of each parallel region with different datasharing attributes (shared, private, firstprivate and reduction)? Is that the value you would expect? (Execute several times if necessary)}
+
+The first datasharing attribute is \textbf{shared(x)}. This attribute makes variable \textit{x} to be shared by all the threads that are executing the code of this region. As we are modifying its value, it is possible that 2 threads read at the same time the \textit{x} value and later write in it their computed value. In this situation, the final value will not be the correct, as we have not added some values. This is what occurs sometimes. The value of this part was 107, similar as what we expected.
+
+The second one is \textbf{private(x)}. This attribute specifies that each thread should have its own instance of the variable \textit{x}, initialised with a random value. Once we leave the parallel region, the \textit{x} value is again the one before executing this region. The value is 5, which is the expected value, because the print is done outside the parallel region and the value of \textit{x} was 5.
+
+The next attribute, \textbf{firstprivate(x)}, is very similar to private. The main difference is that in this attribute the variable is initialized with the value of the variable, because it exists before the parallel construct. We print the value outside the parallel region, so the value is again 5.
+
+The last attribute is \textbf{reduction(+:x)}. It specifies that variable \textit{x} that is private to each thread is the subject of a reduction operation at the end of the parallel region. It is initialized to the neutral value of the operation (sum in this case). The value is what we expected, 125 because the variable is private for each thread.
 
 \subsection{Loop parallelism}
 
@@ -196,19 +236,40 @@ would expect? (Execute several times if necessary)}
 
 \textbf{1. Which iterations of the loops are executed by each thread for each schedule kind?}
 
+In \textbf{schedule(static)}, the iterations are divided by the number of threads. In this case, there will be 4 blocks of the same size (it may occur that the last block does not have the same size). The first block will correspond to the first thread, and successively. Thread 0 will execute block 0 (0-2 iterations), thread 1 block 1 (3-5 iterations), thread 2 will execute block 2 (6-8 iterations) and thread 3 will execute block 4 (9-11 iterations).
+
+We can enforce to create blocks of 2 iterations with \textbf{schedule(static, 2)}. Thread 0 will execute blocks 0 (0-1 iterations) and 4 (8-9 iterations). Thread 1 will execute 1 (2-3 iterations) and 5 (10-11 iterations). Thread 2, block 2 (4-5 iterations) and thread 3, block 3 (6-7 iterations).
+
+The \textbf{schedule(dynamic, 2)} divides the iterations in blocks of 2 iterations, but it distributes the blocks in a different way than static. It gives the next block to execute to the first thread to end its work. This is a better solution, because it is possible that some thread has a lot of work in a block and has to execute another one. With dynamic, the other threads will execute that block. We cannot say which threads will execute each block, but we can say that for each block, the thread will execute two iterations of the loop.
+
+The \textbf{schedule(guided, 2)} gives n/p iterations to the first loop, (n - n/p)/p iterations to the next loop and so on until blocks have 2 iterations. Then, it starts to work as a dynamic schedule.
+
 \subsubsection{2.nowait.c}
 
 \textbf{1. Which could be a possible sequence of printf when executing the program?}
+
+In this code, two threads will execute the first loop while the other two threads execute the second loop. A possible sequence of prints would be the following:
+
+\begin{lstlisting}
+	Loop 1: thread (0) gets iteration 0
+	Loop 1: thread (3) gets iteration 1
+	Loop 2: thread (1) gets iteration 2
+	Loop 2: thread (2) gets iteration 3
+\end{lstlisting}
 
 \hfill
 
 \textbf{2. How does the sequence of printf change if the nowait clause is removed from the first for
 directive?}
 
+Now, while two threads are executing the first loop, the other two will remain doing nothing. Once they end with the loop, only 2 threads will enter in the second loop. As the schedule type is dynamic, we do not know which two threads will execute the for loops.
+
 \hfill
 
 \textbf{3. What would happen if dynamic is changed to static in the schedule in both loops? (keeping
 the nowait clause)}
+
+If we change it to static, threads 0 and 1 will execute the first and the second for loop because threads 2 and 3 will not receieve any work.
 
 \subsubsection{3.collapse.c}
 
