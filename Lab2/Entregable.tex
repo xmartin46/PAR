@@ -594,6 +594,205 @@ Now, there are created the same number of tasks, and each one does the same itre
 
 \section{Observing overheads}
 
+\subsection{Synchronisation overheads}
+
+In this part we have different ways of computing the pi number, each with a different method of synchronization of the sum variable.
+
+\subsubsection{pi\_omp\_critical}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel private(x) num_threads(num_threads)
+    {
+        #pragma omp for 
+        for (long int i=0; i<num_steps; ++i) {
+            x = (i+0.5)*step;
+            #pragma omp critical 
+	    	sum += 4.0/(1.0+x*x);
+        }
+    }
+	\end{lstlisting}
+	
+	\caption{Parallel code (pi\_omp\_critical)}
+\end{figure}
+
+\paragraph{1 thread}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 4.319360s
+	Number pi after 100000000 iterations = 3.141592653590426		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_critical with 1 thread}
+\end{figure}
+
+\paragraph{4 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 38.100659s
+	Number pi after 100000000 iterations = 3.141592653590203		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_critical with 4 threads}
+\end{figure}
+
+\paragraph{8 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 34.410379s
+	Number pi after 100000000 iterations = 3.141592653589771		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_critical with 8 threads}
+\end{figure}
+
+\subsubsection{pi\_omp\_atomic}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel private(x) num_threads(num_threads)
+    {
+        #pragma omp for 
+        for (long int i=0; i<num_steps; ++i) {
+            x = (i+0.5)*step;
+            #pragma omp atomic 
+	    	sum += 4.0/(1.0+x*x);
+        }
+    }
+	\end{lstlisting}
+	
+	\caption{Parallel code (pi\_omp\_atomic)}
+\end{figure}
+
+\paragraph{1 thread}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 1.794664s
+	Number pi after 100000000 iterations = 3.141592653590426		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_atomic with 1 thread}
+\end{figure}
+
+\paragraph{4 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 6.201648s
+	Number pi after 100000000 iterations = 3.141592653590225			
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_atomic with 4 threads}
+\end{figure}
+
+\paragraph{8 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 6.910445s
+	Number pi after 100000000 iterations = 3.141592653589742
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_atomic with 8 threads}
+\end{figure}
+
+\subsubsection{pi\_omp\_reduction}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel private(x) num_threads(num_threads) reduction(+:sum)
+    {
+        #pragma omp for 
+        for (long int i=0; i<num_steps; ++i) {
+            x = (i+0.5)*step;
+	    	sum += 4.0/(1.0+x*x);
+        }
+    }
+
+	\end{lstlisting}
+	
+	\caption{Parallel code (pi\_omp\_reduction)}
+\end{figure}
+
+\paragraph{1 thread}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 1.831957s
+	Number pi after 100000000 iterations = 3.141592653590426		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_reduction with 1 thread}
+\end{figure}
+
+\paragraph{4 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 0.478957s
+	Number pi after 100000000 iterations = 3.141592653589683			
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_reduction with 4 threads}
+\end{figure}
+
+\paragraph{8 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 0.261439s
+	Number pi after 100000000 iterations = 3.141592653589815
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_reduction with 8 threads}
+\end{figure}
+
+\subsubsection{pi\_omp\_sumlocal}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel private(x) firstprivate(sumlocal) num_threads(num_threads)
+    {
+        #pragma omp for 
+        for (long int i=0; i<num_steps; ++i) {
+            x = (i+0.5)*step;
+            sumlocal += 4.0/(1.0+x*x);
+        }
+        #pragma omp critical 
+		sum += sumlocal;
+    }
+
+
+	\end{lstlisting}
+	
+	\caption{Parallel code (pi\_omp\_sumlocal)}
+\end{figure}
+
+\paragraph{1 thread}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 1.832351s
+	Number pi after 100000000 iterations = 3.141592653590426		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_sumlocal with 1 thread}
+\end{figure}
+
+\paragraph{4 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 0.482865s
+	Number pi after 100000000 iterations = 3.141592653589683					
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_sumlocal with 4 threads}
+\end{figure}
+
+\paragraph{8 threads}
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Total execution time: 0.261369s
+	Number pi after 100000000 iterations = 3.141592653589815		
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_sumlocal with 8 threads}
+\end{figure}
+
 \subsection{Thread creation and termination}
 
 Code \textit{pi\_omp\_parallel.c} is used to calculate the thread creation and termination overhead. To do this, the code has 2 parts which computes the same value (pi), one sequential and the other parallel. The tricky part is that in the parallel region only 1 thread executes the code, so it takes the same time than in the sequential part. As a result, the difference between the sequential and the parallel regions will only be caused by the overheads.
