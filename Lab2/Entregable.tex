@@ -275,10 +275,26 @@ If we change it to static, threads 0 and 1 will execute the first and the second
 
 \textbf{1. Which iterations of the loop are executed by each thread when the collapse clause is used?}
 
+The \textbf{collapse} clause specifies how many loops in a nested loop should be collapsed into one large iteration space and divided according to the schedule clause. In this code, there is no schedule clause, so it will be treated as static.
+
+\begin{lstlisting}
+	Thread 0: 00, 01, 02, 03
+	Thread 1: 04, 10, 11
+	Thread 2: 12, 13, 14
+	Thread 3: 20, 21, 22
+	Thread 4: 23, 24, 30
+	Thread 5: 31, 32, 33
+	Thread 6: 34, 40, 41
+	Thread 7: 42, 43, 44
+\end{lstlisting}
+
+Where 00 means i = 0 and j = 0, 01 means i = 0 and j = 1...
+
 \hfill
 
-\textbf{2. Is the execution correct if the collapse clause is removed? Which clause (different than
-collapse) should be added to make it correct?}
+\textbf{2. Is the execution correct if the collapse clause is removed? Which clause (different than collapse) should be added to make it correct?}
+
+The execution is not correct because some iterations are not executed. The main reason is because there are data racing conflicts with variable \textit{j}. To avoid this, we should make private the \textit{j} variable with \#pragma omp parallel for private(j).
 
 \subsection{Synchronization}
 
@@ -315,15 +331,33 @@ the execution of the ordered part of the loop body?}
 
 \textbf{1. Can you explain why all threads contribute to the execution of instances of the single worksharing construct? Why are those instances appear to be executed in bursts?}
 
+Thanks to the \textbf{single} clause only 1 thread executes each iteration of the loop, and thanks to the \textbf{nowait} clause, the other threads do not have to wait until the iteration ends to continue with the other iterations.
+
+The 4 threads distribute the first 4 iterations. They print a message and remain sleeping during 1 second. Then, they distribute again the 4 next iterations, and so on. As a consequence, we see the messages in bursts.
+
 \subsubsection{2.fibtasks.c}
 
-\textbf{1. Why all tasks are created and executed by the same thread? In other words, why the program
-is not executing in parallel?}
+\textbf{1. Why all tasks are created and executed by the same thread? In other words, why the program is not executing in parallel?}
+
+The program has 0 parallel regions, so only 1 thread is executing the code. Thus, only 1 thread creates tasks and executes them.
 
 \hfill
 
-\textbf{2. Modify the code so that the program correctly executes in parallel, returning the same answer
-that the sequential execution would return.}
+\textbf{2. Modify the code so that the program correctly executes in parallel, returning the same answer that the sequential execution would return.}
+
+\textbf{FALTA PARLAAAAAAAAAAAAAAAAAAAR DEL PER QUE HEM FET AIXO!?!?!?!?!?}
+
+\begin{lstlisting}
+	#pragma omp parallel
+    #pragma omp single
+    while (p != NULL) {
+          printf("Thread %d creating task that will compute %d\n",
+          		  omp_get_thread_num(), p->data);
+          #pragma omp task firstprivate(p)
+          processwork(p);
+          p = p->next;
+    }
+\end{lstlisting}
 
 \subsubsection{3.synchtasks.c}
 
@@ -559,5 +593,102 @@ Now, there are created the same number of tasks, and each one does the same itre
 \end{figure}
 
 \section{Observing overheads}
+
+\subsection{Thread creation and termination}
+
+Code \textit{pi\_omp\_parallel.c} is used to calculate the thread creation and termination overhead. To do this, the code has 2 parts which computes the same value (pi), one sequential and the other parallel. The tricky part is that in the parallel region only 1 thread executes the code, so it takes the same time than in the sequential part. As a result, the difference between the sequential and the parallel regions will only be caused by the overheads.
+
+The order of magnitud of the overhead generated in the threads creation is in microseconds. We can see it clearly in Figure \ref{piompparallel} because the first print is a message with the order of magnitude.
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	All overheads expressed in microseconds
+	Nthr    Overhead        Overhead per thread
+	2       2.0023          1.0011
+	3       1.6780          0.5593
+	4       1.7134          0.4284
+	5       1.7847          0.3569
+	6       1.8046          0.3008
+	7       1.7323          0.2475
+	8       1.7549          0.2194
+	9       2.2797          0.2533
+	10      2.3004          0.2300
+	11      2.3724          0.2157
+	12      2.4019          0.2002
+	13      2.4509          0.1885
+	14      2.5782          0.1842
+	15      2.7435          0.1829
+	16      2.7500          0.1719
+	17      2.8480          0.1675
+	18      2.8822          0.1601
+	19      2.8254          0.1487
+	20      2.9179          0.1459
+	21      2.9622          0.1411
+	22      3.0387          0.1381
+	23      3.0811          0.1340
+	24      3.7695          0.1571
+	\end{lstlisting}
+	\caption{Output of pi\_omp\_parallel.c (execution in queue)}
+	\label{piompparallel}
+\end{figure}
+
+On the one hand, we see that the bigger the number of threads used, the bigger the overhead. This is because we have to create and terminate more threads.
+
+On the other hand, the overhead per thread decreases as we increase the number of threads. \textbf{REPASSSSSSSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR}. We think that this may happen because the task of computing the pi number if bigger than the creation and termination overheads, so adding more threads will still take less time than the pi task. Consequently, the total time in the parallel region will remain constant and this number divided by a bigger number gives a smaller number. We think that if we execute the code with a sufficient number of threads, in the end, the thread overheads would pass the task time and the overhead per thread would begun to increase a little.
+
+\subsection{Task creation and synchronization}
+
+In this section, we studied the overhead when creating tasks and synchronizing them.
+
+The order of magnitude is also in microsecond. It is shown in the first line of Figure \ref{piomptasks}. The execution was using 10 tasks and 1 thread. Doing this, we only have the overhead of the creation (\textbf{task)} and synchronization (\textbf{taskwait}) of the tasks if we compute $T_{par} - T_{seq}$.
+
+\begin{figure}[H]
+\begin{lstlisting}
+	All overheads expressed in microseconds
+	Ntasks  Overhead        Overhead per task
+	2       0.2318          0.1159
+	4       0.5196          0.1299
+	6       0.7690          0.1282
+	8       1.0167          0.1271
+	10      1.2827          0.1283
+	12      1.5125          0.1260
+	14      1.7640          0.1260
+	16      2.0038          0.1252
+	18      2.2672          0.1260
+	20      2.5160          0.1258
+	22      2.7558          0.1253
+	24      3.0027          0.1251
+	26      3.2645          0.1256
+	28      3.4966          0.1249
+	30      3.7534          0.1251
+	32      3.9903          0.1247
+	34      4.2385          0.1247
+	36      4.4821          0.1245
+	38      4.7268          0.1244
+	40      4.9663          0.1242
+	42      5.2138          0.1241
+	44      5.4777          0.1245
+	46      5.7102          0.1241
+	48      5.9602          0.1242
+	50      6.2070          0.1241
+	52      6.4543          0.1241
+	54      6.7144          0.1243
+	56      6.9368          0.1239
+	58      7.2039          0.1242
+	60      7.4387          0.1240
+	62      7.7059          0.1243
+	64      7.9344          0.1240
+	\end{lstlisting}
+	\caption{Execution of pi\_omp\_tasks.c (queue execution).}
+	\label{piomptasks}
+\end{figure}
+
+The total overhead increases when there are more tasks because we have to create and synchronize more tasks. However, the overhead per tasks is constant due to the fact that each task has the same execution time. As we are only using 1 thread, the tasks cannot be executed in parallel, so adding the time/task and dividing it by 1 more task leaves the result constant.
+
+$ Overhead\_per\_task \approx 0.125 $
+
+$ Overhead = \#tasks * overhead/task $
+
+$ Overhead\_per\_task = Overhead/\#tasks \approx 0.125 $
 
 \end{document}
