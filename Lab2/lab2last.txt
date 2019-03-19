@@ -1,0 +1,27 @@
+PARLAR SOBRE QUE LA REGIÓ PARAL·LELITZADA DECREIX
+
+CRITICAL
+El codi de critical triga gairebé 3 segons més que el codi sequencial. Creiem que això es deu a què hem de fer set lock i unset lock cada vegada que entrem a la regió
+crítica, i aquest overhead amb tantes iteracions acaba sent significatiu.
+
+En el pi_omp_critical hem observat que hi ha una gran diferència en el temps d'execució de 1 a més d'un thread. Creiem que això es deu a que si només executem el codi
+amb un thread, aquest no s'ha de sinconitzar amb ningú. Per tant, quan acaba la iteració ja pot executar la següent. En canvi, si tenim més d'un thread, aquests
+s'han de sincronitzar per a què només un thread executi la regió crítica. D'aquesta manera, quan un entra a la regió crítica tenim sincronització, i quan surt, també.
+
+
+ATOMIC
+1 THREAD: Observem que el temps no varia gaire respecte el sequencial perquè l'overhead que afageix la clàusula atomic no és molt gran. Fa l'atomic però no s'ha de sincronitzar/esperar a ningú.
+
+4 i 8 THREADS: El temps d'execució augmenta ja que en cada iteració els threads s'han d'esperar a què la variable sum estigui lliure. Això fa que els threads s'hagin de sincronitzar i per aix`+o hi ha un petit overhead. To i així, aquest overhead és menor al critical perquè només fa lock per la regió de llegir, fer l'operació suma i escriure de la variable sum. En canvi, el critical ho feia de tot (llegir, calcular la funció x/4..., sumar i escriure).
+
+REDUCTION
+1 THREAD: En aquest cas el sequencial empitjora una mica (0.3 s) perquè ha de generar 1 nova variable privada (sum), i això genera una mica de overhead. Al final, s'ha d'esperar a fer la sincronització tot i que com que només hi ha un thread, aquest temps serà molt petit.
+
+4 i 8 THREADS: Observem una gran millora en el temps. Ara si que aprofitem molt el potencial del paralelisme ja que cada thread tindrà la seva propia variable sum, fent possible que cap thread quedi bloquejat durant l'execució del for. Només quedarà bloquejat al final quan hagi d'esperar a que tots els threads acabin. A continuació, hi haurà un altre petit overhead per sumar totes les variabbles privades sum a la variable publica sum.
+
+SUMLOCAL
+La versió sumlocal simula la clàusula reduction sense utilitzar-la. Per aconseguir-ho, es crea una variable publica fora la regió paral·lela. Aquesta variable al tenir la clàusula firstprivate(sumlocal) es privatitzarà amb el valor inicial de la variable pública.
+
+Així, cada thread tindrà la seva variable privada sumlocal i dins el for no hi haurà cap tipus de sincronització entre threads. Quan acabi el for, haurem de fer una part critical per sumar el sumlocal de cada thread a la variable pública sum. El temps d'això serà gairebé negligible.
+
+Podem observar que els temps d'execució entre el reduction i el sumlocal són gairebé iguals. Si haguéssim d'aplicar a la variable sum diferents operacions (/, +, - o *), utilitzaríem la variant de sumlocal ja que el reductions no ens permetria fer-ho.
