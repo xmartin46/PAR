@@ -756,6 +756,7 @@ In this part we have different ways of computing the pi number, each with a diff
 
 \begin{figure}[H]
 	\begin{lstlisting}
+	double sumlocal = 0.0;
 	#pragma omp parallel private(x) firstprivate(sumlocal) num_threads(num_threads)
     {
         #pragma omp for 
