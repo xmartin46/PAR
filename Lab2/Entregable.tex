@@ -308,13 +308,59 @@ The execution is not correct because some iterations are not executed. The main 
 
 \hfill
 
+The problem with this program is that everyone accesses the same variable to read and write.
+This causes that some times two threads read the same x, after this, each one executes its sum, and when writing the results one thread overwrittes the result of the other thread.
+
+\hfill
+
 \textbf{2. Add two alternative directives to make it correct. Explain why they make the execution
 correct.}
+
+\hfill
+
+To solve this, we have proposed two solutions, a very drastic that would eventually turn the program into sequential:
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel for schedule(dynamic,1) private(i) shared(x)
+		for (i=0; i < N; i++) {
+			#pragma omp atomic
+			x++;
+		}
+	\end{lstlisting}
+	
+	\caption{Version 1 of the 1.datarace.c}
+\end{figure}
+
+Since as in each iteration of the loop, it should be expected that we have to wait for the addition of the sum, threads wouldn't work in parallel.
+
+The second solution consisted of applying a reduction in x.
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	#pragma omp parallel for schedule(dynamic,1) private(i) reduction(+:x)
+		for (i=0; i < N; i++) {
+			x++;
+		}
+	\end{lstlisting}
+	
+	\caption{Version 2 of the 1.datarace.c}
+\end{figure}
+
+In this second solution, each thread will compute its own sum of x.
+When all the threads finish, it will be done the sum of each thread and it will be saved in the public variable sum.
 
 \subsubsection{2.barrier.c}
 
 \textbf{1. Can you predict the sequence of messages in this program? Do threads exit from the barrier
 in any specific order?}
+
+\hfill
+
+In this program, will be printed 4 lines saying the number of each thread and how long it will be doing a sleep.
+Then when the sleep of each thread finishes, a line will be printed telling us which thread has been woken up.
+Finally, 4 messages identified by each thread will appear, saying that everyone has already woken up.
+We have been able to observe that the threads after the barrier do not appear in any specific order.
 
 \subsubsection{3.ordered.c}
 
@@ -322,8 +368,18 @@ in any specific order?}
 
 \hfill
 
+The threads are distributed as iterations as they are created, so the before appears in a messy way, since each thread may take a different time to get to the first print.
+However, in the case of the second print, having (\#pragma omp ordered) forces the print to be done in the same order in which iterations are distributed in the for, making the prints in an ordered way.
+
+\hfill
+
 \textbf{2. How can you ensure that a thread always executes two consecutive iterations in order during
 the execution of the ordered part of the loop body?}
+
+\hfill
+
+Adding the schedule(dynamic,2) clause, each thread will have 2 consecutive iterations of the for.
+So with the order clause, the iterations will be done in an ordered way and each thread will have each time two consecutive iterations.
 
 \subsection{Tasks}
 
@@ -345,8 +401,6 @@ The program has 0 parallel regions, so only 1 thread is executing the code. Thus
 
 \textbf{2. Modify the code so that the program correctly executes in parallel, returning the same answer that the sequential execution would return.}
 
-\textbf{FALTA PARLAAAAAAAAAAAAAAAAAAAR DEL PER QUE HEM FET AIXO!?!?!?!?!?}
-
 \begin{lstlisting}
 	#pragma omp parallel
     #pragma omp single
@@ -358,6 +412,10 @@ The program has 0 parallel regions, so only 1 thread is executing the code. Thus
           p = p->next;
     }
 \end{lstlisting}
+
+First of all we add (\#pragma omp parallel) over the loop, in order to make the execution parallel. But, this feature make that each thread creates all the tasks, giving us a wrong result.
+The solution has been adding a (\#pragma omp simple) between the parrallel and the while, and adding the clause firstprivate(p) in the task creation.
+This makes that only the first thread creates all the tasks with saving a copy of each p value for each task, afterwards all the threads can compute indiidually each task as soon as are created.
 
 \subsubsection{3.synchtasks.c}
 
