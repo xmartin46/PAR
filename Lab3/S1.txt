@@ -1,0 +1,87 @@
+1.
+mandel
+Obtenim els següents resultats:
+	./mandel
+	Mandelbrot program
+	center = (0, 0), size = 2
+	maximum iterations = 1000
+
+	Total execution time: 0.341654s
+	
+	./mandel -c -0.737 0.207 -s 0.01 -i 100000
+	Mandelbrot program
+	center = (-0.737, 0.207), size = 0.01
+	maximum iterations = 100000
+
+	Total execution time: 5.590117s
+
+mandeld
+Obtenim els següents resultats:
+	./mandeld
+	Mandelbrot program
+	center = (0, 0), size = 2
+	maximum iterations = 1000
+
+	Total execution time: 0.369783s
+	
+	./mandeld -c -0.737 0.207 -s 0.01 -i 100000
+	Mandelbrot program
+	center = (-0.737, 0.207), size = 0.01
+	maximum iterations = 100000
+
+	Total execution time: 7.751053s
+
+
+2. point
+mandel-tar
+En aquest cas la -w és per defecte 8, per tant ha de fer el càlcul de 64 iteracions.
+Podem observar que cada punt és independent a la resta, per tant podriem paral·lelitzar aquesta zona.
+
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 1000
+
+Total execution time: 0.009655s
+
+
+
+mandeld-tar
+Aquest cop podem observar que totes les iteracions s'han tornat en sèrie.
+Mirant el tareador (botò dret a un node, data view, edges-out, Real dependency) hem observat que la dependencia prové de la variable X11_COLOR_fake.
+Observant el codi hem vist que si executem el codi amb mode _DISPLAY_ (mandeld), entrem en aquesta zona:
+
+#if _DISPLAY_
+            /* Scale color and display point  */
+            long color = (long) ((k-1) * scale_color) + min_color;
+            if (setup_return == EXIT_SUCCESS) {
+                XSetForeground (display, gc, color);
+                XDrawPoint (display, win, gc, col, row);
+            }
+            
+Hem suposat que la variable X11_COLOR_fake s'utilitza com a mínim a a una de les dues funcions, XSetForeground o XDrawPoint.
+
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 1000
+
+Total execution time: 0.008508s
+
+
+3. row
+mandel
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 1000
+
+Total execution time: 0.007063s
+
+
+
+
+mandeld
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 1000
+
+Total execution time: 0.007293s
+
