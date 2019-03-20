@@ -115,17 +115,17 @@
 
 \begin{titlepage}
 	\centering
-	%{\scshape\LARGE UNIVERSITAT POLITÈCNICA DE CATALUNYA \par}
+%	{\scshape\LARGE UNIVERSITAT POLITÈCNICA DE CATALUNYA \par}
 	\vspace{1cm}
 	{\scshape\Large UNIVERSITAT POLITECNICA DE CATALUNYA\par}
 	\vspace{1.5cm}
 	{\huge\bfseries PARALLELISM\par}
 	\vspace{2cm}
-	{\Large\itshape Roger Vilaseca Darne and Xavier Martin Ballesteros\break PAR4110\par}
-	\vfill
 	{\Large\itshape \textbf{Lab 2: Brief tutorial on OpenMP programming model}\par}
 	\vfill
-%	\includegraphics[width=0.25\textwidth]{./images/UPC.png}\par\vspace{1cm}
+	{\Large\itshape Roger Vilaseca Darne and Xavier Martin Ballesteros\break PAR4110\par}
+	\vfill
+	\includegraphics[width=0.25\textwidth]{./images/UPC.png}\par\vspace{1cm}
 	%supervised by\par
 	%Dr.~Mark \textsc{Brown}
 
@@ -145,8 +145,6 @@
   \tableofcontents
 \newpage
 
-\section{Introduction}
-
 % Referència a una equació \ref{eq:area}).
 % Referència a una secció \ref{sec:nada}
 % Referència a una cita \cite{Cd94}.
@@ -165,18 +163,19 @@ If the program is executed with the given code, we see 24 times the message "Hel
 
 \textbf{2. Without changing the program, how to make it to print 4 times the "Hello World!" message?}
 
-We can change the number of threads to execute the code with the command \textbf{OMP\_NUM\_THREADS=4 ./1.hello}. This will execute the program 1.hello.c using only 4 threads.
+We can change the number of threads to execute the code with the command \textbf{OMP\_NUM\_THREADS=4 ./1.hello}. This will execute the program 1.hello.c using only 4 threads. Thus, only 4 threads will output the "Hello World!" message.
 
 \subsubsection{2.hello.c}
 
 \textbf{1. Is the execution of the program correct? (i.e., prints a sequence of "(Thid) Hello (Thid)
 world!" being Thid the thread identifier). If not, add a data sharing clause to make it correct?}
-\textbf{TORNAR A REPASSSSSSSSSSAR}!!!!!!!!!!!!!!!!!!!!!!!!
-The execution of the program is not correct. This is because there is no flow control inside the parallel region, so the 8 threads execute at the same time the code inside this region. Consequently, there may be some prints that are not ordered. It also may occur that in the same line appears "(Thread X) Hello (Thread Y) Hello..." without the second part of the print.
 
-In order to make it correct, we have to add the \textbf{critical} clause as shown below. This clause specifies that code inside its region is executed by one thread at a time.
+The execution of the program is not correct because there is no flow control inside the parallel region, so the 8 threads execute at the same time the code inside this region. Consequently, in the same line may appear "(Thread X) Hello (Thread Y) Hello..." without the second part of the print (Figure \ref{fig:bad_code}).
 
-\begin{lstlisting}
+In order to make it correct, we have to add the \textbf{critical} clause as shown below. This clause specifies that code inside its region is executed by one thread at a time. The correct output is shown in Figure \ref{fig:good_code}.
+
+\begin{figure}[H]
+	\begin{lstlisting}
 	#pragma omp parallel num_threads(8)
 	#pragma omp critical
 	{
@@ -184,7 +183,45 @@ In order to make it correct, we have to add the \textbf{critical} clause as show
 	    printf("(%d) Hello ",id);
 	    printf("(%d) world!\n",id);
 	}
+	\end{lstlisting}
+	\caption{Modified code of 2.hello.c.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{minipage}[b]{0.49\linewidth}
+
+\begin{lstlisting}
+	(0) Hello (0) world!
+	(1) Hello (2) world!
+	(4) Hello (6) Hello (6) world!
+	(5) Hello (5) world!
+	(2) Hello (7) Hello (5) world!
+	(5) world!
+	(6) world!
+	(3) Hello (5) world!
 \end{lstlisting}
+
+\caption{Output of the original version of the code.}
+\label{fig:bad_code}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.46\linewidth}
+
+\begin{lstlisting}
+	(0) Hello (0) world!
+	(4) Hello (4) world!
+	(3) Hello (3) world!
+	(6) Hello (6) world!
+	(7) Hello (7) world!
+	(1) Hello (1) world!
+	(2) Hello (2) world!
+	(5) Hello (5) world!
+\end{lstlisting}
+
+\caption{Output of the modified version of the code.}
+\label{fig:good_code}
+\end{minipage}
+\end{figure}
 
 \hfill
 
@@ -194,7 +231,7 @@ The lines are not always printed in the same order. This is because threads do n
 
 \subsubsection{3.how many.c}
 
-\textbf{Assuming the OMP NUM THREADS variable is set to 8 with "export\_OMP\_NUM\_THREADS=8"}
+\textbf{Assuming the OMP\_NUM\_THREADS variable is set to 8 with "export OMP\_NUM\_THREADS=8"}
 
 \hfill
 
@@ -216,9 +253,15 @@ Using 8 threads, the different "Hello world..." messages appear a total of 20 ti
 
 Outside the parallel region the function returns 1 because, as we are in a sequential part, there is only 1 thread executing the code.
 
-There are several parallel regions (3 with \#pragma omp parallel and 1 with \#pragma omp parallel num\_threads(4)). The first region returns 8 threads, because we set the number of threads to use to 8. The second region is inside the first loop of the main. Before calling \#pragma omp parallel, we set the number of threads to \textit{i}, which is the variable used in the for. This for is executed 2 times. In the first one, we set the number of threads to 2, so the value will be 2 threads. In the next loop iteration, the \textit{i} value is 3, so we will have 3 threads executing the parallel region. In the next parallel region, we set with \textit{num\_threads(4)} the number of threads to execute the code, so the value in this region will be 4. Finally, the last parallel region will be executed by 3 threads. Altough we previously set the number of threads to be 8, we changed later this value inside the loop. The last value was 3, so in this new region the value will still be 3.
+There are several parallel regions (3 with \#pragma omp parallel and 1 with \#pragma omp parallel num\_threads(4)). The first region returns 8 threads, because we set the number of threads to use to 8.
 
-\subsubsection{4.data sharing.c}
+The second region is inside the first loop of the main. Before calling \#pragma omp parallel, we set the number of threads to \textit{i}, which is the variable used in the for. This for is executed 2 times. In the first one, we set the number of threads to 2, so the value will be 2 threads. In the next loop iteration, the \textit{i} value is 3, so we will have 3 threads executing the parallel region.
+
+In the next parallel region, we set with \textit{num\_threads(4)} the number of threads to execute the code, so the value in this region will be 4.
+
+Finally, the last parallel region will be executed by 3 threads. Altough we previously set the number of threads to be 8, we changed later this value inside the loop. The last value was 3, so in this new region the value will still be 3.
+
+\subsubsection{4.data\_sharing.c}
 
 \textbf{1. Which is the value of variable x after the execution of each parallel region with different datasharing attributes (shared, private, firstprivate and reduction)? Is that the value you would expect? (Execute several times if necessary)}
 
@@ -230,17 +273,27 @@ The next attribute, \textbf{firstprivate(x)}, is very similar to private. The ma
 
 The last attribute is \textbf{reduction(+:x)}. It specifies that variable \textit{x} that is private to each thread is the subject of a reduction operation at the end of the parallel region. It is initialized to the neutral value of the operation (sum in this case). The value is what we expected, 125 because the variable is private for each thread.
 
+\begin{figure} [H]
+	\begin{lstlisting}
+	After first parallel (shared) x is: 107
+	After second parallel (private) x is: 5
+	After third  parallel (firstprivate) x is: 5
+	After fourth parallel (reduction) x is: 125
+	\end{lstlisting}
+	\caption{Output of 4.data\_sharing.c.}
+\end{figure}
+
 \subsection{Loop parallelism}
 
 \subsubsection{1.schedule.c}
 
 \textbf{1. Which iterations of the loops are executed by each thread for each schedule kind?}
 
-In \textbf{schedule(static)}, the iterations are divided by the number of threads. In this case, there will be 4 blocks of the same size (it may occur that the last block does not have the same size). The first block will correspond to the first thread, and successively. Thread 0 will execute block 0 (0-2 iterations), thread 1 block 1 (3-5 iterations), thread 2 will execute block 2 (6-8 iterations) and thread 3 will execute block 4 (9-11 iterations).
+In \textbf{schedule(static)}, the iterations are divided by the number of threads. In this case, there will be 4 blocks of the same size (it may occur that the last block does not have the same size). The first block will correspond to the first thread, and successively. Thread 0 will execute block 0 (0-2 iterations), thread 1 will execute block 1 (3-5 iterations), thread 2 will execute block 2 (6-8 iterations) and thread 3 will execute block 4 (9-11 iterations).
 
 We can enforce to create blocks of 2 iterations with \textbf{schedule(static, 2)}. Thread 0 will execute blocks 0 (0-1 iterations) and 4 (8-9 iterations). Thread 1 will execute 1 (2-3 iterations) and 5 (10-11 iterations). Thread 2, block 2 (4-5 iterations) and thread 3, block 3 (6-7 iterations).
 
-The \textbf{schedule(dynamic, 2)} divides the iterations in blocks of 2 iterations, but it distributes the blocks in a different way than static. It gives the next block to execute to the first thread to end its work. This is a better solution, because it is possible that some thread has a lot of work in a block and has to execute another one. With dynamic, the other threads will execute that block. We cannot say which threads will execute each block, but we can say that for each block, the thread will execute two iterations of the loop.
+The \textbf{schedule(dynamic, 2)} divides the iterations in blocks of 2 iterations, but it distributes the blocks in a different way than static. It gives the next block to execute to the first thread to end its work. This is a better solution, because it is possible that some thread has a lot of work in a block and it also has to execute another one. With dynamic, the other free threads will execute that second block, finishing the execution of the loop earlier. We cannot say which threads will execute each block, but we can ensure that for each block, the thread will execute two iterations of the loop.
 
 The \textbf{schedule(guided, 2)} gives n/p iterations to the first loop, (n - n/p)/p iterations to the next loop and so on until blocks have 2 iterations. Then, it starts to work as a dynamic schedule.
 
@@ -250,26 +303,49 @@ The \textbf{schedule(guided, 2)} gives n/p iterations to the first loop, (n - n/
 
 In this code, two threads will execute the first loop while the other two threads execute the second loop. A possible sequence of prints would be the following:
 
-\begin{lstlisting}
-	Loop 1: thread (0) gets iteration 0
-	Loop 1: thread (3) gets iteration 1
-	Loop 2: thread (1) gets iteration 2
-	Loop 2: thread (2) gets iteration 3
-\end{lstlisting}
+\begin{figure}[H]
+	\begin{lstlisting}
+		Loop 1: thread (0) gets iteration 0
+		Loop 1: thread (3) gets iteration 1
+		Loop 2: thread (1) gets iteration 2
+		Loop 2: thread (2) gets iteration 3
+	\end{lstlisting}
+	\caption{Possible output for 2.nowait.c.}
+\end{figure}
 
 \hfill
 
 \textbf{2. How does the sequence of printf change if the nowait clause is removed from the first for
 directive?}
 
-Now, while two threads are executing the first loop, the other two will remain doing nothing. Once they end with the loop, only 2 threads will enter in the second loop. As the schedule type is dynamic, we do not know which two threads will execute the for loops.
+Now, while two threads are executing the first loop, the other two will remain doing nothing. Once they end with the first loop, only 2 threads will enter in the second loop. As the schedule type is dynamic, we do not know which two threads will execute the for loops.
+
+\begin{figure}[H]
+	\begin{lstlisting}
+	Loop 1: thread (0) gets iteration 0
+	Loop 1: thread (1) gets iteration 1
+	Loop 2: thread (0) gets iteration 2
+	Loop 2: thread (1) gets iteration 3
+	\end{lstlisting}
+	\caption{Possible output for 2.nowait.c modified.}
+\end{figure}
 
 \hfill
 
 \textbf{3. What would happen if dynamic is changed to static in the schedule in both loops? (keeping
 the nowait clause)}
 
-If we change it to static, threads 0 and 1 will execute the first and the second for loop because threads 2 and 3 will not receieve any work.
+If we change it to static, threads 0 and 1 will execute the first and the second for loop because threads 2 and 3 will not receieve any work even though we have the nowait clauses.
+
+\begin{figure}[H]
+	\begin{lstlisting}
+		Loop 1: thread (0) gets iteration 0
+		Loop 1: thread (1) gets iteration 1
+		Loop 2: thread (0) gets iteration 2
+		Loop 2: thread (1) gets iteration 3
+	\end{lstlisting}
+	\caption{Output for 2.nowait.c modified.}
+\end{figure}
 
 \subsubsection{3.collapse.c}
 
@@ -277,7 +353,8 @@ If we change it to static, threads 0 and 1 will execute the first and the second
 
 The \textbf{collapse} clause specifies how many loops in a nested loop should be collapsed into one large iteration space and divided according to the schedule clause. In this code, there is no schedule clause, so it will be treated as static.
 
-\begin{lstlisting}
+\begin{figure}[H]
+	\begin{lstlisting}
 	Thread 0: 00, 01, 02, 03
 	Thread 1: 04, 10, 11
 	Thread 2: 12, 13, 14
@@ -286,9 +363,9 @@ The \textbf{collapse} clause specifies how many loops in a nested loop should be
 	Thread 5: 31, 32, 33
 	Thread 6: 34, 40, 41
 	Thread 7: 42, 43, 44
-\end{lstlisting}
-
-Where 00 means i = 0 and j = 0, 01 means i = 0 and j = 1...
+	\end{lstlisting}
+	\caption{Organization of the iterations in the threads. Being i the index for the first loop and j the index for the second loop, 00 means i = 0 and j = 0, 01 means i = 0 and j = 1...}
+\end{figure}
 
 \hfill
 
@@ -306,19 +383,15 @@ The execution is not correct because some iterations are not executed. The main 
 
 \textbf{1. Is the program always executing correctly?}
 
-\hfill
-
 The problem with this program is that everyone accesses the same variable to read and write.
-This causes that some times two threads read the same x, after this, each one executes its sum, and when writing the results one thread overwrittes the result of the other thread.
+This causes that some times two threads read x at the same time and each one executes its sum. Then, when writing the results one thread overwrites the result of the other thread.
 
 \hfill
 
 \textbf{2. Add two alternative directives to make it correct. Explain why they make the execution
 correct.}
 
-\hfill
-
-To solve this, we have proposed two solutions, a very drastic that would eventually turn the program into sequential:
+To solve this, we have proposed two solutions. The first one is very drastic because it turns the program into sequential:
 
 \begin{figure}[H]
 	\begin{lstlisting}
@@ -332,13 +405,14 @@ To solve this, we have proposed two solutions, a very drastic that would eventua
 	\caption{Version 1 of the 1.datarace.c}
 \end{figure}
 
-Since as in each iteration of the loop, it should be expected that we have to wait for the addition of the sum, threads wouldn't work in parallel.
+As in each iteration of the loop each thread has to wait that the atomic region is free for the addition of the sum, threads wouldn't work in parallel.
 
-The second solution consisted of applying a reduction in x.
+The second solution consists of applying a reduction in x.
 
 \begin{figure}[H]
 	\begin{lstlisting}
-	#pragma omp parallel for schedule(dynamic,1) private(i) reduction(+:x)
+	#pragma omp parallel for schedule(dynamic,1) private(i)
+											     reduction(+:x)
 		for (i=0; i < N; i++) {
 			x++;
 		}
@@ -347,8 +421,8 @@ The second solution consisted of applying a reduction in x.
 	\caption{Version 2 of the 1.datarace.c}
 \end{figure}
 
-In this second solution, each thread will compute its own sum of x.
-When all the threads finish, it will be done the sum of each thread and it will be saved in the public variable sum.
+Now, each thread will compute its own sum of x.
+When all the threads finish, it will be computed the public x value using the precomputed sum of each thread.
 
 \subsubsection{2.barrier.c}
 
@@ -357,29 +431,24 @@ in any specific order?}
 
 \hfill
 
-In this program, will be printed 4 lines saying the number of each thread and how long it will be doing a sleep.
+In this program will be printed 4 lines saying the number of each thread and how long it will be doing a sleep.
 Then when the sleep of each thread finishes, a line will be printed telling us which thread has been woken up.
 Finally, 4 messages identified by each thread will appear, saying that everyone has already woken up.
-We have been able to observe that the threads after the barrier do not appear in any specific order.
+
+We have been able to observe that the threads after the barrier do not appear in any specific order. However, before the barrier we can observe that the messages are ordered, because thread 0 will sleep less than 1, 2 and 3, thread 1 will sleep less than 2 and 3...
 
 \subsubsection{3.ordered.c}
 
 \textbf{1. Can you explain the order in which the "Outside" and "Inside" messages are printed?}
 
-\hfill
-
-The threads are distributed as iterations as they are created, so the before appears in a messy way, since each thread may take a different time to get to the first print.
-However, in the case of the second print, having (\#pragma omp ordered) forces the print to be done in the same order in which iterations are distributed in the for, making the prints in an ordered way.
+As the schedule clause is dynamic, the first thread created will be the first to execute the first iteration of the loop, and so on. As a consequence, the before messages appear in a messy way. However, in the case of the inside print, having "\#pragma omp ordered" forces the prints to be done in the same order in which iterations are distributed in the for, making the prints in an ordered way (thread X with i = 0 will print the first inside message even though it has not been the first to output the before message).
 
 \hfill
 
 \textbf{2. How can you ensure that a thread always executes two consecutive iterations in order during
 the execution of the ordered part of the loop body?}
 
-\hfill
-
-Adding the schedule(dynamic,2) clause, each thread will have 2 consecutive iterations of the for.
-So with the order clause, the iterations will be done in an ordered way and each thread will have each time two consecutive iterations.
+Adding the schedule(dynamic, 2) clause, each thread will have 2 consecutive iterations of the for. With the order clause, the iterations will be done in an ordered way and each thread will execute each time two consecutive iterations.
 
 \subsection{Tasks}
 
@@ -401,7 +470,8 @@ The program has 0 parallel regions, so only 1 thread is executing the code. Thus
 
 \textbf{2. Modify the code so that the program correctly executes in parallel, returning the same answer that the sequential execution would return.}
 
-\begin{lstlisting}
+\begin{figure}[H]
+	\begin{lstlisting}
 	#pragma omp parallel
     #pragma omp single
     while (p != NULL) {
@@ -411,11 +481,14 @@ The program has 0 parallel regions, so only 1 thread is executing the code. Thus
           processwork(p);
           p = p->next;
     }
-\end{lstlisting}
+	\end{lstlisting}
+	\caption{Modified version of 2.fibtasks.c.}
+\end{figure}
 
-First of all we add (\#pragma omp parallel) over the loop, in order to make the execution parallel. But, this feature make that each thread creates all the tasks, giving us a wrong result.
-The solution has been adding a (\#pragma omp simple) between the parrallel and the while, and adding the clause firstprivate(p) in the task creation.
-This makes that only the first thread creates all the tasks with saving a copy of each p value for each task, afterwards all the threads can compute indiidually each task as soon as are created.
+
+First of all we add "\#pragma omp parallel" over the loop in order to make the execution parallel. However, this feature make that each thread creates all the tasks, giving us a wrong result.
+The solution has been adding a "\#pragma omp simple" between the parallel and the while, and adding the clause firstprivate(p) in the task creation.
+This makes that only the first thread creates all the tasks and each task has copy of the p value. Afterwards, all the threads can compute individually each task as soon as are created and the threads are free.
 
 \subsubsection{3.synchtasks.c}
 
@@ -428,11 +501,11 @@ The \textbf{depend} clause establish dependences, only between tasks, on the sch
 	\item \textbf{out} and \textbf{inout}: The task has to wait untill all previously generated sibling tasks that reference at least one of the list items in an \textit{in}, \textit{out} or \textit{inout} list end their execution.
 \end{itemize}
 
-In the given code, the first task has an \textbf{out} depende type, with only the variable \textit{a} in its list. As there are no previously generated sibling tasks, this first task is not dependent of any task. Tasks 2 and 3 are not dependent of any previously generated sibling task. Although there exist some previously sibling tasks, none of them has variables \textit{b} or \textit{c} in its lists.
+In the given code, the first task has an \textbf{out} depende type, with only the variable \textit{a} in its list. As there are no previously generated sibling tasks, this first task is not dependent of any task. Tasks 2 and 3 are not dependent of any previously generated sibling task because, although there exist some previously sibling tasks, none of them has variables \textit{b} or \textit{c} in its lists.
 
 On the other hand, task 4 has an \textbf{in} dependence type with variables \textit{a} and \textit{b} and an \textbf{out} dependence type with variable \textit{d}. Thus, this task will have to wait until tasks 1 and 2 end their execution.
 
-Finally, task 5 has an \textbf{in} dependence type with variables \textit{c} and \textit{d}. This taks will depend from tasks 3 and 4. Hence, the task dependence graph is the following:
+Finally, task 5 has an \textbf{in} dependence type with variables \textit{c} and \textit{d}. This task will depend from tasks 3 and 4. Hence, the task dependence graph is the following:
 
 \begin{figure}[H]
   \centering
@@ -533,7 +606,7 @@ Figures \ref{fig:original_code} and \ref{fig:modified_code} show the output when
 
 The \textbf{grainsize(grain-size)} clause controls how many loop iterations are assigned to each created task. The number of loop iterations assigned to each created task is greater than or equal to the minimum of the value of grain-size and the total number of iterations.
 
-We though that when using the \textbf{grainsize(5)} clause there will be created 3 tasks, the first two executing 5 iterations and the other one 2. In reality, there are only 2 tasks created, each one executing 6 iterations. This is because the number 5 does not mean that each task has 5 iterations but a minimum of 5, unless there remain less than 5 iterations.
+We though that when using the \textbf{grainsize(5)} clause there will be created 3 tasks, the first two executing 5 iterations and the other one 2. In reality, there are only 2 tasks created, each one executing 6 iterations. This is because the number 5 does not mean that each task has 5 iterations but a minimum of 5.
 
 The \textbf{num\_tasks(num-tasks)} clause creates as many tasks as the minimum of num-tasks and the number of loop iterations.
 
@@ -654,19 +727,34 @@ Now, there are created the same number of tasks, and each one does the same itre
 
 \subsection{Synchronisation overheads}
 
-In this part we have different ways of computing the pi number, each with a different method of synchronization of the sum variable.
+In this section we have different ways of computing the pi number, each using a different synchronization method for the sum variable. Although all the codes compute the correct value of the pi number, some of them are slower than the others. We have also used the \textit{Paraver} to see the synchronization between threads.
 
-\subsubsection{pi\_sequential}
+We will see an improvement in the usage of the potential parallelism, in decreasing the execution time and the overheads. As we achieved to reduce the overheads in the parallel region, we will see that the traces in the \textit{Paraver} will end up being very small in the parallel region.
+
+\subsubsection{pi\_sequential.c}
+
+The code in \textit{pi\_sequential.c} makes no profit about the potential parallelism it has to compute the pi value. It only executes the code in sequential. The values we obtained are shown below.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Wall clock execution time  = 1.793329954 seconds
 	Value of pi = 3.1415926536		
 	\end{lstlisting}
-	\caption{Output of pi\_sequential}
+	\caption{Output of pi\_sequential.}
 \end{figure}
 
-\subsubsection{pi\_omp\_critical}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_sequential}
+  \caption{Execution flow of pi\_sequential.c.}
+  \label{pi_sequential}
+\end{figure}
+
+The execution time value will be very useful to do comparisons with the different synchronization methods.
+
+\subsubsection{pi\_omp\_critical.c}
+
+The code given in \textit{pi\_omp\_critical.c} makes use of the \textbf{critical} method. Thus, only 1 thread can execute at the same time the critical region. Every time one thread enters the region it executes one synchronization operation (\textit{omp\_set\_lock(...))} and each time any threads leaves the region it executes another syncrhonization operation (\textit{omp\_unset\_lock(...))}. Hence, the total number of synchronization operations is $2 * num\_steps $.
 
 \begin{figure}[H]
 	\begin{lstlisting}
@@ -681,40 +769,63 @@ In this part we have different ways of computing the pi number, each with a diff
     }
 	\end{lstlisting}
 	
-	\caption{Parallel code (pi\_omp\_critical)}
+	\caption{Parallel code (pi\_omp\_critical).}
 \end{figure}
 
-\paragraph{1 thread}
+Using the critical method, the execution time of this version with 1 thread takes around 2.5s more than the sequential execution. We think that this is because each time we want to update the sum variable we have to \textit{omp\_set\_lock(critical\_region)} and \textit{ omp\_unset\_lock(critical\_region)}. These two calls with a big number of iterations ends up being a significant overhead. Figure \ref{pi_omp_critical_1_zoom} shows the synchronization overheads.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 4.319360s
 	Number pi after 100000000 iterations = 3.141592653590426		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_critical with 1 thread}
+	\caption{Output of pi\_omp\_critical with 1 thread.}
 \end{figure}
 
-\paragraph{4 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_critical_1_zoom}
+  \caption{Execution flow of pi\_omp\_critical.c with 1 thread (zoomed).}
+  \label{pi_omp_critical_1_zoom}
+\end{figure}
+
+From 2 threads, the execution time increases a lot because if we execute the code with only 1 thread, this thread does not have to synchronizate with any other thread, so when it ends one iteration it can start the next one. However, if we have more than one thread, the threads have to synchronizate in order that only 1 thread executes the critical region. These synchronizations increase a lot the overhead. Thus, from 2 threads, the execution time increases around 30s. Figures \ref{piompcritical4} and \ref{piompcritical8} show the output of the execution with 4 and 8 threads and figures \ref{pi_omp_critical_4_zoom} and \ref{pi_omp_critical_8_zoom} shows the synchronization flow operations.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 38.100659s
 	Number pi after 100000000 iterations = 3.141592653590203		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_critical with 4 threads}
+	\caption{Output of pi\_omp\_critical with 4 threads.}
+	\label{piompcritical4}
 \end{figure}
 
-\paragraph{8 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_critical_4_zoom}
+  \caption{Execution flow of pi\_omp\_critical.c with 4 threads (zoomed).}
+  \label{pi_omp_critical_4_zoom}
+\end{figure}
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 34.410379s
 	Number pi after 100000000 iterations = 3.141592653589771		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_critical with 8 threads}
+	\caption{Output of pi\_omp\_critical with 8 threads.}
+	\label{piompcritical8}
 \end{figure}
 
-\subsubsection{pi\_omp\_atomic}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_critical_8_zoom}
+  \caption{Execution flow of pi\_omp\_critical.c with 8 threads (zoomed).}
+  \label{pi_omp_critical_8_zoom}
+\end{figure}
+
+\subsubsection{pi\_omp\_atomic.c}
+
+This code can be found in \textit{pi\_omp\_atomic.c}. It uses the \textbf{atomic} method. With this, only 1 thread will be able to execute the sum part although the other threads can compute $4.0/(1.0+x*x)$ in parallel. As we have to lock and unlock that region, the total number of synchronization operations is again $2 * num\_steps$.
 
 \begin{figure}[H]
 	\begin{lstlisting}
@@ -729,44 +840,72 @@ In this part we have different ways of computing the pi number, each with a diff
     }
 	\end{lstlisting}
 	
-	\caption{Parallel code (pi\_omp\_atomic)}
+	\caption{Parallel code (pi\_omp\_atomic).}
 \end{figure}
 
-\paragraph{1 thread}
+The execution time of the code using the atomic clause and 1 thread does not increase with respect to the sequential execution. We think that this happens because the overhead of this clause is smaller than the critical one (in figure \ref{pi_omp_atomic_1_zoom} we cannot see any syncrhonization operation in red). Moreover, when it ends the execution of one iteration it does not have to wait until another thread ends its execution.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 1.794664s
 	Number pi after 100000000 iterations = 3.141592653590426		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_atomic with 1 thread}
+	\caption{Output of pi\_omp\_atomic with 1 thread.}
 \end{figure}
 
-\paragraph{4 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_atomic_1_zoom}
+  \caption{Execution flow of pi\_omp\_atomic.c with 1 thread (zoomed).}
+  \label{pi_omp_atomic_1_zoom}
+\end{figure}
+
+With 4 and 8 threads, the execution time increases a little beacause in each iteration, threads must wait the variable sum to be free. This makes threads to synchronize between them. Consequently, there is a small overhead. Nevertheless, these overheads are smaller than the critical ones because they only lock the region where we read, operate and write the variable sum (in the critical version, it locked the region where we read, operate and write the variable sum and compute the operation $4.0/(1.0+x*x)$).
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 6.201648s
 	Number pi after 100000000 iterations = 3.141592653590225			
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_atomic with 4 threads}
+	\caption{Output of pi\_omp\_atomic with 4 threads.}
+	\label{piompatomic4}
 \end{figure}
 
-\paragraph{8 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_atomic_4_zoom}
+  \caption{Execution flow of pi\_omp\_atomic.c with 4 threads (zoomed).}
+  \label{pi_omp_atomic_4_zoom}
+\end{figure}
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 6.910445s
 	Number pi after 100000000 iterations = 3.141592653589742
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_atomic with 8 threads}
+	\caption{Output of pi\_omp\_atomic with 8 threads.}
+	\label{piompatomic8}
 \end{figure}
 
-\subsubsection{pi\_omp\_reduction}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_atomic_8_zoom}
+  \caption{Execution flow of pi\_omp\_atomic.c with 8 threads (zoomed).}
+  \label{pi_omp_atomic_8_zoom}
+\end{figure}
+
+Figures \ref{piompatomic4} and \ref{piompatomic8} show a big decrease of the execution time with respect to the critical times (34 and 38 to 6 and 7 approximately).
+
+We discussed a lot about the results in \textit{Paraver} (figures \ref{pi_omp_atomic_4_zoom} and \ref{pi_omp_atomic_8_zoom}) because it was not what we think it would appear. What we thinked was that there should be small regions in red (synchronization), regions where only one thread would execute the atomic region while the others wait, but there is only 1 big line in the end (barrier). Our conclusion with this is that \textit{Paraver} cannot make enough zoom to see those small lines, even though they are there.
+
+\subsubsection{pi\_omp\_reduction.c}
+
+The code with the \textbf{reduction} clause can be found in \textit{pi\_omp\_reduction.c}. This new clause will create its own private sum variable initialized to 0 (neutral value of the sum operation). In the end, threads will have to syncrhonize to update securely the public sum variable. Thus, the total number of synchronization will be $2 * \#threads$.
 
 \begin{figure}[H]
 	\begin{lstlisting}
-	#pragma omp parallel private(x) num_threads(num_threads) reduction(+:sum)
+	#pragma omp parallel private(x) num_threads(num_threads)
+								    reduction(+:sum)
     {
         #pragma omp for 
         for (long int i=0; i<num_steps; ++i) {
@@ -777,45 +916,72 @@ In this part we have different ways of computing the pi number, each with a diff
 
 	\end{lstlisting}
 	
-	\caption{Parallel code (pi\_omp\_reduction)}
+	\caption{Parallel code (pi\_omp\_reduction).}
 \end{figure}
 
-\paragraph{1 thread}
+In this case, the execution time with 1 thread gets worse than the sequential time (+0.3s) because it has to create 1 new private variable (sum) and this generates overhead. In the end, the thread has to wait to synchronize with the other threads and write into the public sum variable. As there is only 1 thread, this overhead will be insignificant. We can see this overhead at the end of Figure \ref{pi_omp_reduction_1_zoom}.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 1.831957s
 	Number pi after 100000000 iterations = 3.141592653590426		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_reduction with 1 thread}
+	\caption{Output of pi\_omp\_reduction with 1 thread.}
+	\label{piompreduction1}
 \end{figure}
 
-\paragraph{4 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_reduction_1_zoom}
+  \caption{Execution flow of pi\_omp\_reduction.c with 1 thread (zoomed).}
+  \label{pi_omp_reduction_1_zoom}
+\end{figure}
+
+Using 4 and 8 threads we observe a great improvement. In this version, we make profit of the potential parallelism of the code because each thread will have its own variable sum, making possible that any thread has to remain blocked during the for execution. They will only need synchronization at the end of the for loop to sum all the private sum variables with the public sum variable. Outputs are shown in figures \ref{piompreduction4} and \ref{piompreduction8}.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 0.478957s
 	Number pi after 100000000 iterations = 3.141592653589683			
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_reduction with 4 threads}
+	\caption{Output of pi\_omp\_reduction with 4 threads.}
+	\label{piompreduction4}
 \end{figure}
 
-\paragraph{8 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_reduction_4_zoom}
+  \caption{Execution flow of pi\_omp\_reduction.c with 4 threads (zoomed).}
+  \label{pi_omp_reduction_4_zoom}
+\end{figure}
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 0.261439s
 	Number pi after 100000000 iterations = 3.141592653589815
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_reduction with 8 threads}
+	\caption{Output of pi\_omp\_reduction with 8 threads.}
+	\label{piompreduction8}
 \end{figure}
 
-\subsubsection{pi\_omp\_sumlocal}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_reduction_8_zoom}
+  \caption{Execution flow of pi\_omp\_reduction.c with 8 threads (zoomed).}
+  \label{pi_omp_reduction_8_zoom}
+\end{figure}
+
+In figures \ref{pi_omp_reduction_4_zoom} and \ref{pi_omp_reduction_8_zoom} we can see what we said before. During the execution of the loop, there is no synchronization (continuous blue line). However, at the end of the loop there is a synchronization operation to update correctly the public sum variable.
+
+\subsubsection{pi\_omp\_sumlocal.c}
+
+The code can be found in \textit{pi\_omp\_sumlocal}. This version simulates the reduction clause without using it. To achieve it, it is created a public variable (sumlocal) that is privatized inside the parallel region with the initial value. With this, each thread will have its own sumlocal variable. They will only have to syncrhonize after the for loop, when updating the sum variable. Hence, the total number of syncrhonization operations is $2 * \#threads$.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	double sumlocal = 0.0;
-	#pragma omp parallel private(x) firstprivate(sumlocal) num_threads(num_threads)
+	#pragma omp parallel private(x) firstprivate(sumlocal)
+									num_threads(num_threads)
     {
         #pragma omp for 
         for (long int i=0; i<num_steps; ++i) {
@@ -829,37 +995,54 @@ In this part we have different ways of computing the pi number, each with a diff
 
 	\end{lstlisting}
 	
-	\caption{Parallel code (pi\_omp\_sumlocal)}
+	\caption{Parallel code (pi\_omp\_sumlocal).}
 \end{figure}
 
-\paragraph{1 thread}
+The outputs and execution flows are the same than in the reduction code. This reinforce what we said about that this and the reduction codes are the same using different clauses.
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 1.832351s
 	Number pi after 100000000 iterations = 3.141592653590426		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_sumlocal with 1 thread}
+	\caption{Output of pi\_omp\_sumlocal with 1 thread.}
 \end{figure}
 
-\paragraph{4 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_sumlocal_1_zoom}
+  \caption{Execution flow of pi\_omp\_sumlocal.c with 1 thread (zoomed).}
+  \label{pi_omp_sumlocal_1_zoom}
+\end{figure}
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 0.482865s
 	Number pi after 100000000 iterations = 3.141592653589683					
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_sumlocal with 4 threads}
+	\caption{Output of pi\_omp\_sumlocal with 4 threads.}
 \end{figure}
 
-\paragraph{8 threads}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_sumlocal_4_zoom}
+  \caption{Execution flow of pi\_omp\_sumlocal.c with 4 thread (zoomed).}
+  \label{pi_omp_sumlocal_4_zoom}
+\end{figure}
 
 \begin{figure}[H]
 	\begin{lstlisting}
 	Total execution time: 0.261369s
 	Number pi after 100000000 iterations = 3.141592653589815		
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_sumlocal with 8 threads}
+	\caption{Output of pi\_omp\_sumlocal with 8 threads.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./images/pi_omp_sumlocal_8_zoom}
+  \caption{Execution flow of pi\_omp\_sumlocal.c with 8 thread (zoomed).}
+  \label{pi_omp_sumlocal_8_zoom}
 \end{figure}
 
 \subsection{Thread creation and termination}
@@ -896,19 +1079,19 @@ The order of magnitud of the overhead generated in the threads creation is in mi
 	23      3.0811          0.1340
 	24      3.7695          0.1571
 	\end{lstlisting}
-	\caption{Output of pi\_omp\_parallel.c (execution in queue)}
+	\caption{Output of pi\_omp\_parallel.c (execution in queue).}
 	\label{piompparallel}
 \end{figure}
 
 On the one hand, we see that the bigger the number of threads used, the bigger the overhead. This is because we have to create and terminate more threads.
 
-On the other hand, the overhead per thread decreases as we increase the number of threads. \textbf{REPASSSSSSSSSSSSSSSSSSSSSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR}. We think that this may happen because the task of computing the pi number if bigger than the creation and termination overheads, so adding more threads will still take less time than the pi task. Consequently, the total time in the parallel region will remain constant and this number divided by a bigger number gives a smaller number. We think that if we execute the code with a sufficient number of threads, in the end, the thread overheads would pass the task time and the overhead per thread would begun to increase a little.
+On the other hand, the overhead per thread decreases as we increase the number of threads. We think that this may happen because the total time to initialize a parallel region is much greater than the total time to initialize a thread. As a consequence, if we use more threads, the creation and termination overheads are not significant with respect to the time to initialize the parallel region, so these two operations will not increase a lot the value of the total overhead and the overhead per thread will decrease.
 
 \subsection{Task creation and synchronization}
 
 In this section, we studied the overhead when creating tasks and synchronizing them.
 
-The order of magnitude is also in microsecond. It is shown in the first line of Figure \ref{piomptasks}. The execution was using 10 tasks and 1 thread. Doing this, we only have the overhead of the creation (\textbf{task)} and synchronization (\textbf{taskwait}) of the tasks if we compute $T_{par} - T_{seq}$.
+The order of magnitude is also in microsecond. It is shown in the first line of Figure \ref{piomptasks}. The execution was using 10 tasks and 1 thread. If we compute $T_{par} - T_{seq}$, we only have the overhead of the creation (\textbf{task)} and synchronization (\textbf{taskwait}) of the tasks.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -951,12 +1134,6 @@ The order of magnitude is also in microsecond. It is shown in the first line of 
 	\label{piomptasks}
 \end{figure}
 
-The total overhead increases when there are more tasks because we have to create and synchronize more tasks. However, the overhead per tasks is constant due to the fact that each task has the same execution time. As we are only using 1 thread, the tasks cannot be executed in parallel, so adding the time/task and dividing it by 1 more task leaves the result constant.
-
-$ Overhead\_per\_task \approx 0.125 $
-
-$ Overhead = \#tasks * overhead/task $
-
-$ Overhead\_per\_task = Overhead/\#tasks \approx 0.125 $
+The total overhead increases when there are more tasks because we have to create and synchronize more tasks. However, the overhead per tasks is constant due to the fact that each task has the same execution time. As we are only using 1 thread, the tasks cannot be executed in parallel, so adding the time/task and dividing it by 1 more task leaves the result constant. Hence, the creation and synchronization of tasks increases linearly.
 
 \end{document}
