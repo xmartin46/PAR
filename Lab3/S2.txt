@@ -1,0 +1,50 @@
+2.1
+2.
+La imatge es genera correctament. (OMP_NUM_THREADS=1 ./mandeld-omp -i
+10000)
+Mandelbrot program
+center = (0, 0), size = 2)
+maximum iterations = 10000
+Total execution time: 3.292454s
+
+La imatge es genera correctament. (./mandeld -i 10000)
+Mandelbrot program
+center = (0, 0), size = 2)
+maximum iterations = 10000
+Total execution time: 3.070087s
+
+Per la penalització a l'hora de crear i acabar les taskes. Tot i que el critical no afecta perquè només s'executa amb un thred, i ha un petit overhead per fer el lock d'aquella zona.
+
+La imatge es genera correctament. (OMP_NUM_THREADS=8 ./mandeld-omp -i
+10000)
+Mandelbrot program
+center = (0, 0), size = 2)
+maximum iterations = 10000
+Total execution time: 1.185288s
+
+3.
+OMP_NUM_THREADS=1 ./mandel-omp -i 10000 -o
+Mandelbrot program
+center = (0, 0), size = 2)
+maximum iterations = 10000
+Total execution time: 1.451137s
+
+OMP_NUM_THREADS=8 ./mandel-omp -i 10000 -o
+Mandelbrot program
+center = (0, 0), size = 2)
+maximum iterations = 10000
+Total execution time: 1.420195s
+
+Hem canviat els noms dels outputs per mandel-omp-1.out i mandel-omp-8.out respectivament.
+
+Fent: diff mandel-omp-1.out mandel-omp-8.out
+
+No ens ha tornat res, per tant els arxius son iguals.
+
+En els plots podem observar com els temps d'execució disminueixen a mesura que augmenta el nombre de threads. A partir d'un sert nombre de threads a causa dels overheads i sincronitzacions de taskes, aquest temps es torna constant en els plots. Tot i aixi nosaltres creiem que si augmentessim molt el nombre de threads el temps acabaria augmentant.
+
+4.
+Podem observar en el paraver de "instantiation" que només un thread genera les tasques d'una fila i les posa en la pool de taskes. En el "execution" podem observar com els altres threads a mesura que les tasques es van posant a la pool les agafen i les executa.
+
+En total, es creen i s'executen 640000 tasques. Mentre un thread les crea, els altres 7 les executen. En la imatge S2-OMP_TASKS.png es pot observar el que dit. La parallel construct i la single construct s'executen 800 vegades. Ho hem vist obrint la configuració "OMP_parallel_functions.cfg" i "OMP_state_profile.cfg" modificant la taula 2D profile perquè agafi les dades del parallel function i perquè ens retorni el nombre d'instancies podem veure qe per cada thread hi ha 800 instancies. Thus, 800 regions paral·leles.
+

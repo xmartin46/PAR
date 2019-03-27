@@ -85,3 +85,7 @@ maximum iterations = 1000
 
 Total execution time: 0.007293s
 
+4. 
+Com a punt positiu del row hi ha menys overhead de creació i terminació de taskes.
+Com a punt positiu del point les taskes queden més ben repartides, perquè si en una fila hi
+ha moltes zones blanques, en row ho hauria de calcular un sol thread.
