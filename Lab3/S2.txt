@@ -49,4 +49,16 @@ Podem observar en el paraver de "instantiation" que només un thread genera les 
 
 En total, es creen i s'executen 640000 tasques. Mentre un thread les crea, els altres 7 les executen. En la imatge S2-OMP_TASKS.png es pot observar el que dit. La parallel construct i la single construct s'executen 800 vegades. Ho hem vist obrint la configuració "OMP_parallel_functions.cfg" i "OMP_state_profile.cfg" modificant la taula 2D profile perquè agafi les dades del parallel function i perquè ens retorni el nombre d'instancies podem veure qe per cada thread hi ha 800 instancies. Thus, 800 regions paral·leles.
 
-La parallel construct s'executa 1 cop i la singleworksharing construct s'executa un cop per cada thread, tots hi passaràn però només un entrerà. El taskwait s'executa 800 vegades. El nombre de taskes és de 64000.
+La parallel construct s'executa 1 cop i la singleworksharing construct s'executa un cop per cada thread, tots hi passaràn però només un entrerà. El taskwait s'executa 800 vegades.
+El nombre de taskes és de 640000, tan de creades com de executades. El thread 1 crearà totes les taskes, en canvi tots els threads executaran tasks.
+Thr granullarity is always the same. Each task has exactly one iteration of the for.
+
+Now with taskgroup the execution is faster than before. And the pixels are generated with out any specific order.
+
+El taskwait no es necessari ja que les taskes no tenen res a veure unes amb les altres a la hora de calcular. Per tant tan es l'ordre de generacio de les tasques, entre diferents rows. Em observat que ens dona els mateixos resultats amb l'execució anterior. El nombre de taskes creades i executades no varien respecte l'execució anterior. Això es culpa de que la bossa de taskes que té l'omp és limitada, per això arriba un punt que de forma intel·ligent el thread 0 atura la creació de taskes, per executar-ne i així poder disminuir la quantitat total de taskes a la bossa.
+
+
+
+2.2
+
+3. Perquè 
