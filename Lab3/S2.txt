@@ -57,8 +57,24 @@ Now with taskgroup the execution is faster than before. And the pixels are gener
 
 El taskwait no es necessari ja que les taskes no tenen res a veure unes amb les altres a la hora de calcular. Per tant tan es l'ordre de generacio de les tasques, entre diferents rows. Em observat que ens dona els mateixos resultats amb l'execució anterior. El nombre de taskes creades i executades no varien respecte l'execució anterior. Això es culpa de que la bossa de taskes que té l'omp és limitada, per això arriba un punt que de forma intel·ligent el thread 0 atura la creació de taskes, per executar-ne i així poder disminuir la quantitat total de taskes a la bossa.
 
-
-
 2.2
 
-3. Perquè 
+
+
+Temps
+
+Figure 2.1
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000 
+
+Total execution time: 1.596945s
+
+Figure 2.2
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000
+
+Total execution time: 1.652441s
+
+
