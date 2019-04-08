@@ -4,7 +4,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.500568s
+Total execution time: 0.450203s
 
 \subsubsection{400 tasks}
 
@@ -12,7 +12,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.470143s
+Total execution time: 0.473508s
 
 \subsubsection{200 tasks}
 
@@ -20,7 +20,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.466458s
+Total execution time: 0.466963s
 
 \subsubsection{100 tasks}
 
@@ -28,7 +28,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.456249s
+Total execution time: 0.485884s
 
 \subsubsection{50 tasks}
 
@@ -36,7 +36,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.477879s
+Total execution time: 0.495411s
 
 \subsubsection{25 tasks}
 
@@ -44,7 +44,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.450350s
+Total execution time: 0.615070s
 
 \subsubsection{10 tasks}
 
@@ -52,7 +52,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.443721s
+Total execution time: 1.248994s
 
 \subsubsection{5 tasks}
 
@@ -60,7 +60,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.438034s
+Total execution time: 2.499611s
 
 \subsubsection{2 tasks}
 
@@ -68,7 +68,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.438872s
+Total execution time: 1.737769s
 
 \subsubsection{1 tasks}
 
@@ -76,4 +76,4 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 0.451641s
+Total execution time: 3.440737s

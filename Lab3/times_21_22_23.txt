@@ -4,7 +4,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 3.036643s
+Total execution time: 1.236607s
 
 Figure 22
 
@@ -12,7 +12,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 3.038739s
+Total execution time: 1.372863s
 
 
 Figure 22-2
@@ -21,7 +21,7 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 3.036347s
+Total execution time: 1.185006s
 
 Figure 23
 
@@ -29,4 +29,4 @@ Mandelbrot program
 center = (0, 0), size = 2
 maximum iterations = 10000
 
-Total execution time: 3.035259s
+Total execution time: 1.338104s
