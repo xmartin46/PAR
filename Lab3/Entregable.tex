@@ -153,6 +153,7 @@
 Talk about the Mandelbrot Set and about what we are going to do in this 3 sessions, in order.
 
 \section{Task decomposition analysis with \textit{Tareador}}
+\label{sec:tareador}
 
 In this section, we had to analyse the two possible task granularities that could be exploited in the given program. To do it, we used the \textit{Tareador} tool, which was very useful to see graphically the created tasks and which dependences are between them.
 
@@ -356,14 +357,14 @@ The following figure shows the execution flow of the program using the \textit{P
 	\centering
 	\includegraphics[scale=0.40]{./S2_OMP_tasks}
 	\caption{Zoomed part of the execution flow using the task strategy.}
-	\label{fig:dependence_X11_COLOR_fake}
+	\label{fig:S2_OMP_tasks}
 \end{figure}
 
 We can observe the effect of the single clause. In the upper part (task instantiation) only one thread is creating the tasks and inserting them in the task pool. In the bottom part (task execution) we can see that the other threads execute the tasks as they are put in the pool. The role of the task creator changes every time we finish a row.
 
 In total, there are 640000 tasks created and executed. This is because the image has size $800 \times 800$. We have seen this using the "OMP\_parallel\_functions.cfg" i "OMP\_state\_profile.cfg" configurations. Figure XXXXXXXXXXXXXXXX shows the results obtained.
 
-The parallel construct is executed 1 time and the single worksharing construct is executed 1 time for each thread. All threads will execute the single lines but only one will "gain". This thread will be responsible for creating the tasks of that row.
+The parallel construct is executed 800 times (number of rows) and the single worksharing construct is executed 800 times for each thread. Thus, the single clause is executed 6400 times ($rows \times threads$). All threads will execute the single line but only one will "gain". This thread will be responsible for creating the tasks of that row.
 
 Finally, figures \ref{fig:mandel-omp-10000-strong-21-time} and \ref{fig:mandel-omp-10000-strong-21-speedup} show the time and speedup plots.
 
@@ -412,7 +413,7 @@ for (int row = 0; row < height; ++row) {
 \label{code:task_implementation_point_taskwait}
 \end{figure}
 
-The number of created and executed tasks is still 640000 as we have not modified the size of the image. Nevertheless, even though the number of calls to parallel is the same, the number of calls to the single worksharing construct will only be 8, the number of threads. Besides, the taskwait clause will be executed 800 times (number of rows). The granularity is the same than before. Each task has exactly one iteration of the for.
+The number of created and executed tasks is still 640000 as we have not modified the size of the image. Nevertheless, the number of calls to parallel is 1, and the number of calls to the single worksharing construct is now 8, the number of threads. Besides, the taskwait clause will be executed 800 times (number of rows). The granularity is the same than before. Each task has exactly one iteration of the innermost for loop.
 
 Figures \ref{fig:mandel-omp-10000-strong-22-time} and \ref{fig:mandel-omp-10000-strong-22-speedup} show again the time and speedup plots. We have not noticed any significant difference between these plots and the plots of the previous section.
 
@@ -433,9 +434,60 @@ Figures \ref{fig:mandel-omp-10000-strong-22-time} and \ref{fig:mandel-omp-10000-
 \end{minipage}
 \end{figure}
 
+\paragraph{The Taskwait Clause}
+
+\hfill
+
+In reality, the taskwait clause is not necessari because the tasks do not have any dependence between them. We saw in section \ref{sec:tareador} that the mandel-tar binary does not produce any kind of dependence between tasks. Thus, we can create and execute all tasks without having to wait until some of them terminate. The modified version of the code can be found in the file \textit{mandel-omp-task-point-taskwait-without.c}.
+
+In order to see the differences with respect to the version with the taskwait clause, we have repeated the evaluation of scalability and tracing. The results are shown below.
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[scale=0.345]{./S2_OMP_tasks_22_2}
+  \caption{Execution flow using the taskwait strategy without the barrier.}
+  \label{fig:S2_OMP_tasks_22_2}
+\end{minipage}%
+\hspace{0cm}
+\begin{minipage}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[scale=0.345]{./S2_OMP_tasks_22_2_zoom}
+  \caption{Zoomed part of Figure \ref{fig:S2_OMP_tasks_22_2}.}
+  \label{fig:S2_OMP_tasks_22_2_zoom}
+\end{minipage}
+\end{figure}
+
+The number of tasks created/executed has not changed because we have not touched the task clause or the parallel and single clauses. However, as we have deleted the taskwait clause, now the creator thread (thread 0 in our case) does not have to wait until the tasks of the same row terminate. Consequently, it can create all possible tasks of the program. Nevertheless, we see in figures \ref{fig:S2_OMP_tasks_22_2} and \ref{fig:S2_OMP_tasks_22_2_zoom} that this is not happening as expected.
+
+We though that thread 0 would create all possible tasks and then execute the remaining tasks inside the task pool. What is happening is that this thread creates some tasks, then stops the task generation, then executes some taks, and then proceeds generating new tasks. After reasoning about this, we have concluded that the task pool that OpenMP has is limited, it has a maximum number of threads inside the pool. As a consequence, when thread 0 reaches this limit it has to stop creating tasks, so it begins to execute the created tasks until the total number of tasks inside the pool is reduced. Afterwards, it begins to create tasks again.
+
+On the other hand, we can see that the scalability plots (time and speedup) have improved a bit even though it is not a significative change.
+
+\textbf{\large{\large{CANVIAR AQUESTES GRAFIQUES}}}
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.95]{./mandel-omp-10000-strong-22-2-time}
+  \caption{Execution time plot varying the number of threads.}
+  \label{fig:mandel-omp-10000-strong-22-2-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.95]{./mandel-omp-10000-strong-22-2-speedup}
+  \caption{Speedup plot varying the number of threads.}
+  \label{fig:mandel-omp-10000-strong-22-2-speedup}
+\end{minipage}
+\end{figure}
+
+To sum up, we can delete the taskwait clause because it is not necessary for mandel-tar. This change improves a little bit the performance of the execution. Moreover, without this clause the creator thread has to stop generating tasks because it reaches the maximum limit of the pool. Thus, it will be changing from creating to executing very often.
+
 \subsubsection{OpenMP Taskgroup Variant}
 
-In this other variant, we define a region in the program where the thread will wait for the termination of all descendant (not only child) tasks. Figure \ref{code:task_implementation_point_taskgroup} shows a section of the modified code that can be found in file \textit{mandel-omp-task-point-taskgroup.c} inside the codes directory. Now, the pixels are generated without any specific order.
+In this other variant, we define a region in the program where the thread will wait for the termination of all descendant (not only child) tasks. Figure \ref{code:task_implementation_point_taskgroup} shows a section of the modified code that can be found in file \textit{mandel-omp-task-point-taskgroup.c} inside the codes directory. Now, the tasks of the same row are generated without any specific order. However, the creator thread has to wait until all the tasks of the same row terminate.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -457,6 +509,8 @@ for (int row = 0; row < height; ++row) {
 \label{code:task_implementation_point_taskgroup}
 \end{figure}
 
+The number of created tasks is the same (640000). Moreover, the number of calls to parallel and the single worksharing contruct is the same (1 and 8 respectively). The only difference is that in this variant the taskgroup clause is executed 800 times (number of rows).
+
 Figures \ref{fig:mandel-omp-10000-strong-23-time} and \ref{fig:mandel-omp-10000-strong-23-speedup} show again the time and speedup plots. We have not noticed any significant difference between these plots and the plots of the two previous sections.
 
 \begin{figure}[H]
@@ -476,11 +530,8 @@ Figures \ref{fig:mandel-omp-10000-strong-23-time} and \ref{fig:mandel-omp-10000-
 \end{minipage}
 \end{figure}
 
-\textbf{\large{\large{FALTA: Do you think the taskwait construct in Figure 2.2 is really necessary? Or in other words, is it
-necessary to wait for the termination of all tasks in a row before generating the tasks for the next rows?
-Modify the code in mandel-omp.c to remove this task barrier and repeat the previous evaluation (scalability and tracing). Has the number of tasks created/executed changed? Why the threads generating
-tasks stops task generation, then executes some tasks, and then proceeds generating new tasks?}}}
+\subsection{OpenMP Taskloop Implementation}
 
-El taskwait no es necessari ja que les taskes no tenen res a veure unes amb les altres a la hora de calcular. Per tant tan es l'ordre de generacio de les tasques, entre diferents rows. Em observat que ens dona els mateixos resultats amb l'execució anterior. El nombre de taskes creades i executades no varien respecte l'execució anterior. Això es culpa de que la bossa de taskes que té l'omp és limitada, per això arriba un punt que de forma intel·ligent el thread 0 atura la creació de taskes, per executar-ne i així poder disminuir la quantitat total de taskes a la bossa.
+In this new strategy, the taskloop clause is used. It generates tasks out of its iterations of a for loop, allowing to better control the number of tyasks generated or their granularity (num\_tasks or grainsize). This version of the code can be found in the file \textit{adsguahsdghasdghbajdsgbabsdgbidsgbi}.
 
 \end{document}
