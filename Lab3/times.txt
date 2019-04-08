@@ -1,0 +1,79 @@
+% \subsubsection{800 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.037101s
+
+% \subsubsection{400 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.036619s
+
+% \subsubsection{200 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.038225s
+
+% \subsubsection{100 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.037314s
+
+% \subsubsection{50 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.055145s
+
+% \subsubsection{25 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.039638s
+
+% \subsubsection{10 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.041241s
+
+% \subsubsection{5 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.037157s
+
+% \subsubsection{2 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.041974s
+
+% \subsubsection{1 tasks}
+
+% Mandelbrot program
+% center = (0, 0), size = 2
+% maximum iterations = 10000
+
+% Total execution time: 3.037729s
