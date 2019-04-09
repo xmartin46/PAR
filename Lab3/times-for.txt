@@ -1,0 +1,27 @@
+\subsection{static}
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000
+
+Total execution time: 1.332498s
+
+\subsection{static-10}
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000
+
+Total execution time: 0.436193s
+
+\subsection{dynamic-10}
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000
+
+Total execution time: 0.426810s
+
+\subsection{guided-10}
+Mandelbrot program
+center = (0, 0), size = 2
+maximum iterations = 10000
+
+Total execution time: 0.465371s
