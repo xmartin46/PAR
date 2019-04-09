@@ -626,6 +626,8 @@ If we create 800 tasks of the mostinner loop, in reality we are executing an equ
 %\end{minipage}
 %\end{figure}
 
+\subsubsection{The Nogroup Clause}
+
 The taskloop construct has an implicit task barrier (taskgroup) at the end. This is causing the effect of a taskwait clause. As we reasoned before about that we could delete the taskwait clause because there are no dependences between tasks, we can do the same with the tasgroup clause. To do it, the taskloop construct accepts a nogroup clause that eliminates this implicit barrier.
 
 Now, we will explore how this new version behaves in terms of performance when using 8 threads and for different task granularities (800, 400, 200, 100, 50, 25, 10, 5, 2 and 1 tasks). All versions of the codes can be found in files \textit{mandel-omp-task-point-taskloop-\{granularity\}-nogroup}.
@@ -640,7 +642,7 @@ In this section, we are going to analyse the scalability and tracing of the Row 
 
 The best implementation in the previous section was using the taskloop clause. Thus, the new code is the following:
 
-\begin{figure}
+\begin{figure}[H]
 \begin{lstlisting}
 #pragma omp parallel
 #pragma omp single
