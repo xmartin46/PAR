@@ -610,6 +610,44 @@ for (int row = 0; row < height; ++row) {
 If we create 800 tasks of the mostinner loop, in reality we are executing an equivalent version of the second task version we analysed. In order to analyse the performance of this strategy we will use the trace generated with \textit{Paraver} and using the appropiate configuration files.
 
 \textbf{\large{\large{FALTEN ELS TRACES, CONFIGURACIONS I DIR PERQUE TE MILLOR RENDIMENT QUE LA VERSIO 22}}}
+
+
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_1}
+  \caption{.}
+  \label{fig:S2_OMP_tasks_24_1}
+\end{minipage}%
+\hspace{1.45cm}
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_50}
+  \caption{.}
+  \label{fig:S2_OMP_tasks_24_50}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_800}
+  \caption{.}
+  \label{fig:S2_OMP_tasks_24_800}
+\end{minipage}%
+\hspace{1.45cm}
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.3]{./S2_OMP_tasks_24_800_table}
+  \caption{.}
+  \label{fig:S2_OMP_tasks_24_800_table}
+\end{minipage}
+\end{figure}
+
+
+
+
 %\begin{figure}[H]
 %\begin{minipage}[t]{0.5\linewidth}
 %  \centering
@@ -634,6 +672,13 @@ Now, we will explore how this new version behaves in terms of performance when u
 
 \textbf{\large{\large{FALTA EL PLOT. EN ROGER SAP COM FER-LO BE. TAMBE POSO ELS STRONG PLOTS?}}}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./num_task_point}
+  \caption{.}
+  \label{fig:num_task_point}
+\end{figure}
+
 As we can see in Figure XXXXXXXXXXXXXXXXXXX, the bigger the granularity, the bigger the execution time (and the lower speedup). The main reason is that we have to create more tasks. Thus, the overhead of creation and termination of tasks is bigger. The best option using this strategy is small values of granularity. In this situation, only 1 or 2 threads will execute the full row, while the other ones can execute the following rows.
 
 \section{Row decomposition in OpenMP}
@@ -657,12 +702,272 @@ for (int row = 0; row < height; ++row) {
 \label{code:task_implementation_row_taskloop_800}
 \end{figure}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./num_task_row}
+  \caption{.}
+  \label{fig:num_task_row}
+\end{figure}
+
 %For the Row strategy implemented in OpenMP, describe the parallelization strategy that you have
 %decided to implement. Reason about the performance that is obtained comparing with the results
 %obtained for the best Point implementation, including the execution time and speed–up plots obtained
 %in the strong scalability analysis (with -i 10000) and Paraver captures that help you to better explain
 %the results that have been obtained.
 
+\subsection{OpenMP For Implementation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-for-schedule}
+  \caption{.}
+  \label{fig:mandel-omp-for-schedule}
+\end{figure}
+
 \section{Conclusion}
+
+\section{Annex}
+
+\subsection{Blablabla}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-1-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-24-1-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-1-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-24-1-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-2-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 2).}
+  \label{fig:mandel-omp-10000-strong-omp-24-2-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-2-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 2).}
+  \label{fig:mandel-omp-10000-strong-omp-24-2-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-5-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 5).}
+  \label{fig:mandel-omp-10000-strong-omp-24-5-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-5-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 5).}
+  \label{fig:mandel-omp-10000-strong-omp-24-5-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-10-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 10).}
+  \label{fig:mandel-omp-10000-strong-omp-24-10-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-10-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 10).}
+  \label{fig:mandel-omp-10000-strong-omp-24-10-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-25-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 25).}
+  \label{fig:mandel-omp-10000-strong-omp-24-25-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-25-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 25).}
+  \label{fig:mandel-omp-10000-strong-omp-24-25-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-50-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-24-50-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-50-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-24-50-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-100-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 100).}
+  \label{fig:mandel-omp-10000-strong-omp-24-100-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-100-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 100).}
+  \label{fig:mandel-omp-10000-strong-omp-24-100-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-200-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 200).}
+  \label{fig:mandel-omp-10000-strong-omp-24-200-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-200-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 200).}
+  \label{fig:mandel-omp-10000-strong-omp-24-200-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-400-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 400).}
+  \label{fig:mandel-omp-10000-strong-omp-24-400-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-400-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 400).}
+  \label{fig:mandel-omp-10000-strong-omp-24-400-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-800-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-24-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-800-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-24-800-speedup}
+\end{minipage}
+\end{figure}
+
+\subsection{Blablabla2}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-time}
+  \caption{Execution time plot varying the number of threads (schedule(static)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(static)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(static, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(static, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-800-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(dynamic, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(dynamic, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(guided, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(guided, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-speedup}
+\end{minipage}
+\end{figure}
 
 \end{document} 
