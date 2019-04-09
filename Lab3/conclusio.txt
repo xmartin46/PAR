@@ -1,0 +1,29 @@
+Conclusio
+
+En aquesta pràctica em obsertvat diferents maneres a l'hora de crear les taskes en dos fors un dins de l'altre.
+
+Les iteracions del loop intern hem pogut observar que tenen temps d'execució diferent.
+AIxò ens ha portat a trobar que els millors resultats temporals estàn quan les tasques agafen poques iteracions del loop intern.
+Per altra banda la creació d'un nombre elevat de tasques ens porta a un increment als temps d'execució degut a que cada tasca necessita un cert temps de creacio, sincronitzacio i terminació.
+
+Utilitzant diferents metodes de creació de tasques explicits hem observat que el metode més eficent per tal de crear les tasques es el taskloop,
+ja que ens permetia controlar de forma més senzilla les diferents granularitats de cada tasca.
+
+Finalment hem fet una comprovació entre la creació de tasques explicita i implicita, on hem pogut observar uns temps molt semblants, però algu millors per la creació implicita.
+
+
+
+
+
+
+
+In this practice we have observed different ways to create tasks in two nested loops.
+
+The iterations of the internal loop has different run-time.
+This has led us to find that the best temporary results are when the tasks are small and they don't have to wait for finishing the tasks.
+On the other hand, the creation of a high number of tasks leads to an increase in run-time due to the fact that each task requires a certain time of creation, synchronization and termination.
+
+Using different methods of creating explicit tasks we have observed that the most efficient method to create tasks is the taskloop,
+since it allowed us to control more easily the different granularities of each task.
+
+Finally we have done a comparison between the creation of explicit and implicit tasks, where we have been able to observe very similar times, but a little bit  better for implicit creation.
