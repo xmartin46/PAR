@@ -150,12 +150,27 @@
 
 \section{Introduction}
 
-Talk about the Mandelbrot Set and about what we are going to do in this 3 sessions, in order.
+Nowadays, the aim of parallelizing codes is to improve the performance of nearly all the applications that can be computed using classical computer architectures. Nevertheless, there are several ways to parallelize the same application, some better than others.
+
+In our case, we are going to study different tasking models in OpenMP to parallelize the Mandelbrot set, a particular set of point, in the complex domain, whose boundary generates a distinctive and easily recognisable two-dimensional fractal shape\footnote{To know more about the Mnadelbrot set, it is highly recommended to look at the following link: \url{http://en.wikipedia.org/wiki/Mandelbrot\_set}}.
+
+Based on the maximum number of steps the code does to calculate wheater a point belongs to the set or not, the coloring of the image changes. The points that belong to the set reach the maximum limit of steps. In the figure \ref{mandelbrot}, those points are the ones in black color. Hence, the points which are not black are the ones that do not belong to the set.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{./mandelbrotset}
+	\caption{Fractal shape.}
+	\label{mandelbrot}
+\end{figure}
+
+First of all we are going to see with \textit{Tareador} the binaries which are potentailly parallelizable. Afterwards, we are going to explore two parallelization methods: Point and Row decomposition. To do it, we are going to use the following tasking models: explicit task implementation (task only, task with taskwait/taskgroup/taskloop) and implicit task implementation (for-based implementation). Finally, we are going to compare the best implementation of one method with the best implementation of the other one.
+
+\newpage
 
 \section{Task decomposition analysis with \textit{Tareador}}
 \label{sec:tareador}
 
-In this section, we had to analyse the two possible task granularities that could be exploited in the given program. To do it, we used the \textit{Tareador} tool, which was very useful to see graphically the created tasks and which dependences are between them.
+In this section, we had to analyse the two possible task granularities that could be exploited in the given program. To do it, we used the \textit{Tareador} tool, which was very useful to see graphically the created tasks and which dependences exist between them.
 
 \subsection{Point decomposition}
 
@@ -362,7 +377,24 @@ The following figure shows the execution flow of the program using the \textit{P
 
 We can observe the effect of the single clause. In the upper part (task instantiation) only one thread is creating the tasks and inserting them in the task pool. In the bottom part (task execution) we can see that the other threads execute the tasks as they are put in the pool. The role of the task creator changes every time we finish a row.
 
-In total, there are 640000 tasks created and executed. This is because the image has size $800 \times 800$. We have seen this using the "OMP\_parallel\_functions.cfg" and "OMP\_state\_profile.cfg" configurations. Figure \ref{fig:S2_OMP_tasks_table} shows the results obtained.
+In total, there are 640000 tasks created and executed. This is because the image has size $800 \times 800$. We have seen this using the "OMP\_parallel\_functions.cfg" and "OMP\_state\_profile.cfg" configurations (figure \ref{fig:mandel-omp-21-parallel}). The parallel construct is executed 800 times (figure \ref{fig:S2_OMP_tasks_table}), the number of rows. Finally, the single worksharing construct is executed 800 times for each thread (figure \ref{fig:mandel-omp-21-single}). Thus, the single clause is executed 6400 times ($rows \times threads$). All threads will execute the single line but only one will "gain". This thread will be responsible for creating the tasks of that row.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.40]{./mandel-omp-21-parallel}
+  \caption{Table with the total number of times \#pragma omp parallel has been called by each thread.}
+  \label{fig:mandel-omp-21-parallel}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.40]{./mandel-omp-21-single}
+  \caption{Table with the total number of times \#pragma omp single has been called by each thread.}
+  \label{fig:mandel-omp-21-single}
+\end{minipage}
+\end{figure}
 
 \begin{figure}[H]
 	\centering
@@ -370,8 +402,6 @@ In total, there are 640000 tasks created and executed. This is because the image
 	\caption{Table with the number of executed tasks in the left column and the number of created tasks in the right column.}
 	\label{fig:S2_OMP_tasks_table}
 \end{figure}
-
-The parallel construct is executed 800 times (number of rows) and the single worksharing construct is executed 800 times for each thread. Thus, the single clause is executed 6400 times ($rows \times threads$). All threads will execute the single line but only one will "gain". This thread will be responsible for creating the tasks of that row.
 
 Finally, figures \ref{fig:mandel-omp-10000-strong-21-time} and \ref{fig:mandel-omp-10000-strong-21-speedup} show the time and speedup plots.
 
@@ -392,7 +422,7 @@ Finally, figures \ref{fig:mandel-omp-10000-strong-21-time} and \ref{fig:mandel-o
 \end{minipage}
 \end{figure}
 
-In the first plot, the execution time is reduces as we increase the number of threads until the time stays constant. However, we think that if we increase a lot the number of threads, the execution time would end up increasing because of the overheads.
+In the first plot, the execution time is reduced as we increase the number of threads until the time stays constant. However, we think that if we increase a lot the number of threads, the execution time would end up increasing because of the overheads.
 
 On the other hand, in the second plot the speedup increases a lot with 2-4 threads but ends up constant as we increase the number of threads.
 
@@ -439,7 +469,24 @@ We can clearly see in figures \ref{fig:S2_OMP_tasks_22}, \ref{fig:S2_OMP_tasks_2
 \end{figure}
 
 
-The number of created and executed tasks is still 640000 as we have not modified the size of the image. Nevertheless, the number of calls to parallel is 1, and the number of calls to the single worksharing construct is now 8, the number of threads. Besides, the taskwait clause will be executed 800 times (number of rows). The granularity is the same than before. Each task has exactly one iteration of the innermost for loop.
+The number of created and executed tasks is still 640000 as we have not modified the size of the image (figure \ref{fig:S2_OMP_tasks_table_22}). Nevertheless, the number of calls to parallel is 1 (figure \ref{fig:mandel-omp-22-parallel}), and the number of calls to the single worksharing construct is now 8 (figure \ref{fig:mandel-omp-22-single}), the number of threads. Besides, the taskwait clause will be executed 800 times (number of rows). The granularity is the same than before. Each task has exactly one iteration of the innermost for loop.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.40]{./mandel-omp-22-parallel}
+  \caption{Table with the total number of times \#pragma omp parallel has been called by each thread.}
+  \label{fig:mandel-omp-22-parallel}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.40]{./mandel-omp-22-single}
+  \caption{Table with the total number of times \#pragma omp single has been called by each thread.}
+  \label{fig:mandel-omp-22-single}
+\end{minipage}
+\end{figure}
 
 \begin{figure}[H]
 	\centering
@@ -447,6 +494,8 @@ The number of created and executed tasks is still 640000 as we have not modified
 	\caption{Table with the number of executed tasks in the left column and the number of created tasks in the right column.}
 	\label{fig:S2_OMP_tasks_table_22}
 \end{figure}
+
+From here, as we will not change the \#pragma omp parallel and \#pragma omp single anymore, figures \ref{fig:mandel-omp-22-parallel} and \ref{fig:mandel-omp-22-single} will be the same for the following variants and new implementations.
 
 Figures \ref{fig:mandel-omp-10000-strong-22-time} and \ref{fig:mandel-omp-10000-strong-22-speedup} show again the time and speedup plots. We have not noticed any significant difference between these plots and the plots of the previous section.
 
@@ -607,62 +656,29 @@ for (int row = 0; row < height; ++row) {
 \label{code:task_implementation_point_taskloop_800}
 \end{figure}
 
-If we create 800 tasks of the mostinner loop, in reality we are executing an equivalent version of the second task version we analysed. In order to analyse the performance of this strategy we will use the trace generated with \textit{Paraver} and using the appropiate configuration files.
+If we create 800 tasks of the mostinner loop, in reality we are executing an equivalent version of the second task version we analysed. In order to analyse the performance of this strategy we will use the traces generated with \textit{Paraver} and using the appropiate configuration files.
 
-\textbf{\large{\large{FALTEN ELS TRACES, CONFIGURACIONS I DIR PERQUE TE MILLOR RENDIMENT QUE LA VERSIO 22}}}
-
-
+\textbf{\large{\large{DIR PERQUE TE MILLOR RENDIMENT QUE LA VERSIO 22}}}
 
 \begin{figure}[H]
-\begin{minipage}[t]{0.4\linewidth}
-  \centering
-  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_1}
-  \caption{.}
-  \label{fig:S2_OMP_tasks_24_1}
-\end{minipage}%
-\hspace{1.45cm}
-\begin{minipage}[t]{0.4\linewidth}
-  \centering
-  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_50}
-  \caption{.}
-  \label{fig:S2_OMP_tasks_24_50}
-\end{minipage}
-\end{figure}
-
-\begin{figure}[H]
-\begin{minipage}[t]{0.4\linewidth}
+\begin{minipage}[t]{0.48\linewidth}
   \centering
   \includegraphics[scale=0.35]{./S2_OMP_tasks_24_800}
-  \caption{.}
+  \caption{Execution flow of using the taskloop strategy and 800 tasks for each row.}
   \label{fig:S2_OMP_tasks_24_800}
 \end{minipage}%
-\hspace{1.45cm}
-\begin{minipage}[t]{0.4\linewidth}
+\hspace{0.5cm}
+\begin{minipage}[t]{0.48\linewidth}
   \centering
   \includegraphics[scale=0.3]{./S2_OMP_tasks_24_800_table}
-  \caption{.}
+  \caption{Table with the number of executed tasks in the left column and the number of created tasks in the right column.}
   \label{fig:S2_OMP_tasks_24_800_table}
 \end{minipage}
 \end{figure}
 
+First of all, we can see something strange in figure \ref{fig:S2_OMP_tasks_24_800} in the instatiation part. In the first moment all threads create a lot of tasks, then only thread 0 is the one creating most of the tasks, and then all threads create again all the tasks. The reasoning about this effect will be done in the next section, when comparing the results with another 2 traces.
 
-
-
-%\begin{figure}[H]
-%\begin{minipage}[t]{0.5\linewidth}
-%  \centering
-%  \includegraphics[scale=0.345]{./S2_OMP_tasks_24}
-%  \caption{Execution flow using the taskwait strategy without the barrier.}
-%  \label{fig:S2_OMP_tasks_24}
-%\end{minipage}%
-%\hspace{0cm}
-%\begin{minipage}[t]{0.5\linewidth}
-%  \centering
-%  \includegraphics[scale=0.345]{./S2_OMP_tasks_24_zoom}
-%  \caption{Zoomed part of Figure \ref{fig:S2_OMP_tasks_24}.}
-%  \label{fig:S2_OMP_tasks_24_zoom}
-%\end{minipage}
-%\end{figure}
+On the other hand, in figure \ref{fig:S2_OMP_tasks_24_800_table} we can see that there are created more than 640000 tasks, the expected number. The reason we got when asking to the professor was that when using the \textit{Paraver} and the taskloop, there are created some metatasks to evaluate some things. Thus, the number of created tasks is increased a bit.
 
 \subsubsection{The Nogroup Clause}
 
@@ -670,20 +686,94 @@ The taskloop construct has an implicit task barrier (taskgroup) at the end. This
 
 Now, we will explore how this new version behaves in terms of performance when using 8 threads and for different task granularities (800, 400, 200, 100, 50, 25, 10, 5, 2 and 1 tasks). All versions of the codes can be found in files \textit{mandel-omp-task-point-taskloop-\{granularity\}-nogroup}.
 
-\textbf{\large{\large{FALTA EL PLOT. EN ROGER SAP COM FER-LO BE. TAMBE POSO ELS STRONG PLOTS?}}}
+\begin{figure}[H]
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_1}
+  \caption{Execution flow of using the taskloop strategy and 1 task for each row.}
+  \label{fig:S2_OMP_tasks_24_1}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.35]{./S2_OMP_tasks_24_50}
+  \caption{Execution flow of using the taskloop strategy and 50 tasks for each row.}
+  \label{fig:S2_OMP_tasks_24_50}
+\end{minipage}
+\end{figure}
+
+In the previous traces we can observe multiple things. Firstly, the time expended creating tasks is reduced as we increase the granularity. It is common sense, if we create less tasks per row, we will expend less time doing it (thanks to the nogroup clause). Moreover, the execution time of the parallel part is also reduced with a smaller number of tasks. We think that this happen because there will be less overhead of creation, synchronization and termination and while some tasks execute the longer tasks, the rest will continue executing the other ones.
+
+Secondly, we can see in figure \ref{fig:S2_OMP_tasks_24_800} a different behaviour with respect to figures \ref{fig:S2_OMP_tasks_24_1} and \ref{fig:S2_OMP_tasks_24_50}. All threads are creating tasks whereas in the other 2 traces only thread 0 is the one creating tasks.
+
+Our conclusion is that in the version with number of tasks 800 threads end faster the upper, left and right parts of the non-created image because there are no white parts. Hence, as we have the nogroup clause and there are no more tasks inside the pool, they can create tasks too. However, in the middle of the image, as there are more white pixels, threads expend more time executing the task, so in this part they will create less tasks and thread 0 will be responsible for creating the biggest part of tasks. As we decrease the total number of tasks, threads will do more instructions per task. Thus, they will not have time to create tasks and only thread 0 will be responsible for creating all the tasks (from number of tasks 100 down, only thread 0 is creating the tasks).
+
+The following plots are the scalability plots using the same implementation but varying the number of tasks per row. They are only a part of all. The rest of the plots can be found in section \ref{sec:point_taskloop_scalability_plots}.
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-1-time}
+  \caption{Time plot varying the number of threads and using 1 task.}
+  \label{fig:mandel-omp-10000-strong-omp-24-1-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-1-speedup}
+  \caption{Speedup plot varying the number of threads and using 1 task.}
+  \label{fig:mandel-omp-10000-strong-omp-24-1-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-50-time}
+  \caption{Time plot varying the number of threads and using 50 tasks.}
+  \label{fig:mandel-omp-10000-strong-omp-24-50-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-50-speedup}
+  \caption{Speedup plot varying the number of threads and using 50 tasks.}
+  \label{fig:mandel-omp-10000-strong-omp-24-50-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-800-time}
+  \caption{Time plot varying the number of threads and using 800 tasks.}
+  \label{fig:mandel-omp-10000-strong-omp-24-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-24-800-speedup}
+  \caption{Speedup plot varying the number of threads and using 800 tasks.}
+  \label{fig:mandel-omp-10000-strong-omp-24-800-speedup}
+\end{minipage}
+\end{figure}
+
+In the previous plots we can see the tendency of the execution time and speedup as we increase the number of tasks. The bigger the number of tasks, the worse the execution time and speedup. This is because of the overhead of creation, synchronization and termination of tasks. Create one task per pixel is not a good idea.
+
+Besides, these results are much better than the ones of the previous section, so it seems that this implementation is the best for a point strategy.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{./num_task_point}
-  \caption{.}
+  \caption{Execution time plot when varying the number of tasks (number of threads = 8).}
   \label{fig:num_task_point}
 \end{figure}
 
-As we can see in Figure XXXXXXXXXXXXXXXXXXX, the bigger the granularity, the bigger the execution time (and the lower speedup). The main reason is that we have to create more tasks. Thus, the overhead of creation and termination of tasks is bigger. The best option using this strategy is small values of granularity. In this situation, only 1 or 2 threads will execute the full row, while the other ones can execute the following rows.
+As we can see in Figure \ref{fig:num_task_point}, the bigger the granularity (less number of tasks), the lower the execution time (and the lower speedup). The main reason is that we have to create less tasks. Thus, the overhead of creation and termination of tasks is smaller. The best option for this strategy is using small values for the number of tasks per row. In this situation, only 1 or 2 threads will execute the full row, while the other ones can execute the following rows.
 
 \section{Row decomposition in OpenMP}
 
-In this section, we are going to analyse the scalability and tracing of the Row decomposition strategy using the best implementation we got with the Point strategy. Afterwards, we will compare both results.
+In this section, we are going to analyse the performance of the Row decomposition strategy using the best implementation we got with the Point strategy. Afterwards, we will compare both results. All versions of the codes can be found in files \textit{mandel-omp-task-row-taskloop-\{granularity\}-nogroup}.
 
 The best implementation in the previous section was using the taskloop clause. Thus, the new code is the following:
 
@@ -702,10 +792,68 @@ for (int row = 0; row < height; ++row) {
 \label{code:task_implementation_row_taskloop_800}
 \end{figure}
 
+The following plots are the scalability plots using the same implementation but varying the number of tasks per row. They are only a part of all. The rest of the plots can be found in section \ref{sec:row_taskloop_scalability_plots}.
+
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-1-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-3-1-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[t]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-1-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-3-1-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-50-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-3-50-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-50-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-3-50-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-800-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-3-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-800-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-3-800-speedup}
+\end{minipage}
+\end{figure}
+
+We can see that now the tendency is the other way round with respect to the previous section. The bigger the number of tasks, the better the execution time. Now, the important thing is not the overhead but the distribution of the tasks into the different threads. Thus, a big number of tasks will balance better the work of the threads.
+
+Now, in figure \ref{fig:num_task_row} we can see that the opposite happens. The bigger the granularity, the bigger the execution time. Thus, in the row strategy, the best option is to create as much tasks as possible. The main reason is that in this strategy, what we are modifying is the number of rows each thread executes. Hence, the bigger the number of tasks, the lower granularity (less intructions). This means that every thread will do less work per thread and will end faster, will take another task and so on.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{./num_task_row}
-  \caption{.}
+  \caption{Execution time plot when varying the number of tasks (number of threads = 8).}
   \label{fig:num_task_row}
 \end{figure}
 
@@ -717,19 +865,128 @@ for (int row = 0; row < height; ++row) {
 
 \subsection{OpenMP For Implementation}
 
+In this section, we are going to implement the for-based parallelization. With this new strategy, instead of tasking to distribute the work among the threads, we distribute loop iterations within the team of threads that encounters this work-sharing construct. The different codes can be found in the \textit{for} directory inside \textit{codes} directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+#pragma omp parallel for schedule(static) private(col)
+for (int row = 0; row < height; ++row) {
+    for (int col = 0; col < width; ++col) {
+    	...
+    }
+}
+\end{lstlisting}
+\caption{Fragment of the code \textit{mandel-omp-for-static.c}.}
+\end{figure}
+
+The following plots show the execution time and speedup for all possible schedules we know. We though that a value of 10 iterations per chunk would very accurate for a good solution. With a big number of iterations per chunk, as we are in the row strategy, one thread would have done a lot of work. Thus, the results would have been very bad.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-time}
+  \caption{Execution time plot varying the number of threads (schedule(static)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(static)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(static, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(static, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-static-800-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(dynamic, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(dynamic, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-time}
+  \caption{Execution time plot varying the number of threads (schedule(guided, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-speedup}
+  \caption{Speedup plot varying the number of threads (schedule(guided, 10)).}
+  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-speedup}
+\end{minipage}
+\end{figure}
+
+In figure \ref{fig:mandel-omp-for-schedule}, we can observe the different time executions when using only 8 threads. It is obvious that only static would be the one with a greater time execution because threads that have the tasks in the middle of the picture  have to do more iterations per pixel, as it is where most of the white pixels are located. However, if we use 10 iterations per chunk with the static schedule, the time is reduced a lot because now, all threads will execute tasks that have white pixels, so they will end faster.
+
+On the other hand, the dynamic strategy is the best option because whenever one thread ends, OpenMP will give him another task of the same chunck size without losing time.
+
+Finally, the guided strategy has not given the expected results. It is slower than schedule(static, 10). The reason is that with this strategy, we give a big number of iteration to each thread, until we arrive to the chunk size limit. Thus, some threads will have to execute tasks with a big number of white pixels.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{./mandel-omp-for-schedule}
-  \caption{.}
+  \caption{Execution time plot for the different schedule methods.}
   \label{fig:mandel-omp-for-schedule}
 \end{figure}
 
+\newpage
+
 \section{Conclusion}
+
+In these 3 laboratory sessions we have seen different strategies and tasking methods on 2 nested loops.
+
+We have found that the innermost loop iterations have different execution times because some points belong to the Mandelbrot set and others do not. Thus, some of them have to reach the maximum number of steps. 
+
+This has led us to find that the best results in the Point strategy are obtained when tasks get a few number of iterations of the innermost loop.
+
+On the other hand, the excessive creation of tasks leds us to an increment of the execution times due to that each task has a creation, synchronization and termination times.
+
+Using different methods of creation of explicit tasks we have observed that the best method is using the taskloop clause because it leds us to control in an easier way the granularity of each task.
+
+Moreover, we have seen that the best granularity for one strategy (for example, Point) is at the same time the worst granularity for the other strategy, and vice versa. The reason is because one strategy needs to create a lot of tasks to improve its parallelism (Row strategy) whereas the other one has to limit its creation of tasks due to the overhead (Point strategy).
+
+Finally, we have seen that using implicit creation task in the Row strategy, the best option to use is the schedule(dynamic, 10) because it is the one that distributes better all the work.
+
+
+\newpage
 
 \section{Annex}
 
-\subsection{Blablabla}
-
+\subsection{Scalability plots of point strategy using taskloop implementation}
+\label{sec:point_taskloop_scalability_plots}
 \begin{figure}[H]
 \centering
 \begin{minipage}[b]{0.4\linewidth}
@@ -900,22 +1157,27 @@ for (int row = 0; row < height; ++row) {
 \end{minipage}
 \end{figure}
 
-\subsection{Blablabla2}
 
+
+
+
+
+\subsection{Scalability plots of row strategy using taskloop implementation}
+\label{sec:row_taskloop_scalability_plots}
 \begin{figure}[H]
 \centering
-\begin{minipage}[b]{0.4\linewidth}
+\begin{minipage}[t]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-time}
-  \caption{Execution time plot varying the number of threads (schedule(static)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-static-time}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-1-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-3-1-time}
 \end{minipage}%
 \hspace{0.5cm}
-\begin{minipage}[b]{0.4\linewidth}
+\begin{minipage}[t]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-speedup}
-  \caption{Speedup plot varying the number of threads (schedule(static)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-static-speedup}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-1-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 1).}
+  \label{fig:mandel-omp-10000-strong-omp-3-1-speedup}
 \end{minipage}
 \end{figure}
 
@@ -923,16 +1185,16 @@ for (int row = 0; row < height; ++row) {
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-time}
-  \caption{Execution time plot varying the number of threads (schedule(static, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-static-800-time}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-2-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 2).}
+  \label{fig:mandel-omp-10000-strong-omp-3-2-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-static-800-speedup}
-  \caption{Speedup plot varying the number of threads (schedule(static, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-static-800-speedup}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-2-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 2).}
+  \label{fig:mandel-omp-10000-strong-omp-3-2-speedup}
 \end{minipage}
 \end{figure}
 
@@ -940,16 +1202,16 @@ for (int row = 0; row < height; ++row) {
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-time}
-  \caption{Execution time plot varying the number of threads (schedule(dynamic, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-time}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-5-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 5).}
+  \label{fig:mandel-omp-10000-strong-omp-3-5-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
-  \caption{Speedup plot varying the number of threads (schedule(dynamic, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-dynamic-800-speedup}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-5-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 5).}
+  \label{fig:mandel-omp-10000-strong-omp-3-5-speedup}
 \end{minipage}
 \end{figure}
 
@@ -957,16 +1219,118 @@ for (int row = 0; row < height; ++row) {
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-time}
-  \caption{Execution time plot varying the number of threads (schedule(guided, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-time}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-10-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 10).}
+  \label{fig:mandel-omp-10000-strong-omp-3-10-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-for-guided-800-speedup}
-  \caption{Speedup plot varying the number of threads (schedule(guided, 10)).}
-  \label{fig:mandel-omp-10000-strong-omp-for-guided-800-speedup}
+  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-10-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 10).}
+  \label{fig:mandel-omp-10000-strong-omp-3-10-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-25-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 25).}
+  \label{fig:mandel-omp-10000-strong-omp-3-25-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-25-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 25).}
+  \label{fig:mandel-omp-10000-strong-omp-3-25-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-50-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-3-50-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-50-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 50).}
+  \label{fig:mandel-omp-10000-strong-omp-3-50-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-100-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 100).}
+  \label{fig:mandel-omp-10000-strong-omp-3-100-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-100-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 100).}
+  \label{fig:mandel-omp-10000-strong-omp-3-100-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-200-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 200).}
+  \label{fig:mandel-omp-10000-strong-omp-3-200-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-200-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 200).}
+  \label{fig:mandel-omp-10000-strong-omp-3-200-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-400-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 400).}
+  \label{fig:mandel-omp-10000-strong-omp-3-400-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-400-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 400).}
+  \label{fig:mandel-omp-10000-strong-omp-3-400-speedup}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-800-time}
+  \caption{Execution time plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-3-800-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-800-speedup}
+  \caption{Speedup plot varying the number of threads (Num. tasks = 800).}
+  \label{fig:mandel-omp-10000-strong-omp-3-800-speedup}
 \end{minipage}
 \end{figure}
 
