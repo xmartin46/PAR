@@ -311,31 +311,9 @@ Therefore, variable X11\_COLOR\_fake is used at least in one of the functions XS
 \label{fig:display_code}
 \end{figure}
 
-
-
-\textbf{\large\large{{FALTA AIXO:  Reason when each strategy/granularity should be used.}}}
-
-\textbf{\large\large{{You also have to deliver the complete C source codes for Tareador instrumentation and all the
-OpenMP parallelization strategies that you have done. Include both the PDF and source codes in
-a single compressed tar file (GZ or ZIP). Only one file has to be submitted per group through the
-Raco website.}}}
-
 \section{Point decomposition in OpenMP}
 
 In this section, we are going to explore different options in the OpenMP tasking model to express the Point decomposition for the Mandelbrot computation program. We will analyse the scalability and behaviour of these options.
-
-%For the Point strategy implemented in OpenMP, describe and reason about how the performance has
-%evolved for the three task versions of the code that you have evaluated, using the speed–up plots
-%obtained and Paraver captures. 
-
-%After that, explain the influence of the granularity control available in the taskloop construct, showing how the execution behaves when setting the number of tasks or
-%iterations per task to 800, 400, 200, 100, 50, 25, 10, 5, 2 and 1, for example. Include the execution time
-%and speed–up plots obtained in the strong scalability analysis (with -i 10000), again including Paraver
-%captures to help you in the reasoning.
-
-%\textbf{Optional}: taskgroup vs. taskwait: Include the parallel version that makes use of the taskgroup
-%construct. Explain the two fundamental differences with taskwait and if they are relevant in this code.
-%Also include the strong scalability analysis and use tracing to show the differences with taskwait.
 
 \subsection{OpenMP Task Implementation}
 
@@ -377,7 +355,7 @@ The following figure shows the execution flow of the program using the \textit{P
 
 We can observe the effect of the single clause. In the upper part (task instantiation) only one thread is creating the tasks and inserting them in the task pool. In the bottom part (task execution) we can see that the other threads execute the tasks as they are put in the pool. The role of the task creator changes every time we finish a row.
 
-In total, there are 640000 tasks created and executed. This is because the image has size $800 \times 800$. We have seen this using the "OMP\_parallel\_functions.cfg" and "OMP\_state\_profile.cfg" configurations (figure \ref{fig:mandel-omp-21-parallel}). The parallel construct is executed 800 times (figure \ref{fig:S2_OMP_tasks_table}), the number of rows. Finally, the single worksharing construct is executed 800 times for each thread (figure \ref{fig:mandel-omp-21-single}). Thus, the single clause is executed 6400 times ($rows \times threads$). All threads will execute the single line but only one will "gain". This thread will be responsible for creating the tasks of that row.
+In total, there are 640000 tasks created and executed. This is because the image has size $800 \times 800$. We have seen this using the "OMP\_parallel\_functions.cfg" and "OMP\_state\_profile.cfg" configurations (figure \ref{fig:S2_OMP_tasks_table}). The parallel construct is executed 800 times (figure \ref{fig:mandel-omp-21-parallel}), the number of rows. Finally, the single worksharing construct is executed 800 times for each thread (figure \ref{fig:mandel-omp-21-single}). Thus, the single clause is executed 6400 times ($rows \times threads$). All threads will execute the single line but only one will "gain". This thread will be responsible for creating the tasks of that row.
 
 \begin{figure}[H]
 \centering
@@ -426,11 +404,11 @@ In the first plot, the execution time is reduced as we increase the number of th
 
 On the other hand, in the second plot the speedup increases a lot with 2-4 threads but ends up constant as we increase the number of threads.
 
-\textbf{\large{\large{REPASSAR EL SEGUENT: The scalability is not appropiate because the speedup stays at 2 (reduction of time of T$_1$) even though we have 8 threads.}}}
+Finally, the scalability is not appropiate because the speedup stays at 2 when we are using a big number of threads.
 
 \subsubsection{OpenMP Taskwait Variant}
 
-In this variant of the previous code, only one thread (the one that gets access to the single region), traverses all iterations of the row and col loops, generating a task for each iteration of the innermost loop (point). To do it, we have introduced "\#pragma omp taskwait" at the end of each iteration of a row. Consequently, the creator thread must wait until all tasks for a row finish. After that, the thread will advace one iteration of the row loop and generate a new bunch of tasks. This new version of the code can be found in \textit{mandel-omp-task-point-taskwait.c}.
+In this variant of the previous code, only one thread (the one that gets access to the single region), traverses all iterations of the row and col loops, generating a task for each iteration of the innermost loop (point). To do it, we have introduced "\#pragma omp taskwait" at the end of each iteration of a row. Consequently, the creator thread must wait until all tasks for a row finish. After that, the thread will advance one iteration of the row loop and generate a new bunch of tasks. This new version of the code can be found in \textit{mandel-omp-task-point-taskwait.c}.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -520,7 +498,7 @@ Figures \ref{fig:mandel-omp-10000-strong-22-time} and \ref{fig:mandel-omp-10000-
 
 \hfill
 
-In reality, the taskwait clause is not necessary because the tasks do not have any dependence between them. We saw in section \ref{sec:tareador} that the mandel-tar binary does not produce any kind of dependence between tasks. Thus, we can create and execute all tasks without having to wait until some of them terminate. The modified version of the code can be found in the file \textit{mandel-omp-task-point-taskwait-without.c}.
+In reality, the taskwait clause is not necessary because tasks do not have any dependence between them. We saw in section \ref{sec:tareador} that the mandel-tar binary does not produce any kind of dependence between tasks. Thus, we can create and execute all tasks without having to wait until some of them terminate. The modified version of the code can be found in the file \textit{mandel-omp-task-point-taskwait-without.c}.
 
 In order to see the differences with respect to the version with the taskwait clause, we have repeated the evaluation of scalability and tracing. The results are shown below.
 
@@ -547,7 +525,6 @@ We though that thread 0 would create all possible tasks and then execute the rem
 
 On the other hand, we can see that the scalability plots (time and speedup) have improved a bit even though it is not a significative change.
 
-\textbf{\large{\large{CANVIAR AQUESTES GRAFIQUES}}}
 \begin{figure}[H]
 \centering
 \begin{minipage}[b]{0.4\linewidth}
@@ -658,8 +635,6 @@ for (int row = 0; row < height; ++row) {
 
 If we create 800 tasks of the mostinner loop, in reality we are executing an equivalent version of the second task version we analysed. In order to analyse the performance of this strategy we will use the traces generated with \textit{Paraver} and using the appropiate configuration files.
 
-\textbf{\large{\large{DIR PERQUE TE MILLOR RENDIMENT QUE LA VERSIO 22}}}
-
 \begin{figure}[H]
 \begin{minipage}[t]{0.48\linewidth}
   \centering
@@ -682,7 +657,7 @@ On the other hand, in figure \ref{fig:S2_OMP_tasks_24_800_table} we can see that
 
 \subsubsection{The Nogroup Clause}
 
-The taskloop construct has an implicit task barrier (taskgroup) at the end. This is causing the effect of a taskwait clause. As we reasoned before about that we could delete the taskwait clause because there are no dependences between tasks, we can do the same with the tasgroup clause. To do it, the taskloop construct accepts a nogroup clause that eliminates this implicit barrier.
+The taskloop construct has an implicit task barrier (taskgroup) at the end. This is causing the effect of a taskwait clause. As we reasoned before about that we could delete the taskwait clause because there are no dependences between tasks, we can do the same with the taskgroup clause. To do it, the taskloop construct accepts a nogroup clause that eliminates this implicit barrier.
 
 Now, we will explore how this new version behaves in terms of performance when using 8 threads and for different task granularities (800, 400, 200, 100, 50, 25, 10, 5, 2 and 1 tasks). All versions of the codes can be found in files \textit{mandel-omp-task-point-taskloop-\{granularity\}-nogroup}.
 
@@ -758,7 +733,7 @@ The following plots are the scalability plots using the same implementation but 
 \end{minipage}
 \end{figure}
 
-In the previous plots we can see the tendency of the execution time and speedup as we increase the number of tasks. The bigger the number of tasks, the worse the execution time and speedup. This is because of the overhead of creation, synchronization and termination of tasks. Create one task per pixel is not a good idea.
+In the previous plots we can see the tendency of the execution time and speedup as we increase the number of tasks. The bigger the number of tasks, the worse the execution time and speedup. This is because of the overhead of creation, synchronization and termination of tasks. Creating one task per pixel is not a good idea.
 
 Besides, these results are much better than the ones of the previous section, so it seems that this implementation is the best for a point strategy.
 
@@ -769,7 +744,7 @@ Besides, these results are much better than the ones of the previous section, so
   \label{fig:num_task_point}
 \end{figure}
 
-As we can see in Figure \ref{fig:num_task_point}, the bigger the granularity (less number of tasks), the lower the execution time (and the lower speedup). The main reason is that we have to create less tasks. Thus, the overhead of creation and termination of tasks is smaller. The best option for this strategy is using small values for the number of tasks per row. In this situation, only 1 or 2 threads will execute the full row, while the other ones can execute the following rows.
+Figure \ref{fig:num_task_point} shows the execution time of the program with a constant number of threads (8). The bigger the granularity (less number of tasks), the lower the execution time (and the lower speedup). The main reason is that we have to create less tasks. Thus, the overhead of creation and termination of tasks is smaller. The best option for this strategy is using small values for the number of tasks per row. In this situation, only 1 or 2 threads will execute the full row, while the other ones can execute the following rows.
 
 \section{Row decomposition in OpenMP}
 
@@ -1164,6 +1139,7 @@ Finally, we have seen that using implicit creation task in the Row strategy, the
 
 \subsection{Scalability plots of row strategy using taskloop implementation}
 \label{sec:row_taskloop_scalability_plots}
+
 \begin{figure}[H]
 \centering
 \begin{minipage}[t]{0.4\linewidth}
@@ -1185,14 +1161,14 @@ Finally, we have seen that using implicit creation task in the Row strategy, the
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-2-time}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-2-time}
   \caption{Execution time plot varying the number of threads (Num. tasks = 2).}
   \label{fig:mandel-omp-10000-strong-omp-3-2-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-2-speedup}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-2-speedup}
   \caption{Speedup plot varying the number of threads (Num. tasks = 2).}
   \label{fig:mandel-omp-10000-strong-omp-3-2-speedup}
 \end{minipage}
@@ -1202,14 +1178,14 @@ Finally, we have seen that using implicit creation task in the Row strategy, the
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-5-time}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-5-time}
   \caption{Execution time plot varying the number of threads (Num. tasks = 5).}
   \label{fig:mandel-omp-10000-strong-omp-3-5-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-5-speedup}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-5-speedup}
   \caption{Speedup plot varying the number of threads (Num. tasks = 5).}
   \label{fig:mandel-omp-10000-strong-omp-3-5-speedup}
 \end{minipage}
@@ -1219,14 +1195,14 @@ Finally, we have seen that using implicit creation task in the Row strategy, the
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-10-time}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-10-time}
   \caption{Execution time plot varying the number of threads (Num. tasks = 10).}
   \label{fig:mandel-omp-10000-strong-omp-3-10-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=1.5]{./mandel-omp-10000-strong-omp-3-10-speedup}
+  \includegraphics[scale=0.5]{./mandel-omp-10000-strong-omp-3-10-speedup}
   \caption{Speedup plot varying the number of threads (Num. tasks = 10).}
   \label{fig:mandel-omp-10000-strong-omp-3-10-speedup}
 \end{minipage}
