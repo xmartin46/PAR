@@ -1,0 +1,21 @@
+Leaf strategy:
+2) (Ho hem fet amb un qsub)
+par4110@boada-1:~/lab4$ cat multisort-omp_8_boada-2.times.txt 
+Arguments (Kelements): N=32768, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.818592
+Multisort execution time: 1.578155
+Check sorted data execution time: 0.023391
+Multisort program finished
+
+3) (Boada)
+par4110@boada-1:~/lab4$ cat multisort-omp_8_boada-3.times.txt 
+....
+Arguments (Kelements): N=8192, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.206935
+Multisort execution time: 0.400170
+Check sorted data execution time: 0.004163
+Multisort program finished
+....
+
