@@ -1,0 +1,55 @@
+Leaf strategy:
+2) (Ho hem fet amb un qsub)
+par4110@boada-1:~/lab4$ cat multisort-omp_8_boada-2.times.txt 
+Arguments (Kelements): N=32768, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.818592
+Multisort execution time: 1.578155
+Check sorted data execution time: 0.023391
+Multisort program finished
+
+3) (Boada)
+par4110@boada-1:~/lab4$ cat multisort-omp_8_boada-3.times.txt 
+....
+Arguments (Kelements): N=8192, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.206935
+Multisort execution time: 0.400170
+Check sorted data execution time: 0.004163
+Multisort program finished
+....
+
+A partir de una funció recursiva un dels threads crearà tasques al final de la recursió del multisort i del merge.
+Executeran tasques tots els threads, inclús el que genera ja que quan hi haagi un taskwait aprofitarà per fer tasques.
+
+4)
+
+El problema es que com que un sol processador executa la part recursiva del codi i ell sol crea totes les tasques, els altres threads només executen els casos base.
+Per aquest motiu arriba un moment en que hi ha treads que mai executen cap tasca perquè el numero de tasques a la pull sempre serà menor al nombre de threads totals.
+
+Tree strategy:
+2) (Ho hem fet amb un qsub)
+par4110@boada-1:~/lab4$ cat multisort-omp_8_boada-4.times.txt
+Arguments (Kelements): N=32768, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.817532
+Multisort execution time: 3.742070
+Check sorted data execution time: 0.018040
+Multisort program finished
+
+3) (Boada)
+....
+Arguments (Kelements): N=8192, MIN_SORT_SIZE=1, MIN_MERGE_SIZE=1
+                       CUTOFF=4
+Initialization time in seconds: 0.207520
+Multisort execution time: 1.020923
+Check sorted data execution time: 0.004715
+Multisort program finished
+....
+
+En aquest cas observem que tots els threads creen tasques. Com que per cada recursió del programa es crea una tasca nova això porboca que es creiin moltes tasques.
+La creació de tantes tasques ens fa suspitar que aquest és el problema que en 8 threads sigui més ràpida la leaf strategy tot i ser paral·lelitzable.
+
+4)
+
+ 

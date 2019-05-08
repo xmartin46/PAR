@@ -1,0 +1,39 @@
+1.1 "Divide and conquer"
+
+par4110@boada-1:~/lab4$ ./multisort -n 32768 -s 32 -m 32
+Arguments (Kelements): N=32768, MIN_SORT_SIZE=32, MIN_MERGE_SIZE=32
+Initialization time in seconds: 0.850011
+Multisort execution time: 6.173513
+Check sorted data execution time: 0.015198
+Multisort program finished
+
+1.2
+1) Dibuix que esta al boada
+
+Multisort:
+Crearem tasques quan la mida del vector sigui major o igual a MIN_SORT_SIZE*4L.
+En la cració de tasques podem observar per cada recursió cap fill creat per multisort no comparteix dades, per tant es poden executar a l'hora.
+Per altra banda necessitem que els dos primers fills acabin per fer el primer merge i als dos ultims per fer el segon.
+Un cop acabats aquests dos merges s'en farà un tercer dels results obtinguts.
+I així succesivament.
+Quan no es compleix la codició es fa un basic sort.
+
+Merge:
+Crearem tasques quan el nombre d'elements del vector que volem ordenar sigui major o igual a MIN_MERGE_SIZE*2L.
+En aquest cas ordenarem el vector resultat en dues tasques, que no tenen relació entre elles. La primera ordenarà des de start una mida de length/2 i la segona de start + length/2 una mida de length/2.
+Quan no es compleix la codició es fa un basic merge.
+
+2)
+	Execution Time (ms)	Speed-up
+1	20334411001	1
+2	10173716001	1.99872013323365
+4	5086725001	3.99754478510288
+8	2550595001	7.97241858979085
+16	1289922001	15.7640624667507
+32	1289909001	15.7642213406029
+64	1289909001	15.7642213406029
+
+Fins a 16 threads els resultats s'acosten molt al cas ideal, ja que l'speed-up és molt semblant al nombre de threads.
+En el millor cas podem tenir un màxim de 16 tasques executant-se al mateix temps (ja que és un cas reduit).
+És per aquest motiu que utilitzar més de 16 threads no tindrà cap impacte en el temps d'execució i speed-up.
+
