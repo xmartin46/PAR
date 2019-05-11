@@ -245,6 +245,7 @@ void multisort(long n, T data[n], T tmp[n]) {
 \end{figure}
 
 \subsection{Task dependency graph (TDG)}
+\label{subsec:TDG}
 
 We can clearly see that Figure \ref{fig:TDG} is divided into two parts: the multisort and the merge.
 
@@ -324,6 +325,371 @@ Write a table with the execution time and speed-up predicted by Tareador (for 1,
 and 64 processors) for the task decomposition specified with Tareador. Are the results close to the
 ideal case? Reason about your answer.
 
+
+\section{Parallelization and performance analysis with tasks}
+
+As we said in the previous section, we concluded that we can use both Tree and Leaf strategies for the parallelization of the multisort and merge functions.
+
+In this section we are going to analyse the parallelization and performance of the given code using the \textit{OpenMP} clauses. The different versions of the code can be found in the next subsections. Nevertheless, the following code will be the same for the implementation of the two strategies:
+
+\begin{figure}[H]
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+multisort(N, data, tmp);
+\end{lstlisting}
+
+\caption{Modified fragment of the given code in the main function.}
+\end{figure}
+
+\subsection{Leaf Strategy}
+
+In this strategy, we define a task for the invocations of basicsort and basicmerge functions. That is, we create a task for each function inside the base case of multisort and merge functions.
+
+In order to do it, we have used the \textit{\#pragma omp task} clause. As we have seen in the section \ref{subsec:TDG}, there exists dependencies between some function calls, so we will need an \textit{OpenMP} clause to synchronize these functions (\textit{\#pragma omp taskwait}).
+
+The code can be found in the \textit{multisort-omp-leaf} file inside the codes directory. However, the important changes of the code are shown below.
+
+\begin{figure}[H]
+\begin{lstlisting}
+void merge(long n, T left[n], T right[n], T result[n*2], long start,
+		   long length) {
+    if (length < MIN_MERGE_SIZE*2L) {
+        // Base case
+        #pragma omp task
+        basicmerge(n, left, right, result, start, length);
+    } else {
+        // Recursive decomposition
+        merge(n, left, right, result, start, length/2);
+        merge(n, left, right, result, start + length/2, length/2);
+    }
+}
+\end{lstlisting}
+
+\caption{Merge function implementing the Leaf strategy.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{lstlisting}
+void multisort(long n, T data[n], T tmp[n]) {
+    if (n >= MIN_SORT_SIZE*4L) {
+        // Recursive decomposition
+		multisort(n/4L, &data[0], &tmp[0]);
+		multisort(n/4L, &data[n/4L], &tmp[n/4L]);
+		multisort(n/4L, &data[n/2L], &tmp[n/2L]);
+		multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L]);
+		
+		#pragma omp taskwait
+		
+		merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L);
+		merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L], 0, n/2L);
+		
+		#pragma omp taskwait
+		
+        merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n);
+	} else {
+		// Base case
+		#pragma omp task
+		basicsort(n, data);
+	}
+}
+\end{lstlisting}
+
+\caption{Multisort function implementing the Leaf strategy.}
+\end{figure}
+
+We can see in Figure \ref{fig:leaf_traces} that only thread 0 is the one that creates tasks (in the base case of the functions), while the other tasks are executing them. Moreover, we can see that thread 0 is also executing tasks. We think that this happens because it does not create tasks very usually, so it has time to execute some of the tasks inside the pool.
+
+On the other hand, we can also see the effect of the \textit{\#pragma omp taskwait} clause if we look at the first trace of the figure. There are plenty of red parts (synchronization parts) in all threads.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{./images/S2/Leaf_paraver}
+	
+	\label{fig:leaf_traces}
+	\caption{Fragment of the execution flow of the code using the Leaf strategy.}
+\end{figure}
+
+As in the Leaf stratgy only one thread executes the recursive part of the functions, there is a big amount of time where the other threads are doing nothing. Consequently, the speed-up plots for the complete application and only the multisort function cannot be good.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-2_leaf_complete_application}
+  \caption{Speed-up plot of the complete application using the Leaf strategy.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-2_leaf_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Leaf strategy.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+If we continue adding more threads to execute the code, this will result into an irrelevant improvement of both speed-up plots because there will be more threads that are doing no work, which means that the total amount of time in the Idle state will increase.
+
+\subsection{Tree Strategy}
+
+In this other strategy, we define a task during the recursive decomposition, when invoking multisort and merge recursive calls.
+
+To do it, we have also used the \textit{\#pragma omp task} clause. However, we cannot use \textit{\#pragma omp taskwait} in the multisort function anymore because we have to stop the flow of the code until a group of recursive calls which some are siblings and others are not terminate. To achieve this, we have used the \textit{\#pragma omp taskgroup} clause. We have done 3 groups taking into account the dependences in Figure \ref{fig:TDG}: multisort calls, first two merge calls and the third merge call.
+
+\begin{figure}[H]
+\begin{lstlisting}
+void merge(long n, T left[n], T right[n], T result[n*2], long start,
+	 	   long length) {
+    if (length < MIN_MERGE_SIZE*2L) {
+        // Base case
+        basicmerge(n, left, right, result, start, length);
+    } else {
+        // Recursive decomposition
+        #pragma omp task
+        merge(n, left, right, result, start, length/2);
+        
+        #pragma omp task
+        merge(n, left, right, result, start + length/2, length/2);
+    }
+}
+\end{lstlisting}
+
+\caption{Merge function implementing the Tree strategy.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{lstlisting}
+void multisort(long n, T data[n], T tmp[n]) {
+    if (n >= MIN_SORT_SIZE*4L) {
+	    // Recursive decomposition
+	    #pragma omp taskgroup
+	    {
+			#pragma omp task
+			multisort(n/4L, &data[0], &tmp[0]);
+			
+			#pragma omp task
+			multisort(n/4L, &data[n/4L], &tmp[n/4L]);
+			
+			#pragma omp task
+			multisort(n/4L, &data[n/2L], &tmp[n/2L]);
+			
+			#pragma omp task
+			multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L]);
+		}
+	
+		#pragma omp taskgroup
+		{
+			#pragma omp task
+			merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L);
+			
+			#pragma omp task
+			merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L],
+				  0, n/2L);
+		}
+		
+		#pragma omp task
+	    merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n);
+	} else {
+		// Base case
+		basicsort(n, data);
+	}
+}
+\end{lstlisting}
+
+\caption{Multisort function implementing the Tree strategy.}
+\end{figure}
+
+Now, with this new strategy, all threads can execute and create tasks. At he beginning only thread 0 could create tasks, but each time it creates one, the number of threads that can create tasks increases. As a consequence, the execution time will be reduced a lot because now the total amount of time in the Idle state is reduced.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{./images/S2/Tree_paraver}
+	
+	\label{fig:tree_traces}
+	\caption{Fragment of the execution flow of the code using the Tree strategy.}
+\end{figure}
+
+As we have said before, the execution time is reduced a lot, improving the speed-up plots of both complete application and multisort function only. Hence, both plots will be much better than the ones obtained using the Leaf strategy.
+
+Besides, we can see that this improvement has had a much impact on the multisort function only plot than in the complete application one.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-3_tree_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-3_tree_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+If we continue adding more threads to execute the code, this will result into a better performance of the code. We would have better execution time and speed-up results.
+
+\subsection{Task Cut–Off Mechanism}
+
+As we have seen, in the Tree strategy there is not a maximum recursion level, so if we have a large vector input we can be calling functions recursively for a long time.
+
+To solve this problem, we can set a maximum recursion level using a cut-off mechanism that controls the maximum recursion level for task generation (and their granularity).
+
+To do this, we have used the \textit{final(condition)} clause. When the condition is true, the task has the attribute final to true. The \textit{omp\_in\_final()} function uses this attribute to decide whether it can create more tasks or not.
+
+This code can be found in the multisort-omp-tree-cutoff.c file inside the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+int CUTOFF;
+
+void merge(long n, T left[n], T right[n], T result[n*2], long start,
+		   long length, int depth) {
+    if (length < MIN_MERGE_SIZE*2L) {
+        // Base case
+        basicmerge(n, left, right, result, start, length);
+    } else {
+        // Recursive decomposition
+        if (!omp_in_final()) {
+			#pragma omp task final(depth >= CUTOFF)
+			merge(n, left, right, result, start, length/2, depth + 1);
+			
+			#pragma omp task final(depth >= CUTOFF)
+			merge(n, left, right, result, start + length/2, length/2,
+				  depth + 1);
+		} else {
+			merge(n, left, right, result, start, length/2, depth + 1);
+			merge(n, left, right, result, start + length/2, length/2,
+				  depth + 1);
+		}
+    }
+}
+\end{lstlisting}
+
+\caption{Merge function implementing the Tree strategy using the cut-off mechanism.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{lstlisting}
+void multisort(long n, T data[n], T tmp[n], int depth) {
+    if (n >= MIN_SORT_SIZE*4L) {
+        // Recursive decomposition
+        
+        if (!omp_in_final()) {
+			#pragma omp taskgroup
+			{
+				#pragma omp task final(depth >= CUTOFF)
+				multisort(n/4L, &data[0], &tmp[0], depth + 1);
+				
+				#pragma omp task final(depth >= CUTOFF)
+				multisort(n/4L, &data[n/4L], &tmp[n/4L], depth + 1);
+				
+				#pragma omp task final(depth >= CUTOFF)
+				multisort(n/4L, &data[n/2L], &tmp[n/2L], depth + 1);
+				
+				#pragma omp task final(depth >= CUTOFF)
+				multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L],
+						  depth + 1);
+			}
+
+			#pragma omp taskgroup
+			{
+				#pragma omp task final(depth >= CUTOFF)
+				merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L,
+					  depth + 1);
+				
+				#pragma omp task final(depth >= CUTOFF)
+				merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L],
+					  0, n/2L, depth + 1);
+			}
+			
+			#pragma omp task final(depth >= CUTOFF)
+			merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n, 
+				  depth + 1);
+		} else {
+			multisort(n/4L, &data[0], &tmp[0], depth + 1);
+			multisort(n/4L, &data[n/4L], &tmp[n/4L], depth + 1);
+			multisort(n/4L, &data[n/2L], &tmp[n/2L], depth + 1);
+			multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L], depth + 1);
+
+			merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L,
+				  depth + 1);
+			merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L], 0,
+				  n/2L, depth + 1);
+			
+			merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n, 
+				  depth + 1);
+		}
+	} else {
+		// Base case
+		basicsort(n, data);
+	}
+}
+\end{lstlisting}
+
+\caption{Multisort function implementing the Tree strategy using the cut-off mechanism.}
+\end{figure}
+
+The CUTOFF variable can be set using the -c cutoff argument in the command line. If we do this, CUTOFF will be the maximum recursion level permitted.
+
+To understand the cut-off mechanism, we have used a CUTOFF value of 0 and the \textit{Paraver} tool to see the execution flow. The results are shown below.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{./images/S2/Tree_CUTOFF_paraver}
+	
+	\label{fig:trace_cutoff_tree}
+	\caption{Fragment of the execution flow of the code using the Tree strategy and CUTOFF = 0.}
+\end{figure}
+
+As the maximum recursion level is 0, we only create one task for each call function inside multisort. These new tasks will not be able to create tasks, and will execute te code in sequential mode.
+
+In the recursive part, the multisort function does 7 calls (4 for the multisort and 3 for the merge). We can see this 7 created tasks in the third trace in Figure \ref{fig:trace_cutoff_tree}. The four large executions correspond to the multisort functions. Once the first two terminate, the first merge call (yellow one) can be executed. The same happens with the second merge call (red one) when the other two multisort functions end. Finally, the third merge function can start when the other two merge calls have terminated. This happens because of the taskgroup clause.
+
+Once we have understood the cut-off mechanism, we are going to explore the performance of the code when using different values for the maximum recursion level. To do this, we have used the \textbf{submit-cutoff-omp.sh} script.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.55]{./images/S2/multisort-omp-4-cutoff}
+	
+	\label{fig:multivalues_cutoff}
+	\caption{Execution time of the code when varying the recursion size.}
+\end{figure}
+
+With a recursion size value of 3 we get the best performance of the program. Thus, if we analyse the scalability of the program using this optimum value, we see that the speed-up of the multisort function only is the best in comparison with the other two speed-up plots (Leaf and Tree strategies). However, the difference with the plot of the Tree strategy without the cut-off mechanism is very small.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-4_tree_cutoff_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-4_tree_cutoff_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+\break
+
+1. Include the relevant portion of the codes that implement the two versions (Leaf and Tree), commenting whatever necessary.
+
+2. For the the Leaf and Tree strategies, include the speed–up (strong scalability) plots that have been
+obtained for the different numbers of processors. Reason about the performance that is observed,
+including captures of Paraver windows to justify your explanations.
+
+3. Show the changes you have done in the code in order to include a cut-off mechanism based on
+recursion level. Is there a value for the cut-off argument that improves the overall performance?
+Analyze the scalability of your parallelization with this value.
 
 \section{Annex}
 
