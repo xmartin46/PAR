@@ -193,7 +193,7 @@ void merge(long n, T left[n], T right[n], T result[n*2], long start,
 
 \subsection{Multisort Function}
 
-The multisort function divides the input vector into four smaller vectors, apply a recursive call for each of them and them merges the 4 vectors into a big sorted one.
+The multisort function divides the input vector into 4 smaller vectors, apply a recursive call for each of them and then merges the 4 vectors into a big sorted one.
 
 We will use the same strategy than in the merge function. This is, creating a task for each recursive call and for each call to the merge function.
 
@@ -265,7 +265,7 @@ On the other hand, in the merge function, we create tasks when the number of ele
 
 With all these information, we can conclude that we can use a \textbf{Tree strategy} (generate a task for each recursive function) because there are no dependences between sibling tasks. Besides, we can also use a \textbf{Leaf strategy} (generate a task in each base case of the functions).
 
-Furthermore, we must be careful about the synchronization we need between the multisort tasks and the merge ones because, as we said before, the first merge call depends on the first two multisort calls, the second merge call depends on the thids and fourth multisort calls and the third merge call depends on the previous two merge calls. Without synchronization we would have wrong results due to data racing.
+Furthermore, we must be careful about the synchronization we need between the multisort tasks and the merge ones because, as we said before, the first merge call depends on the first two multisort calls, the second merge call depends on the third and fourth multisort calls and the third merge call depends on the previous two merge calls. Without synchronization we would have wrong results due to data racing.
 
 \subsection{Parallel Performance and Scalability}
 
@@ -317,20 +317,19 @@ We can see that until 16 processors, the results obtained are pretty close to th
 
 \break
 
-Include the relevant parts of the modified multisort-tareador.c code and comment where the
+\textbf{Include the relevant parts of the modified multisort-tareador.c code and comment where the
 calls to the Tareador API have been placed. Comment also about the task graph generated and
-the causes of the dependences that appear.
+the causes of the dependences that appear.}
 
-Write a table with the execution time and speed-up predicted by Tareador (for 1, 2, 4, 8, 16, 32
+\textbf{Write a table with the execution time and speed-up predicted by Tareador (for 1, 2, 4, 8, 16, 32
 and 64 processors) for the task decomposition specified with Tareador. Are the results close to the
-ideal case? Reason about your answer.
-
+ideal case? Reason about your answer.}
 
 \section{Parallelization and performance analysis with tasks}
 
 As we said in the previous section, we concluded that we can use both Tree and Leaf strategies for the parallelization of the multisort and merge functions.
 
-In this section we are going to analyse the parallelization and performance of the given code using the \textit{OpenMP} clauses. The different versions of the code can be found in the next subsections. Nevertheless, the following code will be the same for the implementation of the two strategies:
+In this section we are going to analyse the parallelization and performance of the 2 strategies implemented using the \textit{OpenMP} clauses. The different versions of the code can be found in the next subsections. Nevertheless, the following code will be the same for the implementation of both strategies:
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -344,11 +343,11 @@ multisort(N, data, tmp);
 
 \subsection{Leaf Strategy}
 
-In this strategy, we define a task for the invocations of basicsort and basicmerge functions. That is, we create a task for each function inside the base case of multisort and merge functions.
+In this strategy, we define a task for the invocations of basicsort and basicmerge functions. That is, we create a task each time we are in the base case of multisort and merge functions.
 
 In order to do it, we have used the \textit{\#pragma omp task} clause. As we have seen in the section \ref{subsec:TDG}, there exists dependencies between some function calls, so we will need an \textit{OpenMP} clause to synchronize these functions (\textit{\#pragma omp taskwait}).
 
-The code can be found in the \textit{multisort-omp-leaf} file inside the codes directory. However, the important changes of the code are shown below.
+The code can be found in the \textit{multisort-omp-leaf.c} file inside the codes directory. However, the important changes of the code are shown below.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -436,6 +435,8 @@ If we continue adding more threads to execute the code, this will result into an
 In this other strategy, we define a task during the recursive decomposition, when invoking multisort and merge recursive calls.
 
 To do it, we have also used the \textit{\#pragma omp task} clause. However, we cannot use \textit{\#pragma omp taskwait} in the multisort function anymore because we have to stop the flow of the code until a group of recursive calls which some are siblings and others are not terminate. To achieve this, we have used the \textit{\#pragma omp taskgroup} clause. We have done 3 groups taking into account the dependences in Figure \ref{fig:TDG}: multisort calls, first two merge calls and the third merge call.
+
+The following code can be found in the \textit{multisort-omp-tree.c} file inside the codes directory.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -537,11 +538,11 @@ If we continue adding more threads to execute the code, this will result into a 
 
 As we have seen, in the Tree strategy there is not a maximum recursion level, so if we have a large vector input we can be calling functions recursively for a long time.
 
-To solve this problem, we can set a maximum recursion level using a cut-off mechanism that controls the maximum recursion level for task generation (and their granularity).
+To solve this problem, we can set a maximum recursion level using a cut-off mechanism that controls it for task generation (and their granularity).
 
 To do this, we have used the \textit{final(condition)} clause. When the condition is true, the task has the attribute final to true. The \textit{omp\_in\_final()} function uses this attribute to decide whether it can create more tasks or not.
 
-This code can be found in the multisort-omp-tree-cutoff.c file inside the codes directory.
+This code can be found in the \textit{multisort-omp-tree-cutoff.c} file inside the codes directory.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -634,7 +635,7 @@ void multisort(long n, T data[n], T tmp[n], int depth) {
 \caption{Multisort function implementing the Tree strategy using the cut-off mechanism.}
 \end{figure}
 
-The CUTOFF variable can be set using the -c cutoff argument in the command line. If we do this, CUTOFF will be the maximum recursion level permitted.
+The CUTOFF variable can be set using the \textbf{-c cutoff} argument in the command line. If we do this, CUTOFF will be the maximum recursion level permitted.
 
 To understand the cut-off mechanism, we have used a CUTOFF value of 0 and the \textit{Paraver} tool to see the execution flow. The results are shown below.
 
@@ -660,36 +661,149 @@ Once we have understood the cut-off mechanism, we are going to explore the perfo
 	\caption{Execution time of the code when varying the recursion size.}
 \end{figure}
 
-With a recursion size value of 3 we get the best performance of the program. Thus, if we analyse the scalability of the program using this optimum value, we see that the speed-up of the multisort function only is the best in comparison with the other two speed-up plots (Leaf and Tree strategies). However, the difference with the plot of the Tree strategy without the cut-off mechanism is very small.
+With a recursion size value of 3 we get the best performance of the program. Analysing the scalability of the program using this optimum value, we see that the speed-up of the multisort function only is the best in comparison with the other two speed-up plots (Leaf and Tree strategies). However, the difference with the plot of the Tree strategy without the cut-off mechanism is very small.
 
 \begin{figure}[H]
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
   \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-4_tree_cutoff_complete_application}
-  \caption{Speed-up plot of the complete application using the Tree strategy.}
+  \caption{Speed-up plot of the complete application using the Tree strategy and the cut-off mechanism.}
   \label{fig:mandel-omp-10000-strong-21-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
   \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-4_tree_cutoff_multisort_only}
-  \caption{Speed-up plot of the multisort function using the Tree strategy.}
+  \caption{Speed-up plot of the multisort function using the Tree strategy and the cut-off mechanism.}
   \label{fig:mandel-omp-10000-strong-21-speedup}
 \end{minipage}
 \end{figure}
 
 \break
 
-1. Include the relevant portion of the codes that implement the two versions (Leaf and Tree), commenting whatever necessary.
+\textbf{1. Include the relevant portion of the codes that implement the two versions (Leaf and Tree), commenting whatever necessary.}
 
-2. For the the Leaf and Tree strategies, include the speed–up (strong scalability) plots that have been
+\textbf{2. For the the Leaf and Tree strategies, include the speed–up (strong scalability) plots that have been
 obtained for the different numbers of processors. Reason about the performance that is observed,
-including captures of Paraver windows to justify your explanations.
+including captures of Paraver windows to justify your explanations.}
 
-3. Show the changes you have done in the code in order to include a cut-off mechanism based on
+\textbf{3. Show the changes you have done in the code in order to include a cut-off mechanism based on
 recursion level. Is there a value for the cut-off argument that improves the overall performance?
-Analyze the scalability of your parallelization with this value.
+Analyze the scalability of your parallelization with this value.}
+
+\section{Parallelization and performance analysis with dependent tasks}
+
+In the previous sections we used \textit{\#pragma omp taskwait} and \textit{\#pragma omp taskgroup} to synchronize the tasks. However, it may happen that the execution time of one task is much greater than the other ones. As a result, we will loose time waiting that task to terminate.
+
+A solution to this problem is to get rid of these two \textit{OpenMP} clauses and use the \textit{depend} clause to express dependencies. With this new clause, tasks do not have to wait until all previous tasks end but only the tasks that create their dependencies.
+
+The new code is in \textit{multisort-omp-tree-depend.c} file inside the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+void merge(long n, T left[n], T right[n], T result[n*2], long start,
+		   long length) {
+    if (length < MIN_MERGE_SIZE*2L) {
+        // Base case
+        basicmerge(n, left, right, result, start, length);
+    } else {
+        // Recursive decomposition
+        #pragma omp task
+        merge(n, left, right, result, start, length/2);
+        
+        #pragma omp task
+        merge(n, left, right, result, start + length/2, length/2);
+        
+        #pragma omp taskwait
+    }
+}
+\end{lstlisting}
+
+\caption{Merge function implementing the Tree strategy using the dependence clauses.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{lstlisting}
+void multisort(long n, T data[n], T tmp[n]) {
+    if (n >= MIN_SORT_SIZE*4L) {
+        // Recursive decomposition
+		#pragma omp task depend(out:data[0])
+		multisort(n/4L, &data[0], &tmp[0]);
+		
+		#pragma omp task depend(out:data[n/4L])
+		multisort(n/4L, &data[n/4L], &tmp[n/4L]);
+		
+		#pragma omp task depend(out:data[n/2L])
+		multisort(n/4L, &data[n/2L], &tmp[n/2L]);
+		
+		#pragma omp task depend(out:data[3L*n/4L])
+		multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L]);
+
+		
+		#pragma omp task depend(in:data[0],data[n/4L]) 
+						 depend(out:tmp[0])
+		merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L);
+		
+		#pragma omp task depend(in:data[n/2L],data[3L*n/4L])
+						 depend(out:tmp[n/2L])
+		merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L], 0, n/2L);
+		
+		#pragma omp task depend(in:tmp[0],tmp[n/2L])
+        merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n);
+        
+        #pragma omp taskwait
+	} else {
+		// Base case
+		basicsort(n, data);
+	}
+}
+\end{lstlisting}
+
+\caption{Multisort function implementing the Tree strategy using the dependence clauses.}
+\end{figure}
+
+The first merge call cannot be executed until the previous tasks with \textit{depend(out: data[0])} and \textit{depend(out: data[n/4L])} terminate. Now, even though the third or fourth multisort calls have not terminated, the first merge call can be executed. The same happens for the rest of the calls with the depend clause. Thus, we will reduce a bit the execution time of the program.
+
+Nevertheless, we must use \textit{\#pragma omp taskwait} at the end of both multisort and merge functions. Without them, the sorting would not be correct because it could happen that while the last merge call inside the multisort function is being executed, we terminate this function and start with other tasks. The next task would think that the vector is already sorted altough that merge call would have not terminated yet. The same happens inside the merge function.
+
+The most important thing we see in Figure \ref{fig:depend_tree} is that there is even less parts in Idle time than in the Tree flow (Figure \ref{fig:tree_traces}). Hence, the execution time is reduced a bit with respect to the one using the Tree strategy.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{./images/S3/Tree_depend_paraver}
+
+	\label{fig:depend_tree}	
+	\caption{Fragment of the execution flow of the code using the Tree strategy and the depend clause.}
+\end{figure}
+
+Finally, in the scalability plots of this program we can observe that both have the best speed-ups with respect to all previous speed-up plots. This has been possible with the use of the depend clause.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/S3/multisort-omp-strong_boada-2_tree_depend_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy and the cut-off mechanism.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/S3/multisort-omp-strong_boada-2_tree_depend_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy and the cut-off mechanism.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+\break
+
+\textbf{1. Include the relevant portion of the code that implements the Tree version with task dependencies,
+commenting whatever necessary.}
+
+\textbf{2. Reason about the performance that is observed, including the speed–up plots that have been
+obtained for different numbers of processors and with captures of Paraver windows to justify your
+reasoning.}
 
 \section{Annex}
 
