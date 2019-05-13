@@ -431,6 +431,7 @@ As in the Leaf stratgy only one thread executes the recursive part of the functi
 If we continue adding more threads to execute the code, this will result into an irrelevant improvement of both speed-up plots because there will be more threads that are doing no work, which means that the total amount of time in the Idle state will increase.
 
 \subsection{Tree Strategy}
+\label{treestrategy}
 
 In this other strategy, we define a task during the recursive decomposition, when invoking multisort and merge recursive calls.
 
@@ -804,6 +805,77 @@ commenting whatever necessary.}
 \textbf{2. Reason about the performance that is observed, including the speed–up plots that have been
 obtained for different numbers of processors and with captures of Paraver windows to justify your
 reasoning.}
+
+\section{Optional}
+
+\subsection{Optional 1}
+
+In this part we used the code from the section \nameref{treestrategy}, to check the different resources of each Boada node.
+
+\subsubsection{Boada-1 to 4}
+
+As we have seen in the First Laboratory, the number of cores of these nodes is 12. Executing the script in one of those nodes we obtained the following Speed-up plots.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-3_tree_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy in Boada 3.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/S2_strong_scalability/multisort-omp-strong_boada-3_tree_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy in Boada 3.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+\subsubsection{Boada-5}
+
+In this node we have a total of 12 cores, equal that in Boada-1 to 4, but in this node we have a different architecture. Submitting with the script we obtained the following results.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/multisort-omp-strong_boada-5_tree_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy in Boada 5.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/multisort-omp-strong_boada-5_tree_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy in Boada 5.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+\subsubsection{Boada-6 to 8}
+
+In this case, these nodes have a total of 16 cores. So we have changed the value of np_NMAX to 16 in the submit-strong-omp.sh script. Afterwards we executed the script in one of these nodes.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/multisort-omp-strong_boada-7_tree_complete_application}
+  \caption{Speed-up plot of the complete application using the Tree strategy in Boada 7.}
+  \label{fig:mandel-omp-10000-strong-21-time}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}[b]{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./S2/multisort-omp-strong_boada-7_tree_multisort_only}
+  \caption{Speed-up plot of the multisort function using the Tree strategy in Boada 7.}
+  \label{fig:mandel-omp-10000-strong-21-speedup}
+\end{minipage}
+\end{figure}
+
+We have seen that the beest resultss are in the Boada-5, due to the architecture of this node, which has the best maximum core frequency.
 
 \section{Annex}
 
