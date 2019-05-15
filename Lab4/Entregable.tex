@@ -150,6 +150,20 @@
 
 \section{Introduction}
 
+Sorting is such an important part in Algorithm that it is crucial to find the best algorithms that sort vectors in the least possible execution time.
+
+Mergesort is a sorting algorithm which combines a "divide and conquer" strategy. It divides the initial vector into multiple subvectors recursively and when the size of the subvectors reaches a value, a sequential quicksort is applied to each of the created subvectors. Finally, with a merge of the subvectors we back into a single sorted vector.
+
+In this three sessions of the laboratory we will analyse the performance of this algorithm using different parallel strategies. The first one will be the Leaf strategy, in which we create a task each time we are in the base case of the function. The second one is the Tree strategy, in which we define a task during the recursive decomposition.
+
+To do this analysis we will first use the \textit{Tareador} tool to see whether we can use both strategies or not, depending on the dependencies that exist in the program tasks. One we have done this, we will parallelise the code using the \textit{OpenMP} clauses.
+
+First we will implement the Leaf strategy and later the Tree one. For the Tree strategy we will use different versions of its implementation (with and without cut-off and using the \textit{depend} clause).
+
+To be able to analyse the parallelisation and performance of the program we will be using the \textit{Paraver} tool and the scripts that we have been given.
+
+\newpage
+
 \section{Anlysis with \textit{Tareador}}
 
 In order to study which is the best approach that we should use to parallelize the code (using the \textit{OpenMP} directives), a study about the task dependencies is needed.
@@ -175,13 +189,13 @@ void merge(long n, T left[n], T right[n], T result[n*2], long start,
         basicmerge(n, left, right, result, start, length);
     } else {
         // Recursive decomposition
-        tareador_start_task("me1");
+        tareador_start_task("mef1");
         merge(n, left, right, result, start, length/2);
-        tareador_end_task("me1");
+        tareador_end_task("mef1");
 
-        tareador_start_task("me2");
+        tareador_start_task("mef2");
         merge(n, left, right, result, start + length/2, length/2);
-        tareador_end_task("me2");
+        tareador_end_task("mef2");
     }
 }
 \end{lstlisting}
@@ -247,7 +261,7 @@ void multisort(long n, T data[n], T tmp[n]) {
 \subsection{Task dependency graph (TDG)}
 \label{subsec:TDG}
 
-We can clearly see that Figure \ref{fig:TDG} is divided into two parts: the multisort and the merge.
+We can clearly see that Figure 3 is divided into two parts: the multisort and the merge.
 
 As we said before, in the multisort function we divide the input vector into 4 smaller vectors, until the vector size is smaller than $MIN\_SORT\_SIZE \times 4L$. This can be seen at the top of the figure, as we can see 4 different boxes (green, red, yellow and purple). Moreover, there is no data sharing between them, so we can execute them at the same time.
 
@@ -298,7 +312,7 @@ The following table shows the execution time and speed-up values obtained when v
 \caption{Execution Time and Speed-Up varying the number of processors.}
 \end{table}
 
-We can see that until 16 processors, the results obtained are pretty close to the ideal ones. However, from 16 to infinite processors there is no improvement on the speed-up values. This is because in Figure \ref{fig:TDG} we see that the maximum number of tasks executed at the same time are 16. For this reason, using more than 16 processors will not have any impact on the execution time and speed-up.
+We can see that until 16 processors, the results obtained are pretty close to the ideal ones. However, from 16 to infinite processors there is no improvement on the speed-up values. This is because in Figure 3 we see that the maximum number of tasks executed at the same time are 16. For this reason, using more than 16 processors will not have any impact on the execution time and speed-up. See the traces extracted from \textit{Paraver} in Annex \ref{ann:scalabilityS1}.
 
 \begin{figure}[H]
 \hspace{-0.5cm}
@@ -314,16 +328,6 @@ We can see that until 16 processors, the results obtained are pretty close to th
 \end{subfigure}
 \caption{Execution Time and Speed-Up plots varying the number of processors.}
 \end{figure}
-
-\break
-
-\textbf{Include the relevant parts of the modified multisort-tareador.c code and comment where the
-calls to the Tareador API have been placed. Comment also about the task graph generated and
-the causes of the dependences that appear.}
-
-\textbf{Write a table with the execution time and speed-up predicted by Tareador (for 1, 2, 4, 8, 16, 32
-and 64 processors) for the task decomposition specified with Tareador. Are the results close to the
-ideal case? Reason about your answer.}
 
 \section{Parallelization and performance analysis with tasks}
 
@@ -397,7 +401,7 @@ void multisort(long n, T data[n], T tmp[n]) {
 \caption{Multisort function implementing the Leaf strategy.}
 \end{figure}
 
-We can see in Figure \ref{fig:leaf_traces} that only thread 0 is the one that creates tasks (in the base case of the functions), while the other tasks are executing them. Moreover, we can see that thread 0 is also executing tasks. We think that this happens because it does not create tasks very usually, so it has time to execute some of the tasks inside the pool.
+We can see in Figure 8 that only thread 0 is the one that creates tasks (in the base case of the functions), while the other tasks are executing them. Moreover, we can see that thread 0 is also executing tasks. We think that this happens because it does not create tasks very usually, so it has time to execute some of the tasks inside the pool.
 
 On the other hand, we can also see the effect of the \textit{\#pragma omp taskwait} clause if we look at the first trace of the figure. There are plenty of red parts (synchronization parts) in all threads.
 
@@ -435,7 +439,7 @@ If we continue adding more threads to execute the code, this will result into an
 
 In this other strategy, we define a task during the recursive decomposition, when invoking multisort and merge recursive calls.
 
-To do it, we have also used the \textit{\#pragma omp task} clause. However, we cannot use \textit{\#pragma omp taskwait} in the multisort function anymore because we have to stop the flow of the code until a group of recursive calls which some are siblings and others are not terminate. To achieve this, we have used the \textit{\#pragma omp taskgroup} clause. We have done 3 groups taking into account the dependences in Figure \ref{fig:TDG}: multisort calls, first two merge calls and the third merge call.
+To do it, we have also used the \textit{\#pragma omp task} clause. However, we cannot use \textit{\#pragma omp taskwait} in the multisort function anymore because we have to stop the flow of the code until a group of recursive calls which some are siblings and others are not terminate. To achieve this, we have used the \textit{\#pragma omp taskgroup} clause. We have done 3 groups taking into account the dependences in Figure 3: multisort calls, first two merge calls and the third merge call.
 
 The following code can be found in the \textit{multisort-omp-tree.c} file inside the codes directory.
 
@@ -650,7 +654,7 @@ To understand the cut-off mechanism, we have used a CUTOFF value of 0 and the \t
 
 As the maximum recursion level is 0, we only create one task for each call function inside multisort. These new tasks will not be able to create tasks, and will execute te code in sequential mode.
 
-In the recursive part, the multisort function does 7 calls (4 for the multisort and 3 for the merge). We can see this 7 created tasks in the third trace in Figure \ref{fig:trace_cutoff_tree}. The four large executions correspond to the multisort functions. Once the first two terminate, the first merge call (yellow one) can be executed. The same happens with the second merge call (red one) when the other two multisort functions end. Finally, the third merge function can start when the other two merge calls have terminated. This happens because of the taskgroup clause.
+In the recursive part, the multisort function does 7 calls (4 for the multisort and 3 for the merge). We can see this 7 created tasks in the third trace in Figure 18. The four large executions correspond to the multisort functions. Once the first two terminate, the first merge call (yellow one) can be executed. The same happens with the second merge call (red one) when the other two multisort functions end. Finally, the third merge function can start when the other two merge calls have terminated. This happens because of the taskgroup clause.
 
 Once we have understood the cut-off mechanism, we are going to explore the performance of the code when using different values for the maximum recursion level. To do this, we have used the \textbf{submit-cutoff-omp.sh} script.
 
@@ -680,18 +684,6 @@ With a recursion size value of 3 we get the best performance of the program. Ana
   \label{fig:mandel-omp-10000-strong-21-speedup}
 \end{minipage}
 \end{figure}
-
-\break
-
-\textbf{1. Include the relevant portion of the codes that implement the two versions (Leaf and Tree), commenting whatever necessary.}
-
-\textbf{2. For the the Leaf and Tree strategies, include the speed–up (strong scalability) plots that have been
-obtained for the different numbers of processors. Reason about the performance that is observed,
-including captures of Paraver windows to justify your explanations.}
-
-\textbf{3. Show the changes you have done in the code in order to include a cut-off mechanism based on
-recursion level. Is there a value for the cut-off argument that improves the overall performance?
-Analyze the scalability of your parallelization with this value.}
 
 \section{Parallelization and performance analysis with dependent tasks}
 
@@ -768,7 +760,7 @@ The first merge call cannot be executed until the previous tasks with \textit{de
 
 Nevertheless, we must use \textit{\#pragma omp taskwait} at the end of both multisort and merge functions. Without them, the sorting would not be correct because it could happen that while the last merge call inside the multisort function is being executed, we terminate this function and start with other tasks. The next task would think that the vector is already sorted altough that merge call would have not terminated yet. The same happens inside the merge function.
 
-The most important thing we see in Figure \ref{fig:depend_tree} is that there is even less parts in Idle time than in the Tree flow (Figure \ref{fig:tree_traces}). Hence, the execution time is reduced a bit with respect to the one using the Tree strategy.
+The most important thing we see in Figure 24 is that there is even less parts in Idle time than in the Tree flow (Figure 13). Hence, the execution time is reduced a bit with respect to the one using the Tree strategy.
 
 \begin{figure}[H]
 	\centering
@@ -797,24 +789,15 @@ Finally, in the scalability plots of this program we can observe that both have 
 \end{minipage}
 \end{figure}
 
-\break
-
-\textbf{1. Include the relevant portion of the code that implements the Tree version with task dependencies,
-commenting whatever necessary.}
-
-\textbf{2. Reason about the performance that is observed, including the speed–up plots that have been
-obtained for different numbers of processors and with captures of Paraver windows to justify your
-reasoning.}
-
-\section{Optional}
+\section{Optionals}
 
 \subsection{Optional 1}
 
-In this part we used the code from the section \nameref{treestrategy}, to check the different resources of each Boada node.
+In this part we used the code from the section \nameref{treestrategy}, to analyse the scalability plots on the other node types in boada. To do that, we edited for each node type the maximum number of cores to be used in the \textbf{submit-strong-omp.sh} script (variable np\_NMAX).
 
 \subsubsection{Boada-1 to 4}
 
-As we have seen in the First Laboratory, the number of cores of these nodes is 12. Executing the script in one of those nodes we obtained the following Speed-up plots.
+As we have seen in the first laboratory, the number of cores of these nodes is 12. Executing the script in one of those nodes we obtained the following Speed-up plots, which are the same than in the \nameref{treestrategy} section.
 
 \begin{figure}[H]
 \centering
@@ -835,7 +818,7 @@ As we have seen in the First Laboratory, the number of cores of these nodes is 1
 
 \subsubsection{Boada-5}
 
-In this node we have a total of 12 cores, equal that in Boada-1 to 4, but in this node we have a different architecture. Submitting with the script we obtained the following results.
+In this node we have a total of 12 cores, which is the same that in Boada-1 to 4. However, in this node we have a different type of architecture. Submitting the script we obtained the following results:
 
 \begin{figure}[H]
 \centering
@@ -854,9 +837,11 @@ In this node we have a total of 12 cores, equal that in Boada-1 to 4, but in thi
 \end{minipage}
 \end{figure}
 
+We can see that this architecture is much better than the one in Boada-1 to 4 because there has been an improvement on both Speed-up plots. Besides, the results in the second plot are almost the ideal case (discontinuous line).
+
 \subsubsection{Boada-6 to 8}
 
-In this case, these nodes have a total of 16 cores. So we have changed the value of np\_NMAX to 16 in the submit-strong-omp.sh script. Afterwards we executed the script in one of these nodes.
+These other nodes have a total of 16 cores. Thus, we have changed the value of np\_NMAX to 16 in the \textbf{submit-strong-omp.sh} script. Afterwards we executed the script in one of these nodes.
 
 \begin{figure}[H]
 \centering
@@ -875,16 +860,21 @@ In this case, these nodes have a total of 16 cores. So we have changed the value
 \end{minipage}
 \end{figure}
 
-We have seen that the beest results are in the Boada-5, due to the architecture of this node, which has the best maximum core frequency.
+Although this node type is the one that has more cores, we do not get the best results. Hence, this architecture is worse than the one in Boada-5. Nevertheless, we can see a little improvement in both plots with respect to the plots in Boada-1 to 4.
+
+To sum up, we have seen that the best results are in the Boada-5 due to the architecture of this node, which has the best maximum core frequency.
 
 \subsection{Optional 2}
-With this optional we had to parallelize the initialization of the data and temp vectors. We have made these changes in the initialize and clear function:
+
+In this other optional we had to parallelize the initialization of the data and temp vectors. The changes we made are shown below.
+
+The following code can be found in the \textit{multisort-omp-op2.c} file in the codes directory.
 
 \begin{figure}[H]
 \begin{lstlisting}
 static void initialize(long length, T data[length]) {
    long i;
-   #pragma omp for schedule(dynamic,1)
+   #pragma omp for schedule(dynamic)
    for (i = 0; i < length; i++) {
 		data[i] = rand();
    }
@@ -892,7 +882,7 @@ static void initialize(long length, T data[length]) {
 
 static void clear(long length, T data[length]) {
    long i;
-   #pragma omp for schedule(dynamic,1)
+   #pragma omp for schedule(dynamic)
    for (i = 0; i < length; i++) {
       data[i] = 0;
    }
@@ -902,40 +892,65 @@ static void clear(long length, T data[length]) {
 \caption{Parallelization of Initialize and clear functions.}
 \end{figure}
 
-In order to be able to parallelize the initialize function, we have changed the way the random numbers are created, now each number is completely random.
+Before modifying the code, in the initialize function, each position of the vector data was computed using the value from the previous position of its vector. Thus, we could not parallelise it using the same code due to dependencies. In order to be able to parallelize the initialize function, we have changed the way the random numbers are created, now each number is completely random. We have used the \textbf{dynamic} schedule type in order to balance the work in all threads.
 
-Afterwards we have submitted the scripts submit-strong-omp.sh and submit-omp-i.sh, obtaining the following speed-up plots and paraver scalability.
+Afterwards we have submitted the scripts \textbf{submit-strong-omp.sh} and \textbf{submit-omp-i.sh}, obtaining the following speed-up plots and \textit{Paraver} traces.
 
 \begin{figure}[H]
 \centering
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./images/S2/}
-  \caption{Speed-up plot of the complete application using the Tree strategy and initialization improvement.}
+  \includegraphics[scale=0.5]{./images/S2/multisort-omp-strong_boada-4_tree_op2_complete_application}
+  \caption{Speed-up plot of the complete application with the parallelisation of the initialize and clear function and using the Tree strategy.}
   \label{fig:mandel-omp-10000-strong-21-time}
 \end{minipage}%
 \hspace{0.5cm}
 \begin{minipage}[b]{0.4\linewidth}
   \centering
-  \includegraphics[scale=0.5]{./images/S2/}
-  \caption{Speed-up plot of the multisort function using the Tree strategy and initialization improvement.}
+  \includegraphics[scale=0.5]{./images/S2/multisort-omp-strong_boada-4_tree_op2_multisort_only}
+  \caption{Speed-up plot of the multisort function with the parallelisation of the initialize and clear function and using the Tree strategy.}
   \label{fig:mandel-omp-10000-strong-21-speedup}
 \end{minipage}
 \end{figure}
 
+We though that there would have been a big improvement in the speed-up plot of the complete application. However, it has not been a big improvement but a good one. Probably trying to parallelise other parts of the code would result in a bigger improvement on the speed-up plot of the complete application.
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.75]{./images/S2/OP2_paraver}
+	\includegraphics[scale=0.45]{./images/S2/OP2_paraver}
 	
 	\label{fig_ann:S2_scalability_op2}
-	\caption{Execution flow of the code using 64 processors.}
+	\caption{Execution flow of the modified code using 8 threads.}
 \end{figure}
 
-We can see that we have better results when the initializations are parallelized, especially in the complete application Speed-up plot and the execution flow, where the serial part has been reduced.
+In the \textit{Paraver} traces we can see that the parallel part of the program has increased a bit, which is what we expected.
+
+To conclude, we can see that we have better results when the initializations are parallelized, especially in the complete application Speed-up plot. In the execution flow we have seen that the serial part has been reduced.
+
+\section{Conclusion}
+
+In this three laboratory sessions we have seen different strategies for the mergesort algorithm.
+
+With \textit{Tareador} we have seen that it is possible to implement both Leaf and Tree strategies due to the dependencies.
+
+On the one hand, the Leaf strategy has not given use the best results. This is because it only creates a task for each leaf of the tree generated with the recursive calls. Hence, in almost all the time there is only one thread doing work.
+
+On the other hand, the Tree strategy has given us the best results because all threads can create tasks. As a consequence, the total amount of time of threads in Idle state (doing no work) has decreased a lot. Thus, the performance of this strategy is better than the first one.
+
+When using the cut-off mechanism, we saw that the execution time varies when changing the value of the recursion size. Using the optimum value we have observed that we improved the performance of the Tree strategy.
+
+We must remark that using the depend clause we have got better results because tasks will not be suspended until all previous tasks finishes, they will be suspended until the variables they need have been correctly modified.
+
+Finally, in the first optional we have seen that it is not important the number of cores to use but the type of architecture of the node. Even though Boada-5 has fewer cores than Boada-6 to 8, it has better results due to its architecture type.
+
+In the second optional, we have seen that parallelising the initialization of the vectors has increased a bit the performance of the complete application. Nevertheless, we think that we would get better results if we parallelise other functions (e.g. the check\_sorted function).
+
+\newpage
 
 \section{Annex}
 
 \subsection{Scalability anaysis: Traces using different number of processors}
+\label{ann:scalabilityS1}
 
 \begin{figure}[H]
 	\centering
