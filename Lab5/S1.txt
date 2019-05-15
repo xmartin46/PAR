@@ -1,0 +1,36 @@
+1. Sequential...
+Jacobi:
+par4110@boada-1:~/lab5$ ./heat test.dat
+Iterations        : 25000
+Resolution        : 254
+Algorithm         : 0 (Jacobi)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50
+   2: (0.50, 1.00) 1.00 2.50
+Time: 4.873
+Flops and Flops per second: (11.182 GFlop => 2294.75 MFlop/s)
+Convergence to residual=0.000050: 15756 iterations
+
+Gauss-Seidel:
+par4110@boada-1:~/lab5$ ./heat test.dat
+Iterations        : 25000
+Resolution        : 254
+Algorithm         : 1 (Gauss-Seidel)
+Num. Heat sources : 2
+   1: (0.00, 0.00) 1.00 2.50 
+   2: (0.50, 1.00) 1.00 2.50 
+Time: 2.400 
+Flops and Flops per second: (8.806 GFlop => 3669.64 MFlop/s)
+Convergence to residual=0.000050: 12409 iterations
+
+2. Analysis...
+Jacobi:
+2.a) La variable sum és la que causa la serialització de les tasques. Ho hem vist de la següent manera.
+Clic dret sobre un dels edges entre dos nodes de jacobi_inermost_task(verd) >> dataview >> edge >> Real dependency
+
+2.b) Si que incrementem el paral·leisme. Creiem que una bona opció per paral·lelitzar-ho seria amb una reduction the sum. (#pragma omp for reduction(+:sum))
+
+Gauss-Seidel:
+2.a) 
+
+2.b) Pel sum aplicarem reduction com al Jacobian i pel vector propi aplicarem un doacross.
