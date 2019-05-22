@@ -1,0 +1,22 @@
+3. Parell... Jacobi
+3.1.
+Descripció del que hem de dibuixar:
+La matriu es divideix en howmany parts par files. Aquesta matriu s'itera per files (per cada fila totes les columnes (00 01 10 11)).
+La primera i ultima fila i columna, no s'hi accedeix degut a que per fer el calcul necessites tenir una casella a sobre, sota, dreta i esquerra.
+
+3.2
+
+par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-2i3.ppm
+par4110@boada-1:~/lab5$
+
+3.3 FALTA!!
+
+Observem que només s'estan utilitzan 4 threads alhora per calcular-ho. Això proboca que no tinguem la màxima parallelisme per cada funció.
+
+3.4.
+par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-4.ppm
+par4110@boada-1:~/lab5$    
+
+No. Ara en el paraver podem observar com es fan servir tots els threats possibles i a més s'optimitza el tros copy mat.
+
+3.5 FALTA!!
