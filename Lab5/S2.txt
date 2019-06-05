@@ -6,12 +6,19 @@ La primera i ultima fila i columna, no s'hi accedeix degut a que per fer el calc
 
 3.2
 
-par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-2i3.ppm
+par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-2.ppm
 par4110@boada-1:~/lab5$
 
-3.3 FALTA!!
+3.3
 
-Observem que només s'estan utilitzan 4 threads alhora per calcular-ho. Això proboca que no tinguem la màxima parallelisme per cada funció.
+En el paraver observem que tots els threas entren a la regió paralela però només 4 threads seràn els que entreràn a dins els fors.
+La resta de threads tindran un i_start més gran que sizex-2 i per tant no entreran a dins del for. 
+Per això si movem la inicialització del howmany a dins de la regió paral·lela i l'inicialitzem a omp_get_num_threads(), obtindrem el millor rendiment.
+
+par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-3b.ppm
+par4110@boada-1:~/lab5$ 
+
+
 
 3.4.
 par4110@boada-1:~/lab5$ diff heat-jacobi.ppm heat-omp-jacobi-S2-4.ppm

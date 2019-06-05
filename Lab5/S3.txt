@@ -1,0 +1,12 @@
+4. Parallel ... Gauss
+4.1
+par4110@boada-1:~/lab5$ diff heat-gauss-seidel.ppm heat-omp-gauss-S3.ppm
+par4110@boada-1:~/lab5$ 
+
+No hi ha diferència entre els dos ppm's.
+
+4.2
+No sabem que dir-hi
+
+4.3
+No acaba :*(
