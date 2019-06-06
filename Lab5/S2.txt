@@ -26,4 +26,5 @@ par4110@boada-1:~/lab5$
 
 No. Ara en el paraver podem observar com es fan servir tots els threats possibles i a més s'optimitza el tros copy mat.
 
-3.5 FALTA!!
+3.5 
+Observem una bona scalabilitat.

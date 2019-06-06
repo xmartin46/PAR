@@ -6,7 +6,8 @@ par4110@boada-1:~/lab5$
 No hi ha diferència entre els dos ppm's.
 
 4.2
-No sabem que dir-hi
+COm podem obserbar en el paraver hi ha moltes regions amb sincronitzacions, que sería la part vermella degut al ordered i als depends.
 
 4.3
-No acaba :*(
+Ja acaba i ho tenim.
+Es queda estancat a 2 i no escala gaire ja que el codi de gauss seidel té moltes dependències.
