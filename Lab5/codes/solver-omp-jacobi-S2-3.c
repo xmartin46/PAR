@@ -39,9 +39,10 @@ double relax_jacobi (double *u, double *utmp, unsigned sizex, unsigned sizey)
     
 	double diff, sum=0.0;
 
-	int howmany = omp_get_num_threads();
+	
 	#pragma omp parallel reduction(+: sum) private(diff)
 	{
+		int howmany = omp_get_num_threads();
 		int blockid = omp_get_thread_num();
 		int i_start = lowerb(blockid, howmany, sizex);
 		int i_end = upperb(blockid, howmany, sizex);
