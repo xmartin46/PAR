@@ -1,0 +1,402 @@
+\documentclass[12pt, a4paper]{article}
+
+% Text languages
+\usepackage[english, UKenglish, USenglish, american, british]{babel}
+
+% Accents
+%usepackage[latin1]{inputenc}
+
+% Maths
+\usepackage{mathtools}
+\usepackage{amsmath,amsthm,amssymb}
+
+% Double rows
+%\usepackage{multirow}
+
+% Math-mode symbol & verbatim
+%\def\W#1#2{$#1{#2}$ &\tt\string#1\string{#2\string}}
+%\def\X#1{$#1$ &\tt\string#1}
+%\def\Y#1{$\big#1$ &\tt\string#1}
+%\def\Z#1{\tt\string#1}
+
+% A non-floating table environment.
+%\makeatletter
+%\renewenvironment{table}%
+%   {\vskip\intextsep\parskip\z@
+%    \vbox\bgroup\centering\def\@captype{table}}%
+%   {\egroup\vskip\intextsep}
+%\makeatother
+
+%\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+%\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the 
+% starred version does not.
+%\makeatletter
+%\let\oldabs\abs
+%\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+%\let\oldnorm\norm
+%\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+%\makeatother
+
+% C++
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset { %
+	language = C++,
+	backgroundcolor=\color{black!5}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+    tabsize=4, % tab space width
+    showstringspaces=false, % don't mark spaces in strings
+    %numbers=left, % display line numbers on the left
+    commentstyle=\color{green}, % comment color
+    keywordstyle=\color{blue}, % keyword color
+    stringstyle=\color{red}, % string color
+    linewidth=16cm
+}
+
+% https://www.overleaf.com/learn/latex/Page_size_and_margins
+\usepackage{geometry}
+\topmargin = -23pt
+\oddsidemargin = 13pt
+\headheight = 12pt
+\headsep = 25pt
+\textheight = 674pt
+\textwidth = 426pt
+\marginparsep = 10pt
+\marginparwidth = 50pt
+\footskip = 30pt
+\marginparpush = 5pt
+\hoffset = 0pt
+\voffset = 0pt
+\paperwidth = 597pt
+\paperheight = 845pt
+
+% Hyperlinks
+\usepackage{hyperref}
+
+% Figure
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{etoc}
+% Example
+\newtheorem{exmp}{Example}[section]
+% Algorithms
+%\usepackage[]{algorithm2e}
+%\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+%\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\usepackage{algpseudocode}
+
+\renewcommand{\thefootnote}{\arabic{footnote}} % 1, 2, 3... (la que hay por defecto)
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+%\titleformat{\paragraph}
+%{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+%\titlespacing*{\paragraph}
+%{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\usepackage{float}
+%--------------------------------------------------------------------------
+\title{PARALLELISM}
+\author{Roger Vilaseca Darné and Xavier Martín Ballesteros\\
+  \small UNIVERSITAT POLITÈCNICA DE CATALUNYA\\
+}
+\date{10th December 2018}
+
+\begin{document}
+% Images
+\graphicspath{ {./images} }
+
+%\maketitle
+
+\begin{titlepage}
+	\centering
+%	{\scshape\LARGE UNIVERSITAT POLITÈCNICA DE CATALUNYA \par}
+	\vspace{1cm}
+	{\scshape\Large UNIVERSITAT POLITECNICA DE CATALUNYA\par}
+	\vspace{1.5cm}
+	{\huge\bfseries PARALLELISM\par}
+	\vspace{2cm}
+	{\Large\itshape \textbf{Lab 5: Geometric (data) decomposition:
+heat diffusion equation}\par}
+	\vfill
+	{\Large\itshape Roger Vilaseca Darne and Xavier Martin Ballesteros\break PAR4110\par}
+	\vfill
+	\includegraphics[width=0.25\textwidth]{./images/UPC.png}\par\vspace{1cm}
+	%supervised by\par
+	%Dr.~Mark \textsc{Brown}
+
+	\vfill
+
+% Bottom of the page
+	{\large 7th June 2019, Q2}
+\end{titlepage}
+
+%\abstract{Esto es una plantilla simple para un articulo en \LaTeX.}
+
+%	*********************** ÍNDEX *********************
+\setcounter{secnumdepth}{5}
+
+\newpage
+  \tableofcontents
+\newpage
+
+% Referència a una equació \ref{eq:area}).
+% Referència a una secció \ref{sec:nada}
+% Referència a una cita \cite{Cd94}.
+
+\section{Introduction}
+
+\section{Analysis with \textit{Tareador}}
+
+In this section we have used the \textit{Tareador} tool to analyse the possible parallelism strategies that we can use in order to parallelise both Jacobi and Gauss-Seidel solvers. 
+
+We have mainly focused on the data dependences that appear and how will we protect them in our parallel \textit{OpenMP} code. To explore the dependences, we have used a much finer task decomposition: one task for each iteration of the body of the most innerloop.
+
+\subsection{Jacobi Solver}
+
+This solver uses an auxiliar matrix \textbf{utmp} to write the resulting values of the computation in the most innerloop of the body. For each element in the matrix \textbf{u}, it takes the values of the element on its top and bottom and on its left and right, and does some arithmetic operations.
+
+The modified code using the \textit{Tareador} tool is shown below. However, the code can be found in \textit{jacobi-tareador.c} file inside the codes directory.
+
+\begin{figure}[H]
+\hspace{-0.5cm}
+\begin{lstlisting}
+ double relax_jacobi (double *u, double *utmp, unsigned sizex,
+ 				      unsigned sizey)
+ {
+     double diff, sum=0.0;
+   
+     int howmany=1;
+     for (int blockid = 0; blockid < howmany; ++blockid) {
+       int i_start = lowerb(blockid, howmany, sizex);
+       int i_end = upperb(blockid, howmany, sizex);
+       for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+         for (int j=1; j<= sizey-2; j++) {
+ 			tareador_start_task("jacobi_innermost_task");
+ 			utmp[i*sizey+j]= 0.25 * ( u[ i*sizey     + (j-1) ]+  // left
+ 							   		  u[ i*sizey     + (j+1) ]+  // right
+ 	   								  u[ (i-1)*sizey + j     ]+  // top
+ 				   					  u[ (i+1)*sizey + j     ]); // bottom
+ 			diff = utmp[i*sizey+j] - u[i*sizey + j]; 
+ 			sum += diff * diff;
+		 	tareador_end_task("jacobi_innermost_task");
+	     }
+       }
+     }
+     return sum;
+ }
+\end{lstlisting}
+\label{code:tareador-relax-jacobi}
+\caption{Code for the task decomposition for relax\_jacobi function.}
+\end{figure}
+
+With this modified version of the code we can obtain the task decomposition graph (TDG), which can be found in Figure \ref{fig:TDGJacobi}. Moreover we can see that there exist some kind of data dependencies between tasks. To know which variable is the responsible of these dependences, we have right clicked in an edge between two jacobi\_innermost\_task nodes (green) $>>$ Dataview $>>$ Edge $>>$ Real dependency. The obtained results are shown in Figure \ref{fig:RealDependencyJacobi}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[scale=0.15]{./images/tareador-jacobi-2a}
+\caption{\label{fig:TDGJacobi}}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[scale=0.55,height=7cm]{./images/dependence-jacobi}
+\caption{\label{fig:RealDependencyJacobi}}
+\end{subfigure}
+\caption{(a) Task decomposition graph for the Jacobi solver, (b) Real data dependences in the Jacobi solver.}
+\end{figure}
+
+Now, we know that the \textbf{sum} variable creates the dependences for the Jacobi solver. Novertheless, we have made use of some \textit{Tareador} calls that temporarily filter the analysis for the variable sum, causing the serialization and obtaining a new task graph (Figure \ref{fig:TDGJacobi-disable-sum}). The modified fragment of the code can be found in \textit{jacobi-tareador-disable-sum.c} file in the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+ double relax_jacobi (double *u, double *utmp, unsigned sizex,
+ 					  unsigned sizey)
+ {
+ 	 ...
+     for (int blockid = 0; blockid < howmany; ++blockid) {
+       ...
+       for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+         for (int j=1; j<= sizey-2; j++) {
+			 tareador_start_task("jacobi_innermost_task");
+			 ...
+			 tareador_disable_object(&sum);
+			 sum += diff * diff;
+			 tareador_enable_object(&sum);
+			 tareador_end_task("jacobi_innermost_task");
+	 	 }
+       }
+     }
+
+     ...
+ }
+\end{lstlisting}
+\label{code:tareador-relax-jacobi-disable-sum}
+\caption{Code for the task decomposition for relax\_jacobi function temporarily filtering the analysis of the sum variable.}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.35]{./images/tareador-jacobi-2b}
+	\label{fig:TDGJacobi-disable-sum}
+	\caption{Task decomposition graph of the Jacobi solver temporarily filtering the analysis of the sum variable.}
+\end{figure}
+
+Now, we can see that there is any dependency between tasks of the most innerloop. Hence, we are increasing the parallelism. We think that the \textit{reduction(+:sum)} clause would be a good option to parallelise the code using \textit{OpenMP} directives.
+
+\subsection{Gauss-Seidel Solver}
+
+The Gauss-Seidel Solver does no longer use an auxiliar matrix. It writes in the position of the matrix where it reads the values. As in the previous solver, it takes the values of the element on its top and bottom and on its left and right, and does some arithmetic operations.
+
+The modified code can be found in \textit{gauss-seidel-tareador.c} file in the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+ double relax_gauss (double *u, unsigned sizex, unsigned sizey)
+ {
+     double unew, diff, sum=0.0; 
+ 
+     int howmany=1;
+     for (int blockid = 0; blockid < howmany; ++blockid) {
+       int i_start = lowerb(blockid, howmany, sizex);
+       int i_end = upperb(blockid, howmany, sizex);
+       for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+         for (int j=1; j<= sizey-2; j++) { 
+			 tareador_start_task("gauss_seidel_innermost_task");
+			 unew= 0.25 * ( u[ i*sizey	+ (j-1) ]+  // left
+		 		   		    u[ i*sizey	+ (j+1) ]+  // right
+				   		    u[ (i-1)*sizey	+ j     ]+  // top
+				   		    u[ (i+1)*sizey	+ j     ]); // bottom
+			 diff = unew - u[i*sizey+ j];
+			
+			 sum += diff * diff; 
+			
+		 	 u[i*sizey+j]=unew;
+			 tareador_end_task("gauss_seidel_innermost_task");
+         }
+       }
+     }
+
+     return sum;
+ }
+\end{lstlisting}
+\label{code:tareador-gauss-seidel}
+\caption{Code for the task decomposition for relax\_gauss function.}
+\end{figure}
+
+
+The task decomposition graph is shown in Figure \ref{fig:TDGGaussSeidel}. We can observe that it has also some dependencies. Using the same procedure than in the previous section, we got the Real dependencies for this new solver (Figure \ref{fig:RealDependencyGaussSeidel}).
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[scale=0.35]{./images/tareador-gauss-seidel-2a}
+\caption{\label{fig:TDGGaussSeidel}}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[scale=0.55,height=7cm]{./images/dependence-gauss-seidel}
+\caption{\label{fig:RealDependencyGaussSeidel}}
+\end{subfigure}
+\caption{(a) Task decomposition graph for the Gauss-Seidel solver, (b) Real data dependences in the Gauss-Seidel solver.}
+\end{figure}
+
+We can see that this solver has two real dependencies: variable \textbf{sum} and some \textbf{positions of the matrix}. In this section, we will only show the TDG when disabling only the sum variable. However, the TDG of both variables disables can be found in the Annex section \ref{sec:TDGAllDisablesGaussSeidel}.
+
+This new version of the code can be found in \textit{gauss-seidel-disable-sum.c}, in the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+ double relax_gauss (double *u, unsigned sizex, unsigned sizey)
+ {
+     ...
+     for (int blockid = 0; blockid < howmany; ++blockid) {
+       ...
+       for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+         for (int j=1; j<= sizey-2; j++) {
+			 tareador_start_task("gauss_seidel_innermost_task");
+			 ...
+			 tareador_disable_object(&sum);
+			 sum += diff * diff; 
+			 tareador_enable_object(&sum);
+			 ...
+			 tareador_end_task("gauss_seidel_innermost_task");
+         }
+       }
+     }
+     ...
+ }
+\end{lstlisting}
+\label{code:tareador-relax-jacobi-disable-sum}
+\caption{Code for the task decomposition for relax\_gauss function temporarily filtering only the analysis of the sum variable.}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.20]{./images/tareador-gauss-seidel-2b-sum}
+	\label{fig:TDGGauss-Seidel-disable-sum}
+	\caption{Task decomposition graph of the Gauss-Seidel solver temporarily filtering only the analysis of the sum variable.}
+\end{figure}
+
+Disabling temporarily the variable sum we see that we increase the parallelism. Again, we think that the \textit{reduction(+:sum)} clause would be good to porallelise the code using \textit{OpenMP} directives. Moreover, we can use the \textit{ordered} clause in order to avoid data races and respect the real dependencies we have seen (apply the doacross technique).
+
+\section{Annex}
+\subsection{Task dependency graph when also disabling temporarily some positions of the matrix}
+
+In this section we will see the TDG created when disabling all the variables that create some kind of dependency in the Gauss-Seidel solver. The code can be found in \textit{gauss-seidel-disable-sum-and-matrix-positions.c}, inside the codes folder.
+
+\begin{figure}[H]
+\begin{lstlisting}
+ double relax_gauss (double *u, unsigned sizex, unsigned sizey)
+ {
+     ...
+     for (int blockid = 0; blockid < howmany; ++blockid) {
+       ...
+       for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+         for (int j=1; j<= sizey-2; j++) {
+			 tareador_start_task("gauss_seidel_innermost_task");
+ 				
+			 tareador_disable_object(&u[ i*sizey	+ (j-1) ]); // left
+			 tareador_disable_object(&u[ (i-1)*sizey	+ j     ]); //top
+			 unew= 0.25 * ( u[ i*sizey	+ (j-1) ]+  // left
+ 				   			u[ i*sizey	+ (j+1) ]+  // right
+				    		u[ (i-1)*sizey	+ j     ]+  // top
+				    		u[ (i+1)*sizey	+ j     ]); // bottom
+			 diff = unew - u[i*sizey+ j];
+			 tareador_enable_object(&u[ i*sizey	+ (j-1) ]);
+			 tareador_enable_object(&u[ (i-1)*sizey	+ j     ]);
+ 			
+			 tareador_disable_object(&sum);
+			 sum += diff * diff; 
+			 tareador_enable_object(&sum);
+ 			
+			 ...
+			 tareador_end_task("gauss_seidel_innermost_task");
+         }
+       }
+     }
+	 ...
+ }
+\end{lstlisting}
+\caption{Code for the task decomposition for relax\_gauss function temporarily filtering the analysis of the sum variable and some positions of the matrix.}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.15]{./images/tareador-gauss-seidel-2b-sum-vector}
+	\caption{Task decomposition graph of the Gauss-Seidel solver temporarily filtering the analysis of the sum variable and some positions of the matrix.}
+\end{figure}
+
+\label{sec:TDGAllDisablesGaussSeidel}
+
+\end{document} 
