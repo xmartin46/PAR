@@ -351,7 +351,7 @@ This new version of the code can be found in \textit{gauss-seidel-disable-sum.c}
 Disabling temporarily the variable sum we see that we increase the parallelism. Again, we think that the \textit{reduction(+:sum)} clause would be good to porallelise the code using \textit{OpenMP} directives. Moreover, we can use the \textit{ordered} clause in order to avoid data races and respect the real dependencies we have seen (apply the doacross technique).
 
 
-\section{Parallelization of Jacobi with OpenMP parallel}
+\section{Parallelization of \textit{Jacobi} with OpenMP \texttt{parallel}}
 In this part of the laboratory, we had to understand the code that resolves the problem using the Jacobi algoithm, and afterwards parallelize it, in order to increase the speed of the execution.
 
 \subsection{Understand the code}
@@ -378,6 +378,7 @@ And finally min and max functions that returns the minimum and maximum number be
 	\centering
 	\includegraphics[scale=0.30]{./images/data_decomposition.png}
 	\caption{Geometric data decomposition.}
+	\label{fig:geometricdatadecomposition}
 \end{figure}
 
 In the geometric data decomposition we can see how the block\_id is distributed in a matrix (12 x 12). Assuming that in the code is using a vector to represent the matrix, the size of the vector would be 144.
@@ -484,6 +485,115 @@ Finally in order to test the scalability of our program. We executed the script 
 \end{figure}
 
 As we can see the performance increases together with the number of threads at first. But when we have a large number of threads the results shows a bit stagnation of this improvement.
+
+\section{Parallelization of \textit{Gauss-Seidel} with OpenMP \texttt{ordered}}
+
+In this section we have parallelized the Gauss-Seidel solver using \#pragma omp for and its \textbf{ordered} clause.
+
+The important part with this solver was to decide how we would synchronize the parallel execution of the rows assigned to each processor in order to guarantee the dependences that we detected with \textit{Tareador}.
+
+At first, we decided to divide the matrix as in figure \ref{fig:geometricdatadecomposition}. However, we realized that with that geometric data decomposition, the code would be executed exactly the same than in the sequential version because thread 1 would have had to wait until thread 0 terminated... Consequently, we had to think a new data decomposition.
+
+The solution was to divide the matrix into blocks not only dividing the rows but the columns. Hence, when thread 0 finishes the first block, it continues excuting its new block whereas thread 1 can start executing its first block, and so on.
+
+Then, we used again the \textbf{reduction(+:sum)} clause to improve the performance of the program without creating data races. Besides, we have also implemented the \textbf{doacross} technique using the \textbf{ordered(2)} clause, \textbf{\#pragma omp ordered depend(sink: ...)} and \textbf{\#pragma omp ordered depend(source)}. Each block can only be executed when blocks (i-1, j) and (i, j-1) terminate.
+
+The code can be found in file \textit{gauss-seidel-reduction-doacross.c} in the codes directory.
+
+\begin{figure}[H]
+\begin{lstlisting}
+ double relax_gauss (double *u, unsigned sizex, unsigned sizey) {
+     double unew, diff, sum=0.0;
+ 
+     #pragma omp parallel private(unew, diff) reduction(+: sum)
+     {
+	 int howmany = omp_get_num_threads();
+	
+	 #pragma omp for ordered(2) 
+	 for (int blockid_i = 0; blockid_i < howmany; ++blockid_i) {
+		 for (int blockid_j = 0; blockid_j < howmany; ++blockid_j) {
+			 
+			 int i_start = lowerb(blockid_i, howmany, sizex);
+			 int i_end = upperb(blockid_i, howmany, sizex);
+			 int j_start = lowerb(blockid_j, howmany, sizey);
+			 int j_end = upperb(blockid_j, howmany, sizey);
+			
+			 #pragma omp ordered depend(sink: blockid_i-1,blockid_j)
+			 for (int i=max(1, i_start); i<= min(sizex-2, i_end); i++) {
+				 for (int j=max(1, j_start); j<= min(sizey-2, j_end); j++) {
+					 unew= 0.25 * ( u[ i*sizey	+ (j-1) ]+  // left
+								    u[ i*sizey	+ (j+1) ]+  // right
+								    u[ (i-1)*sizey	+ j ]+  // top
+								    u[ (i+1)*sizey	+ j ]); // bottom
+					 diff = unew - u[i*sizey+ j];
+					 sum += diff * diff; 
+					 u[i*sizey+j]=unew;
+				 }
+			 }
+			 #pragma omp ordered depend(source)
+		 }
+	 }
+	 }
+ 
+     return sum;
+ }
+\end{lstlisting}
+\caption{Modified code of the function relax\_gauss.}
+\end{figure}
+ 
+Afterwards, we have used the \textit{Paraver} tool to see if the flow of the program matched our expectations. Due to the use of the \textbf{ordered} clause, we can see in Figure \ref{fig:trace-gauss-seidel-S4} that there is a lot of synchronization between threads. As we said before, thread 1 has to wait until thread 0 ends its first block, thread 2 has to wait until thread 1 terminated its first block... As a consequence, we see a kind of stairs at the beginning of each thread, in blue; and at the end of each thread execution, in red (the first thread will be the first to end, and so on).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{./images/paraver-jacobi-s2-4}
+	\caption{Traces obtained when executing the new version of relax\_gauss function.}
+	\label{fig:trace-gauss-seidel-S4}
+\end{figure}
+
+Finally, we have analysed the scalability of our parallelization. We can see in Figures \ref{plot:exe-gauss} and \ref{plot:speed-gauss} that the results are worse than the plots in the Jacobi solver. The main reason is that this solver has more dependencies than Jacobi, so it has more synchronizations. Thus, it cannot have the same or better results.
+
+\begin{figure}[H]
+\centering
+\hspace{-0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-omp-strong-gauss-execution-time}
+  \caption{Execution time plot when varying the number of processors for the Gauss-Seidel solver.}
+  \label{plot:exe-gauss}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-omp-strong-gauss-speedup}
+  \caption{Speedup plot when varying the number of processors for the Gauss-Seidel solver.}
+    \label{plot:speed-gauss}
+\end{minipage}
+\end{figure}
+
+\textbf{\large{\large{Encara FALTA mirar a baix.}}}
+
+\newpage
+
+How can you control in your code the trade-off between computation and synchronization? Is there
+an optimum value for the ratio between computation and synchronization? For the execution with
+8 threads, explore possible ratios and plot how the execution time varies.
+
+Analyse the speed–up (strong scalability)
+plot that has been obtained for the different numbers of processors, reasoning about the performance
+that is observed and including captures of Paraver windows to justify your explanations. 
+
+
+
+
+
+
+Finally explain
+how did you obtain the optimum value for the ratio computation/synchronization in the parallelization
+of this solver for 8 threads.
+
+
+
+
 
 \section{Annex}
 \subsection{Task dependency graph when also disabling temporarily some positions of the matrix}
