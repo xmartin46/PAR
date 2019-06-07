@@ -152,13 +152,41 @@ heat diffusion equation}\par}
 
 \section{Introduction}
 
+In this last 3 laboratory sessions we have had to apply all the concepts we have learned during the course to parallelise the different functions that simulate heat diffusion in a solid body.
+
+The two pictures below show the resulting heat distribution when two heat sources are placed in the borders of the 2D solid (one in the upper left corner and the other in the middle of the lower border). The first image has been computed using the \textit{Jacobi} solver, which uses two matrices to do the computations (one is auxiliar). The second, on the other hand, is calculated using the \textit{Gauss-Seidel} solver, which only uses one matrix.
+
+\begin{figure}[H]
+\centering
+\hspace{-0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-jacobi}
+  \caption{Heat distribution with the \textit{Jacobi} solver.}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-gauss-seidel}
+  \caption{Heat distribution with the \textit{Gauss-Seidel} solver.}
+\end{minipage}
+\end{figure}
+
+In the first session we have used \textit{Tareador} to analyse the dependences that exist in both solvers, and how we could guarantee these dependences when using \textit{OpenMP}.
+
+In the next two sessions, we have parallelised both solvers. Firstly, we have begun with the \textit{Jacobi} solver, which has been easier to parallelise because it has less dependencies. Secondly, we have parallelised the \textit{Gauss-Seidel} solver using new \textit{OpenMP} clauses that we had not used before.
+
+Finally, we have compared the two performances of the solvers using the execution time and speedup plots.
+
+\newpage
+
 \section{Analysis with \textit{Tareador}}
 
 In this section we have used the \textit{Tareador} tool to analyse the possible parallelism strategies that we can use in order to parallelise both Jacobi and Gauss-Seidel solvers. 
 
 We have mainly focused on the data dependences that appear and how will we protect them in our parallel \textit{OpenMP} code. To explore the dependences, we have used a much finer task decomposition: one task for each iteration of the body of the most innerloop.
 
-\subsection{Jacobi Solver}
+\subsection{\textit{Jacobi} Solver}
 
 This solver uses an auxiliar matrix \textbf{utmp} to write the resulting values of the computation in the most innerloop of the body. For each element in the matrix \textbf{u}, it takes the values of the element on its top and bottom and on its left and right, and does some arithmetic operations.
 
@@ -213,7 +241,7 @@ With this modified version of the code we can obtain the task decomposition grap
 \caption{(a) Task decomposition graph for the Jacobi solver, (b) Real data dependences in the Jacobi solver.}
 \end{figure}
 
-Now, we know that the \textbf{sum} variable creates the dependences for the Jacobi solver. Novertheless, we have made use of some \textit{Tareador} calls that temporarily filter the analysis for the variable sum, causing the serialization and obtaining a new task graph (Figure \ref{fig:TDGJacobi-disable-sum}). The modified fragment of the code can be found in \textit{jacobi-tareador-disable-sum.c} file in the codes directory.
+Now, we know that the \textbf{sum} variable creates the dependences for the Jacobi solver. Novertheless, we have made use of some \textit{Tareador} calls that temporarily filter the analysis for the variable sum, causing the serialization and obtaining a new task graph (Figure 6). The modified fragment of the code can be found in \textit{jacobi-tareador-disable-sum.c} file in the codes directory.
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -252,7 +280,7 @@ Now, we know that the \textbf{sum} variable creates the dependences for the Jaco
 
 Now, we can see that there is any dependency between tasks of the most innerloop. Hence, we are increasing the parallelism. We think that the \textit{reduction(+:sum)} clause would be a good option to parallelise the code using \textit{OpenMP} directives.
 
-\subsection{Gauss-Seidel Solver}
+\subsection{\textit{Gauss-Seidel} Solver}
 
 The Gauss-Seidel Solver does no longer use an auxiliar matrix. It writes in the position of the matrix where it reads the values. As in the previous solver, it takes the values of the element on its top and bottom and on its left and right, and does some arithmetic operations.
 
@@ -385,7 +413,7 @@ Finally, \textbf{min} and \textbf{max} functions return the minimum and maximum 
 
 In the geometric data decomposition we can see how the block\_id is distributed in a matrix (12 $\times$ 12). Assuming that the code is using a vector to represent the matrix, the size of the vector would be 144.
 
-The first and last row and column (white cells in the matrix) are not accessed due to the fact that to do the computation for each element of the matrix, it needs to have an element above, below, right and left with respect to him, as we will see in the following section.
+We have marked in white (first and last row and column) the cells in the matrix that will not be accessed due to the fact that to do the computation for each element of the matrix, it needs to have an element above, below, right and left with respect to him, as we will see in the following section.
 
 \subsection{Parallelization of \textit{Jacobi}}
 
@@ -516,7 +544,7 @@ At first, we decided to divide the matrix as in figure \ref{fig:geometricdatadec
 
 The solution was to divide the matrix into blocks not only dividing the rows but the columns. Hence, when thread 0 finishes the first block, it continues excuting its new block whereas thread 1 can start executing its first block, and so on.
 
-Then, we used again the \textbf{reduction(+:sum)} clause to improve the performance of the program without creating data races. Besides, we have also implemented the \textbf{doacross} technique using the \textbf{ordered(2)} clause, \textbf{\#pragma omp ordered depend(sink: ...)} and \textbf{\#pragma omp ordered depend(source)}. Each block can only be executed when blocks (i-1, j) and (i, j-1) terminate.
+Then, we used again the \textbf{reduction(+:sum)} clause to improve the performance of the program without creating data races. Besides, we have also implemented the \textbf{doacross} technique using the \textbf{ordered(2)} clause, \textbf{\#pragma omp ordered depend(sink: ...)} and \textbf{\#pragma omp ordered depend(source)}. Each block can only be executed when blocks (i-1, j) and (i, j-1) terminate. Nevertheless, in Figure \ref{code:chosenone} we have not written the dependency on the (i, j-1) block because it is executed by the same thread. Thus, when thread 0 ends his first block, he will be able to execute its second block without any kind of dependency.
 
 The code can be found in file \textit{gauss-seidel-reduction-doacross.c} in the codes directory.
 
@@ -559,6 +587,7 @@ The code can be found in file \textit{gauss-seidel-reduction-doacross.c} in the 
  }
 \end{lstlisting}
 \caption{Modified code of the function relax\_gauss.}
+\label{code:chosenone}
 \end{figure}
  
 Afterwards, we have used the \textit{Paraver} tool to see if the flow of the program matched our expectations. Due to the use of the \textbf{ordered} clause, we can see in Figure \ref{fig:trace-gauss-seidel-S4} that there is a lot of synchronization between threads. As we said before, thread 1 has to wait until thread 0 ends its first block, thread 2 has to wait until thread 1 terminated its first block... As a consequence, we see a kind of stairs at the beginning of each thread, in blue; and at the end of each thread execution, in red (the first thread will be the first to end, and so on).
@@ -592,33 +621,30 @@ Finally, we have analysed the scalability of our parallelization. We can see in 
 
 \textbf{\large{\large{Encara FALTA mirar a baix.}}}
 
-\newpage
-
 How can you control in your code the trade-off between computation and synchronization? Is there
 an optimum value for the ratio between computation and synchronization? For the execution with
 8 threads, explore possible ratios and plot how the execution time varies.
-
-Analyse the speed–up (strong scalability)
-plot that has been obtained for the different numbers of processors, reasoning about the performance
-that is observed and including captures of Paraver windows to justify your explanations. 
-
-
-
-
-
 
 Finally explain
 how did you obtain the optimum value for the ratio computation/synchronization in the parallelization
 of this solver for 8 threads.
 
-
+\newpage
 
 \section{Conclusions}
 
-Un necessita mes memoria i menys dependencies, i viceversa.
+In these 3 session of laboratory we have seen different algorithms to simulate the heat diffusion in a solid body.
+
+On the one hand, we have seen the \textit{Jacobi} solver. This uses an auxiliar matrix where it writes the results of the computations. Thus, we have seen that it only has dependency on the variable \textbf{sum}. This dependency was easy to guarantee using the \textit{reduction(+:sum)} clause in the \textit{OpenMP} library.
+
+On the other hand, the \textit{Gauss-Seidel} solver does not need an auxiliar matrix. It writes into the same matrix where it reads the elements used in the calculus. Consequently, it has more dependencies than the other solver. The new dependencies have been guaranteed in the parallel code using the \textbf{doacross} technique (\textit{\#pragma omp for ordered(2)}, \textit{\#pragma omp ordered depend(sink:...)} and \textit{\#pragma omp ordered depend(source)}).
+
+We have seen that the first solver needs more memory but has less dependencies, while the second solver is the other way round. Hence, the programmer that will use these algorithms will have to decide depending on his needs which solver to use.
+
+\newpage
 
 \section{Annex}
-\subsection{Task dependency graph when also disabling temporarily some positions of the matrix}
+\subsection{Annex I: Task dependency graph when also disabling temporarily some positions of the matrix}
 
 In this section we will see the TDG created when disabling all the variables that create some kind of dependency in the Gauss-Seidel solver. The code can be found in \textit{gauss-seidel-disable-sum-and-matrix-positions.c}, inside the codes folder.
 
