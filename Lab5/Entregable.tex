@@ -352,10 +352,12 @@ Disabling temporarily the variable sum we see that we increase the parallelism. 
 
 
 \section{Parallelization of \textit{Jacobi} with OpenMP \texttt{parallel}}
-In this part of the laboratory, we had to understand the code that resolves the problem using the Jacobi algoithm, and afterwards parallelize it, in order to increase the speed of the execution.
 
-\subsection{Understand the code}
-The Jacobi algorithm has some functions created in order to facilitate the readability of the code. This functions are:
+In this section, we had to understand how Jacobi solver worked and afterwards, parallelize it in order to increase the speedup of the program.
+
+\subsection{Understanding the code}
+
+We had given some definitions already created in order to facilitate us the readability of the code. This functions are:
 
 \begin{figure}[H]
 \begin{lstlisting}
@@ -368,24 +370,26 @@ The Jacobi algorithm has some functions created in order to facilitate the reada
 \caption{Given functions}
 \end{figure}
 
-The function lowerb and upperb returns the first and the last index of a vector partitons, when it is given an id (the partition number), p (the number of partitions) and n (the size of the vector).
+The functions \textbf{lowerb} and \textbf{upperb} return the first and the last index of a vector partiton, when it is given an id (the partition number), p (the number of partitions) and n (the size of the vector).
 
-The function numElem that returns the number of elements that are in a partition of a vector. Having the same entries as before.
+The function \textbf{numElem} returns the number of elements that are in a partition of a vector. Having the same entries as before.
 
-And finally min and max functions that returns the minimum and maximum number between two respectively.
+Finally, \textbf{min} and \textbf{max} functions return the minimum and maximum number between two values respectively.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.30]{./images/data_decomposition.png}
+	\includegraphics[scale=0.70]{./images/data_decomposition_2.png}
 	\caption{Geometric data decomposition.}
 	\label{fig:geometricdatadecomposition}
 \end{figure}
 
-In the geometric data decomposition we can see how the block\_id is distributed in a matrix (12 x 12). Assuming that in the code is using a vector to represent the matrix, the size of the vector would be 144.
+In the geometric data decomposition we can see how the block\_id is distributed in a matrix (12 $\times$ 12). Assuming that the code is using a vector to represent the matrix, the size of the vector would be 144.
 
-\subsection{Parallelization of Jacobi}
+The first and last row and column (white cells in the matrix) are not accessed due to the fact that to do the computation for each element of the matrix, it needs to have an element above, below, right and left with respect to him, as we will see in the following section.
 
-In this part we had to parallelize the code considering that we want to create 4 blocks, without using \textit{\#pragma omp parallel for} clause in the code. To do that we have modified the relax\_jacobi function:
+\subsection{Parallelization of \textit{Jacobi}}
+
+In this part we had to parallelize the code considering that we wanted to create 4 blocks, without using the \textit{\#pragma omp parallel for} clause in the code. To do that we have modified the relax\_jacobi function, which can be found in \textit{solver-omp-jacobi-S2-2.c} file.
 
  \begin{figure}[H]
 \begin{lstlisting}
@@ -417,15 +421,18 @@ double relax_jacobi (double *u, double *utmp, unsigned sizex, unsigned sizey)
 \caption{Code for parallellization of relax\_jacobi function}
 \end{figure}
 
-As we can see we have divided the matrix in 4 parts. This will cause that, if we execute the code with 8 threads only the first 4 threads will have a valid blockid number, so the other 4 threads will recieve an out of bound \textit{i\_start} index. As we can see in the following image:
+As we can see we have divided the matrix in 4 parts. This will cause that, if we execute the code with 8 threads only the first 4 threads will have a valid blockid number, so the other 4 threads will recieve an out of bound \textit{i\_start} index. Thus, the remaining threads will only execute the first 3 lines of the parallel part and will not enter inside the two fors.
+
+On the other hand, we have used the \textit{reduction(+: sum)} clause to respect the dependences we have seen when using \textit{Tareador}.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.50]{./images/paraver-jacobi-s2-3a.png}
-	\caption{Jacobi Schedule.}
+	\caption{Traces obtained when executing the relax\_jacobi function with only 4 threads doing the computations.}
+	\label{jacobi-2}
 \end{figure}
 
-In order to solve that we modified a little bit more the \textit{relax\_jacobi} function.
+In order to solve this issue, we have modified a bit the \textit{relax\_jacobi} function. Now, the variable \textbf{howmany} has the total number of threads we want to use. Hence, the code will divide the matrix taking into account all the operative threads, and not only the first four as before. This new version of the code can be found in file \textit{solver-omp-jacobi-S2-3.c}, in the codes directory.
 
  \begin{figure}[H]
 \begin{lstlisting}
@@ -442,20 +449,21 @@ double relax_jacobi (double *u, double *utmp, unsigned sizex, unsigned sizey)
     return sum;
 }
 \end{lstlisting}
-\caption{Improved code of relax\_jacobi function}
+\caption{Improved code of relax\_jacobi function.}
 \end{figure}
 
-Now we obtain a better parallelization in all the threads:
+With this little change, we can see that we obtain a better parallelization of the program. In other words, we take more advantage of the potential parallelism of the code. If we compare the execution time of the trace obtained with this new version of the code (\ref{fig:jacobi-3}) with the previous trace (\ref{jacobi-2}), we see that it spends less time in the parallel part. Hence, it goes faster, because the other 4 threads now do some computation in the matrix.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.50]{./images/paraver-jacobi-s2-3b.png}
-	\caption{Improved Jacobi Schedule.}
+	\caption{Improved result of the execution of the relax\_jacobi function with the change in the variable howmany.}
+	\label{fig:jacobi-3}
 \end{figure}
 
-But this wasn't enough parallel. In that moment we realised that the function \textit{copy\_mat} also has a big impact in the code. SO we decide to parallellize it.
+However, this was not enough parallelism. We realised that the function \textit{copy\_mat} had also a big impact in the code, so we decide to parallellize it. The code can be found in \textit{solver-omp-jacobi-S2-4.c} file.
 
- \begin{figure}[H]
+\begin{figure}[H]
 \begin{lstlisting}
 void copy_mat (double *u, double *v, unsigned sizex, unsigned sizey)
 {
@@ -465,10 +473,10 @@ void copy_mat (double *u, double *v, unsigned sizex, unsigned sizey)
 			v[ i*sizey+j ] = u[ i*sizey+j ];
 }
 \end{lstlisting}
-\caption{Code for parallellization of copy\_mat function}
+\caption{Code for the parallellization of the copy\_mat function.}
 \end{figure}
 
-Now we obtained the best results regarding to parallelization. AS we can see in the following image:
+Now, we have obtained the best results so far regarding to parallelization. Each thread copies a fragment of the input matrix. We can see in the following image that the light blue (Idle state) part has decreased, which means that threads are now doing more work.
 
 \begin{figure}[H]
 	\centering
@@ -476,15 +484,27 @@ Now we obtained the best results regarding to parallelization. AS we can see in 
 	\caption{Improved Jacobi Schedule with copy\_mat parallellization.}
 \end{figure}
 
-Finally in order to test the scalability of our program. We executed the script \textit{submit-strong-omp.sh}, to obtain the following speed.up and scalability plots.
+Finally, in order to test the scalability of our program, we have executed the script \textit{submit-strong-omp.sh} to obtain the following speedup and scalability plots.
 
 \begin{figure}[H]
-	\centering
-%	\includegraphics[scale=0.50]{}
-	\caption{Jacobi scalability plots.}
+\centering
+\hspace{-0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-omp-strong-jacobi-execution-time}
+  \caption{Execution time plot when varying the number of processors for the Jacobi solver.}
+  \label{plot:exe-gauss}
+\end{minipage}%
+\hspace{0.5cm}
+\begin{minipage}{0.4\linewidth}
+  \centering
+  \includegraphics[scale=0.5]{./images/heat-omp-strong-jacobi-speedup}
+  \caption{Speedup plot when varying the number of processors for the Jacobi solver.}
+    \label{plot:speed-gauss}
+\end{minipage}
 \end{figure}
 
-As we can see the performance increases together with the number of threads at first. But when we have a large number of threads the results shows a bit stagnation of this improvement.
+As we can see the performance increases together with the number of threads at first. But when we have a large number of threads the results shows a bit stagnation of this improvement, probably due to the creation and termination of threads and the synchronizations between them.
 
 \section{Parallelization of \textit{Gauss-Seidel} with OpenMP \texttt{ordered}}
 
@@ -545,7 +565,7 @@ Afterwards, we have used the \textit{Paraver} tool to see if the flow of the pro
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.5]{./images/paraver-jacobi-s2-4}
+	\includegraphics[scale=0.5]{./images/paraver-gauss}
 	\caption{Traces obtained when executing the new version of relax\_gauss function.}
 	\label{fig:trace-gauss-seidel-S4}
 \end{figure}
@@ -593,7 +613,9 @@ of this solver for 8 threads.
 
 
 
+\section{Conclusions}
 
+Un necessita mes memoria i menys dependencies, i viceversa.
 
 \section{Annex}
 \subsection{Task dependency graph when also disabling temporarily some positions of the matrix}
