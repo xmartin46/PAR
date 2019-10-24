@@ -27,6 +27,6 @@ estratègies de descomposició per tasques i de dades, així com els mecanismes 
 
 * [Laboratori 5: Geometric (data) decomposition: heat diffusion equation](https://github.com/xmartin46/PAR/blob/master/Lab5/Entregable.pdf)
 
-## Authors
+## Autors
 - [Roger Vilaseca Darné](https://github.com/Rovi98)
 - [Xavier Martín Ballesteros](https://github.com/xmartin46)
