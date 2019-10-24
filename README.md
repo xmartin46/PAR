@@ -1,7 +1,7 @@
 # PAR - FIB
 
 [![HitCount](http://hits.dwyl.io/xmartin46/PAR.svg)](http://hits.dwyl.io/xmartin46/PAR)
-[![GitHub stars](https://img.shields.io/github/stars/xmartin46/PAR.svg)](https://GitHub.com/xmartin46/VC/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/xmartin46/PAR.svg)](https://GitHub.com/xmartin46/PAR/stargazers/)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/xmartin46/PAR.svg?color=yellow)](https://github.com/xmartin46/PAR)
 
 
